@@ -1,0 +1,1128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.UserManagerMapper">
+
+    <resultMap type="com.zhiduan.axp.dao.manager.bean.UserManagerBean"
+               id="baseResult">
+        <result column="user_manager_id" property="userManagerId"/>
+        <result column="login_name" property="loginName"/>
+        <result column="password" property="password"/>
+        <result column="user_name" property="userName"/>
+        <result column="user_code" property="userCode"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="duty_id" property="dutyId"/>
+        <result column="gender" property="gender"/>
+        <result column="contact_tel" property="contactTel"/>
+        <result column="address" property="address"/>
+        <result column="be_enabled" property="beEnabled"/>
+        <result column="be_deleted" property="beDeleted"/>
+    </resultMap>
+
+    <!-- 根据用户id查询 -->
+    <select id="selectByUserId" parameterType="java.lang.Long" resultMap="baseResult">
+		select * from tb_user_manager where user_manager_id=#{userManagerId}
+	</select>
+
+    <select id="getUsers" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+            resultMap="baseResult">
+        select * from tb_user_manager where 1=1
+        <if test="nickname != null and nickname != '' ">
+            AND nickname LIKE CONCAT('%',#{nickname},'%')
+        </if>
+        <if test="phone != null and phone != ''">
+            AND phone LIKE CONCAT('%',#{phone},'%')
+        </if>
+        <if test="storeId != null and storeId != ''">
+            AND tb_store.store_id =#{storeId}
+        </if>
+        LIMIT #{offset}, #{limit}
+        <!-- <choose> <when test="page != null and page !=''"> limit #{startRow},#{rows}
+            </when> <otherwise> limit 1,10 </otherwise> </choose> -->
+    </select>
+
+    <select id="loginSelect" parameterType="java.lang.String"
+            resultType="com.zhiduan.axp.dao.user.bean.UserManagerLoginBean">
+		select user_manager_id 'userManagerId',password,user_name 'userName',be_deleted
+		'beDeleted' from
+		tb_user_manager where login_name=#{loginName} and
+		be_deleted=0
+	</select>
+
+    <!-- 获得序列一 -->
+    <select id="getSeq" resultType="long">
+		SELECT sq_user.nextval
+		FROM DUAL;
+	</select>
+
+    <!-- 查询所有 -->
+    <select id="getStoreUsers" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+            resultType="com.zhiduan.axp.dao.store.bean.StoreUserManagerBean">
+        SELECT
+        a.user_id userId,
+        a.phone,
+        a.real_name realName,
+        a.user_name userName,
+        a.age,
+        a.nickname nickName,
+        a.id_no idNo,
+        a.signup_time signupTime,
+        b.verify_status verifyStatus,
+        b.be_supervisor beSupervisor,
+        b.verify_time verifyTime,
+        f.college_id collegeId,
+        e.store_id storeId,
+        e.store_code storeCode,
+        e.store_name storeName,
+        e.location storeLocation,
+        ec.full_name companyFullName,
+        GROUP_CONCAT(c.city_name) cityFullName,
+        GROUP_CONCAT(f.full_name) collegeFullName
+
+        FROM
+        tb_user a
+        INNER join tb_user_store_exp b on a.user_id = b.user_id
+        LEFT JOIN tb_store_college_rel d on b.store_id = d.store_id
+        INNER join tb_store e on b.store_id = e.store_id
+        LEFT JOIN tb_college f on d.college_id = f.college_id
+        LEFT JOIN tb_city c on f.city_id = c.city_id
+        LEFT JOIN tb_store_ec_rel sec on e.store_id=sec.store_id AND sec.be_default=1
+        LEFT JOIN tb_express_company ec ON ec.express_company_id=sec.express_company_id
+        WHERE a.be_deleted = 0
+
+        <if test="realName != null and realName != '' ">
+            AND a.real_name like CONCAT('%',TRIM(#{realName}),'%')
+        </if>
+        <if test="phone != null and phone != ''">
+            AND a.phone like CONCAT('%',TRIM(#{phone}),'%')
+        </if>
+        <if test="idNo != null and idNo != ''">
+            AND a.id_no like CONCAT('%',TRIM(#{idNo}),'%')
+        </if>
+        <if test="startDate != null  and startDate != '' ">
+            <![CDATA[ and a.signup_time  >= #{startDate}]]>
+        </if>
+        <if test="endDate != null  and endDate != '' ">
+            <![CDATA[ and a.signup_time  <= #{endDate}]]>
+        </if>
+        <if test="storeId != null and storeId != ''">
+            AND e.store_id =#{storeId}
+        </if>
+        <if test="expressId != null and expressId != ''">
+            AND ec.express_company_id =#{expressId}
+        </if>
+        <if test="verifyStatus != null">
+            AND b.verify_status = #{ verifyStatus,jdbcType=TINYINT}
+        </if>
+        <if test="expressCompanyId != null and expressCompanyId != ''">
+            AND ec.express_company_id =#{expressCompanyId}
+        </if>
+
+        <if test="beSupervisor != null">
+            AND b.be_supervisor = #{beSupervisor,jdbcType=TINYINT}
+        </if>
+
+        <if test="storeName != null and storeName != ''">
+            AND e.store_name like CONCAT('%',TRIM(#{storeName}),'%')
+        </if>
+        <if test="cityId != null and cityId != ''">
+            AND c.city_id =#{cityId}
+        </if>
+
+        GROUP BY a.phone
+        ORDER BY
+        ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="getStoreUserByUserId" parameterType="java.lang.Long"
+            resultType="com.zhiduan.axp.dao.store.bean.StoreUserManagerBean">
+		SELECT tb_store.store_id storeId,
+		tb_user_store_exp.be_supervisor
+		beSupervisor,
+		tb_user_store_exp.`identity_number`,
+		tb_store.store_name
+		storeName,
+		tb_user.user_id userId
+		,tb_user.nickname
+		,tb_user.user_name
+		userName
+		,tb_user.account_pwd
+		,tb_user_store_exp.verify_status
+		verifyStatus
+		,tb_user.phone
+		,tb_user.gender
+		,tb_user.age
+		,tb_user.signup_time
+		signupTime
+		,tb_user.signup_ip signupIp
+		,tb_user.icon
+		FROM (tb_store INNER
+		JOIN
+		tb_user_store_exp ON
+		tb_store.`store_id`=tb_user_store_exp.`store_id`)
+		INNER JOIN tb_user ON
+		tb_user_store_exp.`user_id`=tb_user.`user_id`
+		where
+		tb_user.be_deleted=0
+		and
+		tb_user.user_id= #{userId,jdbcType=BIGINT}
+	</select>
+
+    <select id="getStoreUsersTotal" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+            resultType="java.lang.Integer">
+        select count(1) from
+        (SELECT
+        a.user_id userId,
+        a.phone,
+        a.real_name realName,
+        a.user_name userName,
+        a.age,
+        a.nickname nickName,
+        a.id_no idNo,
+        a.signup_time signupTime,
+        b.verify_status verifyStatus,
+        b.be_supervisor beSupervisor,
+        b.verify_time verifyTime,
+        f.college_id collegeId,
+        e.store_code storeCode,
+        e.store_name storeName,
+        e.location storeLocation,
+        ec.full_name companyFullName,
+        GROUP_CONCAT(c.city_name) cityFullName,
+        GROUP_CONCAT(f.full_name) collegeFullName
+
+        FROM
+        tb_user a
+        INNER join tb_user_store_exp b on a.user_id = b.user_id
+        LEFT JOIN tb_store_college_rel d on b.store_id = d.store_id
+        INNER join tb_store e on b.store_id = e.store_id
+        LEFT JOIN tb_college f on d.college_id = f.college_id
+        LEFT JOIN tb_city c on f.city_id = c.city_id
+        LEFT JOIN tb_store_ec_rel sec on e.store_id=sec.store_id AND sec.be_default=1
+        LEFT JOIN tb_express_company ec ON ec.express_company_id=sec.express_company_id
+        WHERE a.be_deleted = 0
+
+        <if test="realName != null and realName != '' ">
+            AND a.real_name like CONCAT('%',TRIM(#{realName}),'%')
+        </if>
+        <if test="phone != null and phone != ''">
+            AND a.phone like CONCAT('%',TRIM(#{phone}),'%')
+        </if>
+        <if test="idNo != null and idNo != ''">
+            AND a.id_no like CONCAT('%',TRIM(#{idNo}),'%')
+        </if>
+        <if test="expressId != null and expressId != ''">
+            AND ec.express_company_id =#{expressId}
+        </if>
+        <if test="startDate != null  and startDate != '' ">
+            <![CDATA[ and a.signup_time  >= #{startDate}]]>
+        </if>
+        <if test="endDate != null  and endDate != '' ">
+            <![CDATA[ and a.signup_time  <= #{endDate}]]>
+        </if>
+        <if test="storeId != null and storeId != ''">
+            AND e.store_id =#{storeId}
+        </if>
+        <if test="verifyStatus != null ">
+            AND b.verify_status = #{ verifyStatus,jdbcType=TINYINT}
+        </if>
+        <if test="expressCompanyId != null and expressCompanyId != ''">
+            AND ec.express_company_id =#{expressCompanyId}
+        </if>
+
+        <if test="beSupervisor != null">
+            AND b.be_supervisor = #{beSupervisor,jdbcType=TINYINT}
+        </if>
+
+        <if test="storeName != null and storeName != ''">
+            AND e.store_name like CONCAT('%',TRIM(#{storeName}),'%')
+        </if>
+        <if test="cityId != null and cityId != ''">
+            AND c.city_id =#{cityId}
+        </if>
+
+        GROUP BY a.phone
+        ) t
+    </select>
+
+    <select id="getUsersTotal" resultType="java.lang.Integer">
+		select count(1) FROM
+		(tb_store INNER JOIN
+		tb_user_store_exp ON
+		tb_store.`store_id`=tb_user_store_exp.`store_id`)
+		INNER JOIN tb_user ON
+		tb_user_store_exp.`user_id`=tb_user.`user_id`
+		where
+		tb_user.be_deleted=0
+	</select>
+
+    <select id="validatePhone" resultType="Integer" parameterType="String">
+		select
+		count(1)
+		from tb_user
+		where phone=#{phone,jdbcType=VARCHAR} and
+		be_deleted=0
+	</select>
+
+    <insert id="addUser" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+            useGeneratedKeys="true" keyProperty="user_id">
+        insert into tb_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="accountPwd != null">
+                account_pwd,
+            </if>
+            <if test="verifyStatus != null">
+                verify_status,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="age != null">
+                age,
+            </if>
+            <if test="countyId != null">
+                county_id,
+            </if>
+            <if test="signupTime != null">
+                signup_time,
+            </if>
+            <if test="signupIp != null">
+                signup_ip,
+            </if>
+            <if test="icon != null">
+                icon,
+            </if>
+            <if test="beDeleted != null">
+                be_deleted,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="nickname != null">
+                #{nickname},
+            </if>
+            <if test="userName != null">
+                #{userName},
+            </if>
+            <if test="accountPwd != null">
+                #{accountPwd},
+            </if>
+            <if test="verifyStatus != null">
+                #{verifyStatus},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
+            <if test="gender != null">
+                #{gender},
+            </if>
+            <if test="age != null">
+                #{age},
+            </if>
+            <if test="countyId != null">
+                #{countyId},
+            </if>
+            <if test="signupTime != null">
+                #{signupTime},
+            </if>
+            <if test="signupIp != null">
+                #{signupIp},
+            </if>
+            <if test="icon != null">
+                #{icon},
+            </if>
+            <if test="beDeleted != null">
+                #{beDeleted},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="addManagerUser"
+            parameterType="com.zhiduan.axp.controller.model.manager.UserManagerInfo"
+            useGeneratedKeys="true" keyProperty="userManagerId">
+        insert into tb_user_manager
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="loginName != null">
+                login_name,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="userCode != null">
+                user_code,
+            </if>
+            <if test="deptId != null">
+                dept_id,
+            </if>
+            <if test="dutyId != null">
+                duty_id,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="contactTel != null">
+                contact_tel,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="beEnabled != null">
+                be_enabled,
+            </if>
+            <if test="beDeleted != null">
+                be_deleted,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="loginName != null">
+                #{loginName},
+            </if>
+            <if test="password != null">
+                #{password},
+            </if>
+            <if test="userName != null">
+                #{userName},
+            </if>
+            <if test="userCode != null">
+                #{userCode},
+            </if>
+            <if test="deptId != null">
+                #{deptId},
+            </if>
+            <if test="dutyId != null">
+                #{dutyId},
+            </if>
+            <if test="gender != null">
+                #{gender},
+            </if>
+            <if test="contactTel != null">
+                #{contactTel},
+            </if>
+            <if test="address != null">
+                #{address},
+            </if>
+            <if test="beEnabled != null">
+                #{beEnabled},
+            </if>
+            <if test="beDeleted != null">
+                #{beDeleted},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="editUser" parameterType="com.zhiduan.axp.controller.model.UserInfo">
+        update tb_user
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+            <if test="accountPwd != null">
+                account_pwd = #{accountPwd},
+            </if>
+            <if test="verifyStatus != null">
+                verify_status = #{verifyStatus},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+            <if test="countyId != null">
+                county_id = #{countyId},
+            </if>
+
+            <if test="signupIp != null">
+                signup_ip = #{signupIp},
+            </if>
+            <if test="icon != null">
+                icon = #{icon},
+            </if>
+            <if test="beDeleted != null">
+                be_deleted = #{beDeleted},
+            </if>
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <update id="editManagerUser" parameterType="com.zhiduan.axp.controller.model.manager.UserManagerInfo">
+        update tb_user_manager
+        <set>
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+            <if test="userCode != null">
+                user_code = #{userCode},
+            </if>
+            <if test="deptId != null">
+                dept_id = #{deptId},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="dutyId != null">
+                duty_id = #{dutyId},
+            </if>
+            <if test="contactTel != null">
+                contact_tel = #{contactTel},
+            </if>
+
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="beEnabled != null">
+                be_enabled = #{beEnabled},
+            </if>
+            <if test="beDeleted != null">
+                be_deleted = #{beDeleted},
+            </if>
+            <if test="password != null and password !='' ">
+                password = #{password},
+            </if>
+        </set>
+        where user_manager_id = #{userManagerId}
+    </update>
+
+    <update id="cancelUser" parameterType="java.lang.Long">
+		update tb_user set
+		be_deleted = 1 where
+		user_id=#{userId}
+	</update>
+
+    <update id="cancelManagerUser" parameterType="java.lang.Long">
+		update
+		tb_user_manager set
+		be_deleted = 1 where
+		user_manager_id=#{userManagerId}
+	</update>
+
+    <select id="getUserById" parameterType="java.lang.Long"
+            resultType="com.zhiduan.axp.dao.user.bean.UserBean">
+		select * from tb_user where user_id=#{userId}
+	</select>
+
+    <!-- 动态插入数据 -->
+    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.user.bean.UserBean"
+            useGeneratedKeys="true" keyProperty="userId">
+        insert into tb_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="accountPwd != null">
+                account_pwd,
+            </if>
+            <if test="verifyStatus != null">
+                verify_status,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="age != null">
+                age,
+            </if>
+            <if test="countyId != null">
+                county_id,
+            </if>
+            <if test="signupTime != null">
+                signup_time,
+            </if>
+            <if test="signupIp != null">
+                signup_ip,
+            </if>
+            <if test="icon != null">
+                icon,
+            </if>
+            <if test="beDeleted != null">
+                be_deleted,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="nickname != null">
+                #{nickname},
+            </if>
+            <if test="userName != null">
+                #{userName},
+            </if>
+            <if test="accountPwd != null">
+                #{accountPwd},
+            </if>
+            <if test="verifyStatus != null">
+                #{verifyStatus},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
+            <if test="gender != null">
+                #{gender},
+            </if>
+            <if test="age != null">
+                #{age},
+            </if>
+            <if test="countyId != null">
+                #{countyId},
+            </if>
+            <if test="signupTime != null">
+                #{signupTime},
+            </if>
+            <if test="signupIp != null">
+                #{signupIp},
+            </if>
+            <if test="icon != null">
+                #{icon},
+            </if>
+            <if test="beDeleted != null">
+                #{beDeleted},
+            </if>
+        </trim>
+    </insert>
+
+
+    <select id="validateUserPhone" resultType="Integer"
+            parameterType="com.zhiduan.axp.dao.user.bean.StoreUserManagerBean">
+		select
+		count(1)
+		from tb_user
+		where
+		phone=#{phone,jdbcType=VARCHAR} and be_deleted=0 and
+		user_id!=#{userId}
+	</select>
+
+    <!-- 更新合作公司user信息 -->
+    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.controller.model.UserInfo">
+        update tb_user
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="accountPwd != null">
+                account_pwd = #{accountPwd,jdbcType=VARCHAR},
+            </if>
+            <if test="verifyStatus != null">
+                verify_status = #{verifyStatus,jdbcType=TINYINT},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=VARCHAR},
+            </if>
+            <if test="realName != null">
+                real_name = #{realName,jdbcType=VARCHAR},
+            </if>
+            <if test="idNo != null">
+                id_no = #{idNo,jdbcType=VARCHAR},
+            </if>
+            <if test="age != null">
+                age = #{age,jdbcType=TINYINT},
+            </if>
+            <if test="countyId != null">
+                county_id = #{countyId,jdbcType=BIGINT},
+            </if>
+
+            <if test="signupIp != null">
+                signup_ip = #{signupIp,jdbcType=VARCHAR},
+            </if>
+            <if test="icon != null">
+                icon = #{icon,jdbcType=VARCHAR},
+            </if>
+            <if test="beDeleted != null">
+                be_deleted = #{beDeleted,jdbcType=TINYINT},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=BIGINT}
+    </update>
+
+
+    <!-- 根据用户ID删除合作公司用户 -->
+    <delete id="deleteById" parameterType="Long">
+		UPDATE tb_user SET
+		be_deleted=1
+		where user_id=#{userId}
+	</delete>
+
+    <!-- 更改密码 -->
+    <update id="changePwd" parameterType="com.zhiduan.axp.dao.user.bean.StoreUserManagerBean">
+		update tb_user set
+		account_pwd = #{newPwd} where
+		user_name=#{userName} and be_deleted = 0
+	</update>
+
+    <select id="getTodayUsersTotal" resultType="java.lang.Integer">
+		select count(1) FROM
+		tb_user where be_deleted=0 and 
+		signup_time>=date_format(NOW(),'%Y-%m-%d')
+	</select>
+
+
+    <select id="getAllUsers" resultType="com.zhiduan.axp.dao.user.bean.UserBean">
+        select * from tb_user a ,tb_user_type b where a.user_id=b.user_id and
+        b.user_type=1
+        <!-- <choose> <when test="page != null and page !=''"> limit #{startRow},#{rows}
+            </when> <otherwise> limit 1,10 </otherwise> </choose> -->
+    </select>
+
+    <select id="getTodaySMSTotal" resultType="java.lang.Integer">
+		select COUNT(1) from
+		tb_sms WHERE submit_time >=date_format(NOW(),'%Y-%m-%d')
+	</select>
+
+    <select id="getSMSTotalByDateTime" resultType="java.lang.Integer">
+		select COUNT(1) from
+		tb_sms WHERE submit_time BETWEEN #{0} and #{1}
+	</select>
+
+    <select id="getOderStatiscs" resultType="com.zhiduan.axp.dao.order.bean.OrderStatiscs">
+      select count(1) OrderCout,sum(final_money)FinalMoney from tb_order
+      where create_date BETWEEN  #{0} and #{1}
+    </select>
+
+
+    <select id="getTodayNewPhoneTotal" resultType="java.lang.Integer">
+		select COUNT(1)
+		from tb_user_of_potential WHERE add_time >=
+		date_format(NOW(),'%Y-%m-%d')
+	</select>
+
+
+    <sql id="baseColumns">
+		user_manager_id 'id', login_name 'loginName', password,
+		user_name 'name', user_code 'code', dept_id 'deptId',
+		duty_id 'dutyId',
+		gender, contact_tel 'contactTel', address, be_enabled
+		'enabled',
+		be_deleted 'deleted'
+	</sql>
+
+    <!-- 保存用户 -->
+    <insert id="save" useGeneratedKeys="true" keyColumn="user_manager_id"
+            keyProperty="id">
+		INSERT INTO tb_user_manager(login_name, password,
+		user_name, user_code,
+		dept_id, duty_id, gender, contact_tel, address,
+		be_enabled, be_deleted)
+		VALUES (#{loginName}, #{password}, #{name},
+		#{code}, #{deptId}, #{dutyId},
+		#{gender}, #{contactTel}, #{address},
+		#{enabled}, #{deleted});
+	</insert>
+
+    <!-- 修改用户,密码不能修改 -->
+    <update id="update">
+        UPDATE tb_user_manager
+        SET
+        login_name=#{loginName},<!-- password=#{password}, -->
+        user_name=#{name},user_code=#{code},dept_id=#{deptId},
+        duty_id=#{dutyId},gender=#{gender},contact_tel=#{contactTel},address=#{address},be_enabled=#{enabled}<!--
+			, be_deleted=#{deleted} -->
+        WHERE user_manager_id=#{id}
+    </update>
+
+    <!-- 根据ID查询用户 -->
+    <select id="findById" resultType="com.zhiduan.axp.dao.manager.bean.UserManagerBean">
+        SELECT
+        <include refid="baseColumns"/>
+        FROM tb_user_manager WHERE user_manager_id=#{value}
+    </select>
+
+    <!-- 根据登录名称查询用户 -->
+    <select id="findByLoginName" resultType="com.zhiduan.axp.dao.manager.bean.UserManagerBean">
+        SELECT
+        <include refid="baseColumns"/>
+        FROM tb_user_manager WHERE be_deleted=0 and login_name=#{value}
+    </select>
+
+    <!-- 查询活动的用户列表 -->
+    <select id="findByActiveUsers" resultType="com.zhiduan.axp.dao.manager.bean.UserManagerBean">
+        SELECT
+        <include refid="baseColumns"/>
+        FROM tb_user_manager WHERE be_enabled=1 and be_deleted=0
+    </select>
+
+    <resultMap type="com.zhiduan.axp.dao.manager.bean.RoleBean"
+               id="roleResultMap">
+        <id property="roleId" column="roleId"/>
+        <result property="roleName" column="roleName"/>
+    </resultMap>
+    <resultMap type="com.zhiduan.axp.dao.manager.bean.SearchUserManagerBean"
+               id="userResultMap">
+        <id column="userManagerId" property="userManagerId"/>
+        <result column="loginName" property="loginName"/>
+        <result column="password" property="password"/>
+        <result column="userName" property="userName"/>
+        <result column="userCode" property="userCode"/>
+        <result column="deptId" property="deptId"/>
+        <result column="deptName" property="deptName"/>
+        <result column="dutyId" property="dutyId"/>
+        <result column="dutyName" property="dutyName"/>
+        <result column="gender" property="gender"/>
+        <result column="contactTel" property="contactTel"/>
+        <result column="address" property="address"/>
+        <result column="beDeleted" property="beDeleted"/>
+        <result column="beEnabled" property="beEnabled"/>
+        <collection property="roles" resultMap="roleResultMap"/>
+    </resultMap>
+
+    <resultMap type="com.zhiduan.axp.dao.manager.bean.SearchUserManagerBean"
+               id="managerUserResultMap">
+        <id column="userManagerId" property="userManagerId"/>
+        <result column="loginName" property="loginName"/>
+        <result column="password" property="password"/>
+        <result column="userName" property="userName"/>
+        <result column="userCode" property="userCode"/>
+        <result column="deptId" property="deptId"/>
+        <result column="deptName" property="deptName"/>
+        <result column="dutyId" property="dutyId"/>
+        <result column="dutyName" property="dutyName"/>
+        <result column="gender" property="gender"/>
+        <result column="contactTel" property="contactTel"/>
+        <result column="address" property="address"/>
+        <result column="beDeleted" property="beDeleted"/>
+        <result column="beEnabled" property="beEnabled"/>
+        <result column="roleNameStr" property="roleNameStr"/>
+        <result column="roleIdStr" property="roleIdStr"/>
+    </resultMap>
+
+    <resultMap type="com.zhiduan.axp.dao.manager.bean.SearchUserManagerBean"
+               id="managerResultMap">
+        <id column="user_manager_id" property="userManagerId"/>
+        <result column="login_name" property="loginName"/>
+        <result column="password" property="password"/>
+        <result column="user_name" property="userName"/>
+        <result column="user_code" property="userCode"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="be_deleted" property="beDeleted"/>
+        <result column="duty_id" property="dutyId"/>
+        <result column="gender" property="gender"/>
+        <result column="contact_tel" property="contactTel"/>
+        <result column="address" property="address"/>
+        <result column="be_enabled" property="beEnabled"/>
+    </resultMap>
+
+    <!-- 查询用户列表 -->
+    <select id="searchAll" resultMap="userResultMap">
+		SELECT
+		a.user_manager_id 'id',
+		a.login_name 'loginName', a.password, a.user_name 'name',
+		a.user_code
+		'code',
+		a.dept_id 'deptId',b.dept_name 'deptName',a.duty_id
+		'dutyId',c.duty_name
+		'dutyName', d.property_value 'gender',
+		a.contact_tel 'contactTel', a.address, a.be_enabled
+		'enabled',e.role_id as
+		'roleId',f.role_name as 'roleName'
+		FROM
+		tb_user_manager a
+		LEFT JOIN tb_dept b on a.dept_id = b.dept_id and
+		b.be_deleted=0
+		LEFT JOIN tb_duty c on a.duty_id = c.duty_id and
+		c.be_deleted=0
+		LEFT join tb_property_dict d on a.gender = d.property_id
+		LEFT JOIN tb_user_manager_role_rel e on a.user_manager_id =
+		e.user_manager_id
+		LEFT join tb_role f on e.role_id = f.role_id
+		WHERE
+		a.be_deleted=0
+	</select>
+
+    <!-- 查询用户列表 -->
+    <select id="getAll" resultMap="managerUserResultMap"
+            parameterType="com.zhiduan.axp.controller.model.manager.UserManagerInfo">
+        SELECT
+        a.user_manager_id 'userManagerId',
+        a.be_deleted 'beDeleted',
+        a.login_name
+        'loginName',
+        a.password, a.user_name 'userName',
+        a.user_code
+        'userCode',
+        a.dept_id
+        'deptId',b.dept_name 'deptName',a.duty_id
+        'dutyId',c.duty_name
+        'dutyName', d.property_value 'gender',
+        a.contact_tel 'contactTel',
+        a.address, a.be_enabled
+        'beEnabled',GROUP_CONCAT(e.role_id) as
+        'roleIdStr',GROUP_CONCAT(f.role_name) as
+        'roleNameStr'
+        FROM
+        tb_user_manager a
+        LEFT JOIN tb_dept b on a.dept_id =
+        b.dept_id and
+        b.be_deleted=0
+        LEFT JOIN tb_duty c on a.duty_id =
+        c.duty_id and
+        c.be_deleted=0
+        LEFT join tb_property_dict d on a.gender =
+        d.property_id
+        LEFT JOIN tb_user_manager_role_rel e on a.user_manager_id
+        =
+        e.user_manager_id
+        LEFT join tb_role f on e.role_id = f.role_id
+        WHERE
+        a.be_deleted=0
+        <if test="loginName != null and loginName != '' ">
+            AND a.login_name LIKE CONCAT('%',#{loginName},'%')
+        </if>
+        <if test="contactTel != null and contactTel != ''">
+            AND a.contact_tel LIKE CONCAT('%',#{contactTel},'%')
+        </if>
+        <if test="userName != null and userName != ''">
+            AND a.user_name LIKE CONCAT('%',#{userName},'%')
+        </if>
+        <if test="address != null and address != ''">
+            AND a.address LIKE CONCAT('%',#{address},'%')
+        </if>
+        <if test="deptId != null">
+            AND b.dept_id =#{deptId}
+        </if>
+        <if test="dutyId != null">
+            AND c.duty_id =#{dutyId}
+        </if>
+        <if test="beEnabled != null">
+            AND a.be_enabled =#{beEnabled}
+        </if>
+        <if test="roleId != null">
+            AND e.role_id =#{roleId}
+        </if>
+        GROUP BY a.user_manager_id
+        ORDER BY
+        ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 删除 -->
+    <delete id="deleteManagerById">
+		UPDATE tb_user_manager
+		SET
+		be_deleted=1
+		WHERE
+		user_manager_id=#{id} and be_deleted=0
+	</delete>
+    <!-- 初始化密码 -->
+    <update id="changePassword">
+		UPDATE tb_user_manager
+		SET
+		password=#{1}
+		WHERE
+		user_manager_id=#{0}
+	</update>
+
+    <!-- 初始化密码 -->
+    <update id="changeManagerPassword">
+		UPDATE tb_user_manager
+		SET
+		password=#{1}
+		WHERE
+		user_manager_id=#{0}
+	</update>
+
+    <select id="isUserExists" resultType="int" parameterType="map">
+        select count(1) from tb_user_manager
+        where
+        (login_name=#{loginName,jdbcType=VARCHAR} or
+        user_code=#{userCode,jdbcType=VARCHAR})
+        and be_deleted=0
+        <if test="userManagerId != null">
+            and user_manager_id != #{userManagerId,jdbcType=BIGINT}
+        </if>
+    </select>
+    <!-- 根据主键查询 -->
+    <select id="getInfoByLoginName" parameterType="java.lang.String"
+            resultType="com.zhiduan.axp.dao.manager.bean.UserManagerLoginBean">
+		select t1.user_manager_id,
+		t1.login_name, t1.password,
+		t1.user_name,
+		t1.user_code,
+		t1.dept_id,
+		t1.duty_id,
+		t1.gender,
+		t1.contact_tel,t1.address,t1.be_enabled,t1.be_deleted,t2.dept_code
+		AS
+		deptCode,t2.dept_name AS deptName,t3.duty_name AS dutyName
+		FROM
+		tb_user_manager t1 LEFT JOIN tb_dept t2 ON
+		t1.dept_id=t2.dept_id and
+		t2.be_deleted=0
+		LEFT
+		JOIN tb_duty t3 ON
+		t1.duty_id=t3.duty_id and
+		t3.be_deleted=0 where
+		t1.be_deleted=0
+		and t1.login_name = #{loginName}
+	</select>
+
+    <select id="getManagerTotal" resultType="java.lang.Integer"
+            parameterType="com.zhiduan.axp.controller.model.manager.UserManagerInfo">
+        SELECT COUNT(1) from(
+        SELECT
+        a.user_manager_id 'userManagerId',
+        a.be_deleted 'beDeleted',
+        a.login_name
+        'loginName',
+        a.password, a.user_name 'userName',
+        a.user_code
+        'userCode',
+        a.dept_id
+        'deptId',b.dept_name 'deptName',a.duty_id
+        'dutyId',c.duty_name
+        'dutyName', d.property_value 'gender',
+        a.contact_tel 'contactTel',
+        a.address, a.be_enabled
+        'beEnabled',e.role_id as
+        'roleId',GROUP_CONCAT(f.role_name) as
+        'roleName'
+        FROM
+        tb_user_manager a
+        LEFT JOIN tb_dept b on a.dept_id =
+        b.dept_id and
+        b.be_deleted=0
+        LEFT JOIN tb_duty c on a.duty_id =
+        c.duty_id and
+        c.be_deleted=0
+        LEFT join tb_property_dict d on a.gender =
+        d.property_id
+        LEFT JOIN tb_user_manager_role_rel e on a.user_manager_id
+        =
+        e.user_manager_id
+        LEFT join tb_role f on e.role_id = f.role_id
+        WHERE
+        a.be_deleted=0
+        <if test="loginName != null and loginName != '' ">
+            AND a.login_name LIKE CONCAT('%',#{loginName},'%')
+        </if>
+        <if test="contactTel != null and contactTel != ''">
+            AND a.contact_tel LIKE CONCAT('%',#{contactTel},'%')
+        </if>
+        <if test="userName != null and userName != ''">
+            AND a.user_name LIKE CONCAT('%',#{userName},'%')
+        </if>
+        <if test="address != null and address != ''">
+            AND a.address LIKE CONCAT('%',#{address},'%')
+        </if>
+        <if test="deptId != null">
+            AND b.dept_id =#{deptId}
+        </if>
+        <if test="dutyId != null">
+            AND c.duty_id =#{dutyId}
+        </if>
+        <if test="beEnabled != null">
+            AND a.be_enabled =#{beEnabled}
+        </if>
+        <if test="roleId != null">
+            AND e.role_id =#{roleId}
+        </if>
+        GROUP BY a.user_manager_id
+        ) mm
+    </select>
+
+    <select id="getUserByLoginName" parameterType="java.lang.String"
+            resultType="java.lang.Integer">
+		select count(1) from tb_user_manager where
+		login_name=#{loginName} and be_deleted=0
+	</select>
+
+    <select id="getUserByUserCode" parameterType="java.lang.String"
+            resultType="java.lang.Integer">
+		select count(1) from tb_user_manager where
+		user_code=#{userCode} and be_deleted=0
+	</select>
+
+    <!-- 查询审核列表 -->
+    <select id="userRegisterCheck" parameterType="com.zhiduan.axp.dao.user.bean.UserCheckBean"
+            resultType="com.zhiduan.axp.dao.user.bean.UserCheckBean">
+        SELECT
+        a.user_id,a.phone,a.real_name,a.user_name,a.age,a.nickname,a.signup_time,b.verify_status,b.be_supervisor,b.verify_time,
+        f.college_id,e.store_code,e.store_name,GROUP_CONCAT(f.full_name) college_full_name
+        FROM tb_user a
+        inner JOIN tb_user_store_exp b on a.user_id = b.user_id
+        left join tb_store_college_rel d on b.store_id=d.store_id
+        inner join tb_store e on b.store_id=e.store_id
+        left join tb_college f on d.college_id=f.college_id
+        WHERE /*a.user_id = b.user_id
+        AND b.store_id=d.store_id
+        AND b.store_id=e.store_id
+        AND d.college_id=f.college_id
+        and*/ a.be_deleted=0
+        <if test="phone != ''and phone!=null">
+            and a.phone like '${phone}%'
+        </if>
+        <if test="realName != '' and realName!=null">
+            and a.real_name like '${realName}%'
+        </if>
+        <if test="beSupervisor != null">
+            and b.be_supervisor=#{beSupervisor}
+        </if>
+        <if test="verifyStatus != null">
+            and b.verify_status=#{verifyStatus}
+        </if>
+        <if test="collegeId != null">
+            and f.college_id=#{collegeId}
+        </if>
+        <if test="timeType ==0">
+            <if test="startTime != null">
+                and a.signup_time<![CDATA[>]]>#{startTime}
+            </if>
+            <if test="endTime != null">
+                and a.signup_time<![CDATA[<]]>#{endTime}
+            </if>
+        </if>
+        <if test="timeType ==1">
+            <if test="startTime != null">
+                and b.verify_time<![CDATA[>]]>#{startTime}
+            </if>
+            <if test="endTime != null">
+                and b.verify_time<![CDATA[<]]>#{endTime}
+            </if>
+        </if>
+        GROUP BY a.phone
+        ORDER BY a.phone
+
+    </select>
+
+    <select id="getTenDayUser" resultType="com.zhiduan.axp.controller.model.user.UserNumber">
+		select COUNT(1) number,date_format(signup_time,'%Y-%m-%d') dayTime FROM
+		tb_user
+		where be_deleted=0 and
+		signup_time>=(select date_sub(curdate(),interval 9 day)) GROUP BY date_format(signup_time,'%Y-%m-%d')
+	</select>
+</mapper>

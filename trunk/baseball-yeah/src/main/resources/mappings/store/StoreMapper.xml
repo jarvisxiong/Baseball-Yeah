@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.store.mapper.StoreMapper">
+    <!-- 商户结果集 -->
+    <resultMap id="StoreResultMap" type="com.zhiduan.axp.dao.store.bean.StoreBean">
+        <result property="storeId" column="store_id" javaType="long" jdbcType="BIGINT"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="storeName" column="store_name"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <result property="location" column="location"/>
+        <result property="beDeleted" column="be_deleted"/>
+    </resultMap>
+    <!-- 商户_快递公司结果集 -->
+    <resultMap id="StoreExpResultMap"
+               type="com.zhiduan.axp.dao.store.bean.StoreExpBean">
+        <result property="serId" column="ser_id " javaType="long"
+                jdbcType="BIGINT"/>
+        <result property="storeId" column="store_id" javaType="long"
+                jdbcType="BIGINT"/>
+        <result property="expressCompanyId" column="express_company_id"
+                javaType="long" jdbcType="BIGINT"/>
+        <result property="beDefault" column="be_default"/>
+    </resultMap>
+
+    <!-- 商户_学校结果集 -->
+    <resultMap id="StoreSchoolResultMap"
+               type="com.zhiduan.axp.dao.store.bean.StoreSchoolBean">
+        <result property="scrId" column="scr_id " javaType="long"
+                jdbcType="BIGINT"/>
+        <result property="storeId" column="store_id" javaType="long"
+                jdbcType="BIGINT"/>
+        <result property="collegeId" column="college_id" javaType="long"
+                jdbcType="BIGINT"/>
+    </resultMap>
+
+    <!-- 商户_快递站点结果集 -->
+    <resultMap id="StoreSiteResultMap"
+               type="com.zhiduan.axp.dao.store.bean.StoreSiteBean">
+        <result property="stoExpId" column="sto_exp_id " javaType="long"
+                jdbcType="BIGINT"/>
+        <result property="phone" column="phone"/>
+        <result property="supervisorName" column="supervisor_name"/>
+        <result property="packetModeMgr" column="packet_mode_mgr"/>
+    </resultMap>
+
+    <!-- 快递站点_axp门店结果集 -->
+    <resultMap id="SiteAxpResultMap"
+               type="com.zhiduan.axp.dao.store.bean.SiteAxpBean">
+        <result property="earId" column="ear_id" javaType="long"
+                jdbcType="BIGINT"/>
+        <result property="stoExpId" column="sto_exp_id" javaType="long"
+                jdbcType="BIGINT"/>
+        <result property="stoAxpId" column="sto_axp_id" javaType="long"
+                jdbcType="BIGINT"/>
+        <result property="beDeleted" column="be_deleted"/>
+    </resultMap>
+    <!-- 快递信息结果集 -->
+    <resultMap id="ExpressResultMap"
+               type="com.zhiduan.axp.dao.manager.bean.ExpressBean">
+        <result property="expressCompanyId" column="express_company_id"
+                javaType="long" jdbcType="BIGINT"/>
+        <result property="expressCompanyName" column="simple_name"/>
+        <result property="beDefault" column="be_default"/>
+    </resultMap>
+    <!-- 门店信息结果集 -->
+    <resultMap id="AxpResultMap" type="com.zhiduan.axp.dao.store.bean.AxpBean">
+        <result property="stoAxpId" column="store_id" javaType="long"
+                jdbcType="BIGINT"/>
+        <result property="stoAxpName" column="stoAxpName"/>
+        <result property="collegeId" column="college_id"/>
+        <result property="collegeName" column="full_name"/>
+    </resultMap>
+    <!-- 爱学派门店信息结果集 -->
+    <resultMap id="axpStoreResultMap"
+               type="com.zhiduan.axp.dao.store.bean.AxpStoreBean">
+        <id property="storeId" column="store_id" javaType="long" jdbcType="BIGINT"/>
+        <result property="storeCode" column="store_code" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="storeName" column="store_name" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="location" column="location" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="status" column="status" javaType="Byte"
+                jdbcType="TINYINT"/>
+        <result property="type" column="type" javaType="Byte" jdbcType="INTEGER"/>
+        <result property="esName" column="es_name" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="esGcode" column="es_gcode" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="ecName" column="ec_name" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="ecGcode" column="ec_gcode" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="licence" column="licence" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="supervisorName" column="supervisor_name"
+                javaType="String" jdbcType="VARCHAR"/>
+        <result property="collegeId" column="college_id" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="collegeName" column="college_name" javaType="String"
+                jdbcType="VARCHAR"/>
+    </resultMap>
+    <!-- 快递站点信息结果集 -->
+    <resultMap id="expStoreResultMap"
+               type="com.zhiduan.axp.dao.store.bean.ExpStoreBean">
+        <id property="storeId" column="sto_exp_id" javaType="long"
+            jdbcType="BIGINT"/>
+        <result property="storeCode" column="store_code" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="storeName" column="store_name" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="location" column="location" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="status" column="status" javaType="Integer"
+                jdbcType="TINYINT"/>
+        <result property="packetModeMgr" column="packet_mode_mgr" javaType="Byte" jdbcType="INTEGER"/>
+        <result property="packetModeSend" column="packet_mode_send" javaType="Byte" jdbcType="INTEGER"/>
+        <result property="closeMode" column="close_mode" javaType="Byte" jdbcType="INTEGER"/>
+        <result property="type" column="type" javaType="Byte" jdbcType="INTEGER"/>
+        <result property="phone" column="phone" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="ecName" column="ec_name" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="ecGcode" column="ec_gcode" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="colName" column="col_name" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="colCode" column="col_code" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="supervisorName" column="supervisor_name"
+                javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!-- 查询快递公司条数 -->
+    <select id="getExpressCount" resultType="int" parameterType="java.util.List">
+        select count(t.express_company_id) from tb_express_company t where t.express_company_id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <!-- 查询商户条数 -->
+    <select id="getExpStoreCount" resultType="int" parameterType="java.util.List">
+        select count(1) from tb_store t where t.type=1 and t.be_deleted = 0 and t.store_id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <!-- 查询门店条数 -->
+    <select id="getAxpStoreCount" resultType="int" parameterType="java.util.List">
+        select count(t.store_id) from tb_store t where t.type=2 and t.be_deleted = 0 and t.store_id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <!-- 查询学校条数 -->
+    <select id="getCollegeCount" resultType="int" parameterType="java.util.List">
+        select count(t.college_id) from tb_college t where t.college_id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <!-- 查询门店条数 -->
+    <select id="getAxpStoreCountByParam" resultType="int" parameterType="map">
+        select count(store_id) from tb_store t where (store_name=#{store_name} or store_code=#{store_code}) and type=2 and be_deleted=0
+        <if test="storeId!=null">
+            and store_id!=#{storeId}
+        </if>
+    </select>
+
+
+    <!-- 商户 -->
+    <select id="selectStoreNotDeleted" parameterType="long" resultMap="StoreResultMap">
+		select * from tb_store where store_id=#{storeId} and be_deleted=0
+	</select>
+
+    <insert id="insertStore" parameterType="com.zhiduan.axp.dao.store.bean.StoreBean" useGeneratedKeys="true" keyProperty="storeId">
+		insert into tb_store(store_code,store_name,type,status,location,be_deleted)
+		values(#{storeCode},#{storeName},#{type},#{status},#{location},#{beDeleted})
+	</insert>
+
+    <delete id="deleteStoreById" parameterType="long">
+		delete from tb_store where store_id=#{id}
+	</delete>
+    <update id="updateStore" parameterType="com.zhiduan.axp.dao.store.bean.StoreBean">
+        update tb_store t
+        <set>
+            <if test="storeCode != null">
+                t.store_code=#{storeCode},
+            </if>
+            <if test="storeName != null">
+                t.store_name=#{storeName},
+            </if>
+            <if test="status != null">
+                t.status=#{status},
+            </if>
+            <if test="type != null">
+                t.type=#{type},
+            </if>
+            <if test="location != null">
+                t.location=#{location},
+            </if>
+            <if test="beDeleted != null">
+                t.be_deleted=#{beDeleted},
+            </if>
+        </set>
+        where t.store_id=#{storeId}
+    </update>
+
+    <!-- 商户_快递公司 -->
+    <select id="selectAllStoreExp" resultMap="StoreExpResultMap">
+		select t.* from
+		tb_store_ec_rel t
+	</select>
+    <select id="selectStoreExp" parameterType="long" resultMap="StoreExpResultMap">
+		select t.* from tb_store_ec_rel t
+		where t.ser_id=#{id}
+	</select>
+    <select id="selectEcListByStoreId" parameterType="long" resultMap="StoreExpResultMap">
+		select t.* from tb_store_ec_rel t
+		where t.store_id=#{storeId}
+	</select>
+    <delete id="deleteStoreExp" parameterType="long">
+		delete from tb_store_ec_rel where store_id=#{id}
+	</delete>
+    <insert id="insertStoreExp" parameterType="com.zhiduan.axp.dao.store.bean.StoreExpBean">
+		insert into
+		tb_store_ec_rel(ser_id,store_id,express_company_id,be_default)
+		values(#{serId},#{storeId},#{expressCompanyId},#{beDefault})
+	</insert>
+    <update id="updateStoreExp" parameterType="com.zhiduan.axp.dao.store.bean.StoreExpBean">
+        update tb_store_ec_rel t
+        <set>
+            <if test="storeId != null">
+                t.store_id=#{storeId},
+            </if>
+            <if test="expressCompanyId != null">
+                t.express_company_id=#{expressCompanyId},
+            </if>
+            <if test="beDefault != null">
+                t.be_default=#{beDefault},
+            </if>
+        </set>
+        where t.ser_id=#{serId}
+    </update>
+
+    <!-- 商户_学校 -->
+    <select id="selectAllStoreSchool" resultMap="StoreSchoolResultMap">
+		select t.* from
+		tb_store_college_rel t
+	</select>
+    <select id="selectStoreSchool" parameterType="long"
+            resultMap="StoreSchoolResultMap">
+		select t.* from tb_store_college_rel t
+		where t.scr_id=#{id}
+	</select>
+    <select id="selectColListByStoreId" parameterType="long"
+            resultMap="StoreSchoolResultMap">
+		select t.* from tb_store_college_rel t
+		where t.store_id=#{storeId}
+	</select>
+    <delete id="deleteStoreSchool" parameterType="long">
+		delete from tb_store_college_rel where store_id=#{id}
+	</delete>
+    <insert id="insertStoreSchool" parameterType="com.zhiduan.axp.dao.store.bean.StoreSchoolBean">
+		insert into
+		tb_store_college_rel(scr_id,store_id,college_id)
+		values(#{scrId},#{storeId},#{collegeId})
+	</insert>
+    <update id="updateStoreSchool" parameterType="com.zhiduan.axp.dao.store.bean.StoreSchoolBean">
+        update tb_store_college_rel t
+        <set>
+            <if test="storeId != null">
+                t.store_id=#{storeId},
+            </if>
+            <if test="collegeId != null">
+                t.college_id=#{collegeId},
+            </if>
+        </set>
+        where t.scr_id=#{scrId}
+    </update>
+
+    <!-- 商户_快递站点 -->
+    <select id="selectAllStoreSite" resultMap="StoreSiteResultMap">
+		select t.* from
+		tb_store_exp t
+	</select>
+    <select id="selectStoreSite" parameterType="long" resultMap="StoreSiteResultMap">
+		select t.* from tb_store_exp t
+		where t.sto_exp_id=#{id}
+	</select>
+    <delete id="deleteStoreSite" parameterType="long">
+		delete from
+		tb_store_exp where sto_exp_id=#{id}
+	</delete>
+    <insert id="insertStoreSite" parameterType="com.zhiduan.axp.dao.store.bean.StoreSiteBean">
+		insert into
+		tb_store_exp(sto_exp_id,phone,supervisor_name,packet_mode_mgr,packet_mode_send,close_mode)
+		values(#{stoExpId},#{phone},#{supervisorName},#{packetModeMgr},#{packetModeSend},#{closeMode})
+	</insert>
+    <!-- 批量更新众包开启状态 -->
+    <update id="batchCheckPacketMode" parameterType="Map">
+        update tb_store_exp t
+        <set>
+            <if test="mgrMode != null">
+                t.packet_mode_mgr=#{mgrMode},
+            </if>
+            <if test="sendMode != null">
+                t.packet_mode_send=#{sendMode}
+            </if>
+        </set>
+        where t.sto_exp_id in
+        <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <update id="updateStoreSite" parameterType="com.zhiduan.axp.dao.store.bean.StoreSiteBean">
+        update tb_store_exp t
+        <set>
+            <if test="phone != null">
+                t.phone=#{phone},
+            </if>
+            <if test="supervisorName != null">
+                t.supervisor_name=#{supervisorName},
+            </if>
+            <if test="packetModeMgr != null">
+                packet_mode_mgr=#{packetModeMgr},
+            </if>
+            <if test="packetModeSend != null">
+                packet_mode_send=#{packetModeSend},
+            </if>
+            <if test="closeMode != null">
+                close_mode=#{closeMode}
+            </if>
+        </set>
+        where t.sto_exp_id=#{stoExpId}
+    </update>
+
+    <!-- 快递站点_爱学派门店 -->
+    <select id="selectAllSiteAxp" resultMap="SiteAxpResultMap">
+		select t.* from
+		tb_store_exp_axp_rel t
+	</select>
+    <select id="selectSiteAxp" parameterType="long" resultMap="SiteAxpResultMap">
+		select t.* from tb_store_exp_axp_rel t
+		where t.ear_id=#{id}
+	</select>
+    <!-- 根据商户id 删除门店,重新插入 -->
+    <delete id="deleteSiteAxpByStoreId" parameterType="long">
+		delete from
+		tb_store_exp_axp_rel where sto_exp_id=#{id}
+	</delete>
+    <!-- 根据门店id 删除门店-快递站点对应信息 -->
+    <delete id="deleteSiteAxpByAxpId" parameterType="long">
+        delete from tb_store_exp_axp_rel where sto_axp_id=#{id}
+    </delete>
+    <insert id="insertSiteAxp" parameterType="com.zhiduan.axp.dao.store.bean.SiteAxpBean">
+		insert into
+		tb_store_exp_axp_rel(ear_id,sto_exp_id,sto_axp_id,be_deleted)
+		values(#{earId},#{stoExpId},#{stoAxpId},#{beDeleted})
+	</insert>
+    <update id="updateSiteAxp" parameterType="com.zhiduan.axp.dao.store.bean.SiteAxpBean">
+        update tb_store_exp_axp_rel t
+        <set>
+            <if test="stoExpId != null">
+                t.sto_exp_id=#{stoExpId},
+            </if>
+            <if test="stoAxpId != null">
+                t.sto_axp_id=#{stoAxpId},
+            </if>
+            <if test="beDeleted != null">
+                t.be_deleted=#{beDeleted},
+            </if>
+        </set>
+        where t.ear_id=#{earId}
+    </update>
+    <!-- 根据学校编号查询商户列表 -->
+    <select id="selectStoreByCollegeId" resultMap="StoreResultMap"
+            parameterType="java.lang.Long">
+		select ts.* from tb_store ts where store_id in(
+		select
+		t.store_id from tb_store_college_rel t where t.college_id = #{id})
+	</select>
+    <!-- 删除非默认的快递站点,重新插入 -->
+    <delete id="deleteNoDefault" parameterType="long">
+		delete from
+		tb_store_ec_rel where store_id=#{id} and be_default = 0
+	</delete>
+
+    <!-- 删除快递站点,重新插入 -->
+    <delete id="deleteRelativeExp" parameterType="long">
+		delete from
+		tb_store_ec_rel where store_id=#{id}
+	</delete>
+    <!-- 判断 站点编号,站点名称 唯一 -->
+    <select id="ifStoreExist" resultType="int" parameterType="map">
+        select count(1) from tb_store t where
+        <if test="storeCode != null">
+            t.store_code=#{storeCode}
+        </if>
+        <if test="storeName != null">
+            t.store_name=#{storeName}
+        </if>
+        and be_deleted = 0
+        <if test="storeId != null">
+            and t.store_id != #{storeId}
+        </if>
+    </select>
+    <!-- 判断 手机号码唯一 -->
+    <select id="ifPhoneExist" resultType="int" parameterType="map">
+        select count(1) from tb_store_exp t where t.phone=#{phone}
+        <if test="storeId != null">
+            and t.sto_exp_id != #{storeId}
+        </if>
+    </select>
+    <!-- 获得序列一 -->
+    <select id="getSeq" resultType="long">
+        <!-- 	SELECT sq_store.nextval
+            FROM DUAL; -->
+        select max(store_id) from tb_store
+    </select>
+
+
+    <!-- 逻辑删除商户信息 -->
+    <update id="logicalDeleteStore" parameterType="java.lang.Long">
+		update tb_store t
+		set t.be_deleted = 1 where t.store_id=#{storeId} and t.be_deleted = 0
+	</update>
+
+    <!-- 逻辑批量删除商户信息 -->
+    <update id="logicalDeleteStoreByIds" parameterType="java.util.List">
+        update tb_store t
+        set t.be_deleted = 1 where t.store_id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <resultMap type="com.zhiduan.axp.dao.store.bean.SearchSiteBean"
+               id="phoneSiteResultMap">
+        <id property="siteId" column="siteId"/>
+        <result property="siteName" column="siteName"/>
+    </resultMap>
+
+    <resultMap type="com.zhiduan.axp.dao.store.bean.SearchCollegeBean" id="collegeResultMap">
+        <id property="collegeId" column="college_id"/>
+        <result property="collegeCode" column="college_code"/>
+        <result property="collegeName" column="college_name"/>
+    </resultMap>
+
+    <resultMap type="com.zhiduan.axp.dao.store.bean.SearchStoreBean" id="phoneStoreResultMap">
+        <id property="storeId" column="store_id"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="phone" column="phone"/>
+        <result property="storeName" column="store_name"/>
+        <result property="expressCompanyId" column="express_company_id"/>
+        <result property="expressName" column="express_name"/>
+        <result property="location" column="location"/>
+    </resultMap>
+
+    <resultMap id="customSiteResultMap" type="com.zhiduan.axp.controller.model.store.CustomStoreInfo">
+        <result property="storeCode" column="store_code"/>
+        <result property="storeName" column="store_name"/>
+        <result property="beDeleted" column="be_deleted"/>
+
+        <result property="phone" column="phone"/>
+        <result property="type" column="type" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="status" column="status" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="location" column="location"/>
+        <result property="supervisorName" column="supervisor_name"/>
+        <collection property="ecs" resultMap="ExpressResultMap"/>
+        <collection property="axps" resultMap="AxpResultMap"/>
+    </resultMap>
+
+    <!-- 手机号码查商户信息 -->
+    <select id="selectStoreByPhone" parameterType="java.lang.String"
+            resultMap="phoneStoreResultMap">
+		SELECT a.phone,c.store_id 'storeId',c.store_code 'storeCode',c.store_name 'storeName',e.simple_name 'expressName',
+		e.express_company_id expressCompanyId,g.store_id siteId,g.store_name 'siteName'
+		FROM tb_user a
+		INNER JOIN tb_user_store_exp b ON b.user_id = a.user_id and b.be_supervisor=1
+		LEFT join tb_store c on b.store_id=c.store_id and c.be_deleted=0
+		LEFT JOIN tb_store_ec_rel d on b.store_id = d.store_id and d.be_default=1
+		LEFT JOIN tb_express_company e on d.express_company_id = e.express_company_id and e.be_enabled=1
+		LEFT JOIN tb_store_exp_axp_rel f on f.sto_exp_id = b.store_id and f.be_deleted = 0
+		LEFT JOIN tb_store g on f.sto_axp_id = g.store_id and g.be_deleted=0
+		WHERE a.be_deleted=0
+		and a.phone = #{phone}
+	</select>
+    <!-- 查询门店信息 -->
+    <select id="selectAxpStoreInfo" resultMap="axpStoreResultMap">
+    select t1.store_id,t1.location,t1.`status`,t1.store_code,t1.store_name,t1.type,t2.phone,t2.supervisor_name,tep.
+    es_name,t2.licence,tep.es_gcode,
+	GROUP_CONCAT(t8.college_id SEPARATOR ',')as college_id,
+	GROUP_CONCAT(t8.full_name SEPARATOR ',')as college_name
+	from tb_store_axp t2
+	inner join tb_store t1 on t1.store_id=t2.sto_axp_id
+	inner join(select a.sto_axp_id,GROUP_CONCAT(c.store_name SEPARATOR ',')
+	es_name,GROUP_CONCAT(c.store_id SEPARATOR ',') es_gcode from tb_store_axp a
+    left join tb_store_exp_axp_rel b on a.sto_axp_id=b.sto_axp_id
+	left join tb_store c on c.store_id=b.sto_exp_id and c.be_deleted=0 GROUP BY a.sto_axp_id) tep
+	on tep.sto_axp_id=t2.sto_axp_id
+	left join tb_store_college_rel t7 on t7.store_id=t1.store_id
+	left join tb_college t8 on t8.college_id=t7.college_id
+	where t1.be_deleted=0
+	group by t1.store_id
+	</select>
+    <!-- 查询快递站点信息 -->
+    <select id="selectExpStoreInfo" resultMap="expStoreResultMap">
+        SELECT
+        t1.*,
+        t2.location,
+        t2.`status`,
+        t2.store_code,
+        t2.store_name,
+        t2.type,
+        tc.college_id,
+        t4.express_company_id defaultECId,
+        t4.simple_name defaultECName,
+        GROUP_CONCAT(DISTINCT t3.simple_name SEPARATOR ',') ec_name,
+        GROUP_CONCAT(DISTINCT t3.express_company_id SEPARATOR ',') ec_gcode,
+        GROUP_CONCAT(DISTINCT tc.full_name SEPARATOR ',') col_name,
+        GROUP_CONCAT(DISTINCT tc.college_id SEPARATOR ',') col_code
+        FROM tb_store_exp t1
+        INNER JOIN tb_store t2
+        ON t2.store_id = t1.sto_exp_id
+        LEFT JOIN (SELECT tser.store_id, tec.express_company_id, tec.simple_name
+        FROM tb_store_ec_rel tser, tb_express_company tec
+        WHERE tser.express_company_id = tec.express_company_id AND tser.be_default = 0) t3
+        ON t3.store_id = t2.store_id
+        LEFT JOIN (SELECT tser.store_id,tec.express_company_id,tec.simple_name
+        FROM tb_store_ec_rel tser,tb_express_company tec
+        WHERE tser.express_company_id = tec.express_company_id AND tser.be_default = 1) t4
+        ON t4.store_id = t2.store_id
+        INNER JOIN tb_store_college_rel tscr
+        ON t2.store_id = tscr.store_id
+        INNER JOIN tb_college tc
+        ON tscr.college_id = tc.college_id
+        WHERE t2.be_deleted = 0
+        and t2.be_virtual!=1
+        GROUP BY t1.sto_exp_id
+        ORDER BY sto_exp_id DESC
+
+        <!--虚拟站点不取出来-->
+    </select>
+
+    <!-- 查询快递站点信息(带参数) -->
+    <select id="selectExpStoreInfoByParames" resultMap="expStoreResultMap" parameterType="map">
+        SELECT
+        t1.*,
+        t2.location,
+        t2.`status`,
+        t2.store_code,
+        t2.store_name,
+        t2.type,
+        tc.college_id,
+        t4.express_company_id defaultECId,
+        t4.simple_name defaultECName,
+        GROUP_CONCAT(DISTINCT t3.simple_name SEPARATOR ',') ec_name,
+        GROUP_CONCAT(DISTINCT t3.express_company_id SEPARATOR ',') ec_gcode,
+        GROUP_CONCAT(DISTINCT tc.full_name SEPARATOR ',') col_name,
+        GROUP_CONCAT(DISTINCT tc.college_id SEPARATOR ',') col_code
+        FROM tb_store_exp t1
+        INNER JOIN tb_store t2
+        ON t2.store_id = t1.sto_exp_id
+        LEFT JOIN (SELECT tser.store_id, tec.express_company_id, tec.simple_name
+        FROM tb_store_ec_rel tser, tb_express_company tec
+        WHERE tser.express_company_id = tec.express_company_id AND tser.be_default = 0) t3
+        ON t3.store_id = t2.store_id
+        LEFT JOIN (SELECT tser.store_id,tec.express_company_id,tec.simple_name
+        FROM tb_store_ec_rel tser,tb_express_company tec
+        WHERE tser.express_company_id = tec.express_company_id AND tser.be_default = 1) t4
+        ON t4.store_id = t2.store_id
+        LEFT JOIN tb_store_college_rel tscr
+        ON t2.store_id = tscr.store_id
+        LEFT JOIN tb_college tc
+        ON tscr.college_id = tc.college_id
+        WHERE t2.be_deleted = 0
+        and t2.be_virtual!=1
+        <if test="storeName!=null and storeName!=''">
+            and trim(t2.store_name)=#{storeName}
+        </if>
+        <if test="phone!=null and phone!=''">
+            and trim(t1.phone)=#{phone}
+        </if>
+        <if test="expressCompanyId!=null and expressCompanyId!=''">
+            and t4.express_company_id=#{expressCompanyId}
+        </if>
+        GROUP BY t1.sto_exp_id
+        ORDER BY sto_exp_id DESC
+
+        <!--虚拟站点不取出来-->
+    </select>
+    <!-- 批量插入tb_store_exp_axp_rel 信息 -->
+    <insert id="insertSiteAxpList" parameterType="list">
+        insert into
+        tb_store_exp_axp_rel(ear_id,sto_exp_id,sto_axp_id,be_deleted) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.earId},#{item.stoExpId},#{item.stoAxpId},#{item.beDeleted})
+        </foreach>
+    </insert>
+
+    <!-- 批量插入tb_store_college_rel 信息 -->
+    <insert id="insertStoreSchoolList" parameterType="list">
+        insert into
+        tb_store_college_rel(scr_id,store_id,college_id) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.scrId},#{item.storeId},#{item.collegeId})
+        </foreach>
+    </insert>
+    <!-- 批量插入tb_store_ec_rel 信息 -->
+    <insert id="insertEcList" parameterType="list">
+        insert into
+        tb_store_ec_rel(ser_id,store_id,express_company_id,be_default) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.serId},#{item.storeId},#{item.expressCompanyId},#{item.beDefault})
+        </foreach>
+    </insert>
+    <!-- 插入tb_store_axp 信息 -->
+    <insert id="insertAxpDetail" parameterType="com.zhiduan.axp.dao.store.bean.AxpDetailBean">
+        insert into
+        tb_store_axp(sto_axp_id,phone,supervisor_name,licence) values
+            (#{stoAxpId},#{phone},#{supervisorName},#{licence})
+    </insert>
+    <update id="updateAxpDetail" parameterType="com.zhiduan.axp.dao.store.bean.AxpDetailBean">
+        update tb_store_axp t
+        <set>
+            <if test="phone != null">
+                t.phone=#{phone},
+            </if>
+            <if test="supervisorName != null">
+                t.supervisor_name=#{supervisorName},
+            </if>
+            <if test="licence != null">
+                t.licence=#{licence},
+            </if>
+        </set>
+        where t.sto_axp_id=#{stoAxpId}
+    </update>
+    <!-- 删除tb_store_axp 信息  -->
+    <delete id="deleteAxpDetail" parameterType="long">
+        delete from tb_store_axp where sto_axp_id=#{id}
+    </delete>
+
+
+    <!-- 根据站点的id查询站点的详细信息 -->
+    <select id="querySiteById" resultMap="customSiteResultMap" parameterType="long">
+        select ts.store_code,ts.store_name,ts.type,ts.status,ts.location,ts.be_deleted
+         from tb_store ts
+         where ts.store_id=#{id}
+    </select>
+
+    <!--根据商户ID查询学校列表-->
+    <select id="selectCollegesByStoreId" resultMap="AxpResultMap">
+        SELECT rel.store_id,rel.college_id,coll.full_name FROM tb_store_college_rel rel , tb_college coll WHERE coll.college_id=rel.college_id AND rel.store_id=#{storeId}
+    </select>
+
+    <!--根据手机号查询商户和快递信息-->
+    <select id="selectStoreExpressByPhone" parameterType="java.lang.String" resultMap="phoneStoreResultMap">
+        SELECT a.user_name 'phone',c.store_id ,c.store_name ,c.store_code ,e.express_company_id ,e.simple_name 'express_name',c.location
+        FROM tb_user a,tb_user_store_exp b,tb_store c,tb_store_ec_rel d,tb_express_company e
+        WHERE a.user_id=b.user_id
+        AND   b.store_id=c.store_id
+        AND   c.store_id=d.store_id
+        AND   d.express_company_id=e.express_company_id
+        AND   a.user_name = #{phone}
+        AND   a.be_deleted=0
+        AND   b.be_supervisor=1
+        AND   c.be_deleted=0
+        AND   d.be_default=1
+    </select>
+    <!--插入短信账户 -->
+    <insert id="addSmsAccount" parameterType="com.zhiduan.axp.dao.bean.SmsAccountBean">
+        insert into TB_SMS_ACCOUNT
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">
+                store_id,
+            </if>
+            <if test="balance != null">
+                balance,
+            </if>
+            <if test="beEnabled != null">
+                be_enabled,
+            </if>
+            <if test="lockNum != null">
+                lock_num,
+            </if>
+            <if test="addTime != null">
+                add_time,
+            </if>
+            <if test="memo != null">
+                memo,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeId != null">
+                #{storeId,jdbcType=BIGINT},
+            </if>
+            <if test="balance != null">
+                #{balance,jdbcType=INTEGER},
+            </if>
+            <if test="beEnabled != null">
+                #{beEnabled,jdbcType=BIT},
+            </if>
+            <if test="lockNum != null">
+                #{lockNum,jdbcType=BIGINT},
+            </if>
+            <if test="addTime != null">
+                #{addTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="memo != null">
+                #{memo,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.message.mapper.SmsModelForUserMapper">
+    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.message.bean.SmsModelForUserBean">
+        <constructor>
+            <idArg column="sms_model_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="user_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="template_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="model_content" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+    sms_model_id, user_id, template_name, model_content
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_sms_model_for_user
+        where sms_model_id = #{smsModelId,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from tb_sms_model_for_user
+    where sms_model_id = #{smsModelId,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.message.bean.SmsModelForUserBean">
+        insert into tb_sms_model_for_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="smsModelId != null">
+                sms_model_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="templateName != null">
+                template_name,
+            </if>
+            <if test="modelContent != null">
+                model_content,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="smsModelId != null">
+                #{smsModelId,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="templateName != null">
+                #{templateName,jdbcType=VARCHAR},
+            </if>
+            <if test="modelContent != null">
+                #{modelContent,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.message.bean.SmsModelForUserBean">
+        update tb_sms_model_for_user
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="templateName != null">
+                template_name = #{templateName,jdbcType=VARCHAR},
+            </if>
+            <if test="modelContent != null">
+                model_content = #{modelContent,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where sms_model_id = #{smsModelId,jdbcType=BIGINT}
+    </update>
+
+</mapper>

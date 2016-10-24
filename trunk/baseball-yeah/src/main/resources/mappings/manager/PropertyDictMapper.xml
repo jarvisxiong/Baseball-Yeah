@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.PropertyDictMapper">
+    <resultMap id="PropertyDictResultMap" type="com.zhiduan.axp.dao.manager.bean.PropertyDictBean">
+        <constructor>
+            <idArg column="property_id" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="property_shortcode" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="call_alias" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="description" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="property_value" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="sort_no" jdbcType="SMALLINT" javaType="java.lang.Integer"/>
+        </constructor>
+    </resultMap>
+
+    <select id="getPropertyDictList" resultMap="PropertyDictResultMap">
+		select t.property_id,t.property_shortcode,t.call_alias,t.description,t.property_value,t.sort_no from tb_property_dict t
+	</select>
+    <select id="getDictListbyCallAlias"  parameterType="java.lang.String" resultMap="PropertyDictResultMap">
+        select t.property_id,t.property_shortcode,t.call_alias,t.description,t.property_value,t.sort_no from tb_property_dict t
+        where t.call_alias=#{callAlias}
+    </select>
+	 <select id="getPropertyDictListByPropertyId" parameterType="java.lang.String" resultMap="PropertyDictResultMap">
+		select t.property_id,t.property_shortcode,t.call_alias,t.description,t.property_value,t.sort_no from tb_property_dict t
+		where t.property_id=#{propertyId}
+	</select>
+    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.PropertyDictBean">
+		insert into tb_property_dict
+		(property_id,property_shortcode,call_alias,
+		description,property_value,sort_no) values (
+		#{propertyId,jdbcType=VARCHAR},
+		#{propertyShortcode,jdbcType=VARCHAR},
+		#{callAlias,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR},
+		#{propertyValue,jdbcType=VARCHAR},
+		#{sortNo,jdbcType=SMALLINT}
+		)
+	</insert>
+    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.PropertyDictBean">
+        update tb_property_dict
+        <set>
+            <if test="propertyShortcode != null">
+                property_shortcode = #{propertyShortcode,jdbcType=VARCHAR},
+            </if>
+            <if test="callAlias != null">
+                call_alias = #{callAlias,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=TINYINT},
+            </if>
+            <if test="propertyValue != null">
+                property_value = #{propertyValue,jdbcType=SMALLINT},
+            </if>
+            <if test="sortNo != null">
+                sort_no = #{sortNo,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where property_id = #{propertyId,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteByPrimaryKey">
+      delete from tb_property_dict where property_id = #{propertyId,jdbcType=VARCHAR}
+    </delete>
+
+    <select id="checkPropertyDict" parameterType="map" resultType="int">
+        select count(1) from tb_property_dict
+        <where>
+
+            <if test="callAlias != null">
+                ((call_alias=#{callAlias,jdbcType=VARCHAR}
+            </if>
+            <if test="propertyValue != null">
+                and property_value = #{propertyValue,jdbcType=SMALLINT})
+            </if>
+            <if test="add==0">
+                or property_shortcode = #{propertyShortcode,jdbcType=VARCHAR} or property_id =
+                #{propertyId,jdbcType=VARCHAR})
+            </if>
+            <if test="update==1">
+                or property_shortcode = #{propertyShortcode,jdbcType=VARCHAR}) and property_id !=
+                #{propertyId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByIdAndCallAlias" resultMap="PropertyDictResultMap">
+        SELECT * FROM tb_property_dict WHERE property_id=#{0} AND call_alias=#{1}
+    </select>
+</mapper>

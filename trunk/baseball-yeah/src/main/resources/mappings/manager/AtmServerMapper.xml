@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.AtmServerMapper" >
+  <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+    <constructor >
+      <idArg column="attachment_server_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="attachment_server_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="endpoint" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="access_key_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="access_key_secret" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="access_url" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="be_enabled" jdbcType="TINYINT" javaType="java.lang.Byte" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    attachment_server_id, attachment_server_name, endpoint, access_key_id, access_key_secret, 
+    access_url, be_enabled
+  </sql>
+  <select id="selectByPrimaryKey" resultType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" parameterType="java.lang.String" >
+    select 
+    *
+    from tb_attachment_server
+    where attachment_server_id = #{attachmentServerId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_attachment_server
+    
+  </select>
+  <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_attachment_server
+    where attachment_server_name = #{attachmentServerName,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tb_attachment_server
+    where attachment_server_id = #{attachmentServerId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+    insert into tb_attachment_server (attachment_server_id, attachment_server_name, 
+      endpoint, access_key_id, access_key_secret, 
+      access_url, be_enabled
+      )
+    values (#{attachmentServerId,jdbcType=VARCHAR}, #{attachmentServerName,jdbcType=VARCHAR}, 
+      #{endpoint,jdbcType=VARCHAR}, #{accessKeyId,jdbcType=VARCHAR}, #{accessKeySecret,jdbcType=VARCHAR}, 
+      #{accessUrl,jdbcType=VARCHAR}, #{beEnabled,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+    insert into tb_attachment_server
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="attachmentServerId != null" >
+        attachment_server_id,
+      </if>
+      <if test="attachmentServerName != null" >
+        attachment_server_name,
+      </if>
+      <if test="endpoint != null" >
+        endpoint,
+      </if>
+      <if test="accessKeyId != null" >
+        access_key_id,
+      </if>
+      <if test="accessKeySecret != null" >
+        access_key_secret,
+      </if>
+      <if test="accessUrl != null" >
+        access_url,
+      </if>
+      <if test="beEnabled != null" >
+        be_enabled,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="attachmentServerId != null" >
+        #{attachmentServerId,jdbcType=VARCHAR},
+      </if>
+      <if test="attachmentServerName != null" >
+        #{attachmentServerName,jdbcType=VARCHAR},
+      </if>
+      <if test="endpoint != null" >
+        #{endpoint,jdbcType=VARCHAR},
+      </if>
+      <if test="accessKeyId != null" >
+        #{accessKeyId,jdbcType=VARCHAR},
+      </if>
+      <if test="accessKeySecret != null" >
+        #{accessKeySecret,jdbcType=VARCHAR},
+      </if>
+      
+      <if test="accessUrl != null" >
+        #{accessUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="beEnabled != null" >
+        #{beEnabled,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+    update tb_attachment_server
+    <set >
+      <if test="attachmentServerName != null" >
+        attachment_server_name = #{attachmentServerName,jdbcType=VARCHAR},
+      </if>
+      <if test="endpoint != null" >
+        endpoint = #{endpoint,jdbcType=VARCHAR},
+      </if>
+      <if test="accessKeyId != null" >
+        access_key_id = #{accessKeyId,jdbcType=VARCHAR},
+      </if>
+      <if test="accessKeySecret != null" >
+        access_key_secret = #{accessKeySecret,jdbcType=VARCHAR},
+      </if>
+      <if test="accessUrl != null" >
+        access_url = #{accessUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="beEnabled != null" >
+        be_enabled = #{beEnabled,jdbcType=TINYINT},
+      </if>
+    </set>
+    where attachment_server_id = #{attachmentServerId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+    update tb_attachment_server
+    set attachment_server_name = #{attachmentServerName,jdbcType=VARCHAR},
+      endpoint = #{endpoint,jdbcType=VARCHAR},
+      access_key_id = #{accessKeyId,jdbcType=VARCHAR},
+      access_key_secret = #{accessKeySecret,jdbcType=VARCHAR},
+      access_url = #{accessUrl,jdbcType=VARCHAR},
+      be_enabled = #{beEnabled,jdbcType=TINYINT}
+    where attachment_server_id = #{attachmentServerId,jdbcType=VARCHAR}
+  </update>
+  	<select id="isAtmServerExists" resultType="int" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+		SELECT
+		count(1)
+		FROM tb_attachment_server
+		 where
+		attachment_server_id=#{attachmentServerId} or
+		attachment_server_name=#{attachmentServerName}
+	</select>
+	 	<select id="isAtmServerNameExists" resultType="int" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+		SELECT
+		count(1)
+		FROM tb_attachment_server
+		 where
+		attachment_server_id!=#{attachmentServerId} and
+		attachment_server_name=#{attachmentServerName}
+	</select>
+</mapper>

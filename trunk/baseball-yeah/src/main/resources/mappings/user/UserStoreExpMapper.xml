@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.user.mapper.UserStoreExpMapper">
+	<!-- 基本返回结果 -->
+	<resultMap id="BaseResultMap"
+		type="com.zhiduan.axp.dao.user.bean.UserStoreExpBean">
+		<constructor>
+			<idArg column="user_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="be_supervisor" jdbcType="TINYINT" javaType="java.lang.Byte" />
+			<arg column="store_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="identity_number" jdbcType="VARCHAR" javaType="java.lang.String" />
+		</constructor>
+	</resultMap>
+	
+	<!-- sql语句 -->
+	<sql id="Base_Column_List">
+			user_id, be_supervisor, store_id, identity_number,verify_status
+	</sql>
+	
+	<!-- 根据用户编码查询用户 -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from tb_user_store_exp
+		where user_id = #{userId,jdbcType=BIGINT}
+	</select>
+	
+	<!-- 根据用户编码删除记录 -->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from tb_user_store_exp
+		where user_id = #{userId,jdbcType=BIGINT}
+	</delete>
+	
+	<!-- 插入数据 -->
+	<insert id="insert" parameterType="com.zhiduan.axp.dao.user.bean.UserStoreExpBean">
+		insert into tb_user_store_exp (user_id, be_supervisor, store_id,
+		identity_number)
+		values (#{userId,jdbcType=BIGINT}, #{beSupervisor,jdbcType=TINYINT},
+		#{storeId,jdbcType=BIGINT},
+		#{identityNumber,jdbcType=VARCHAR})
+	</insert>
+	
+	<!-- 动态插入数据 -->
+	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.user.bean.UserStoreExpBean">
+		insert into tb_user_store_exp
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="beSupervisor != null">
+				be_supervisor,
+			</if>
+			<if test="storeId != null">
+				store_id,
+			</if>
+			<if test="identityNumber != null">
+				identity_number,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				#{userId,jdbcType=BIGINT},
+			</if>
+			<if test="beSupervisor != null">
+				#{beSupervisor,jdbcType=TINYINT},
+			</if>
+			<if test="storeId != null">
+				#{storeId,jdbcType=BIGINT},
+			</if>
+			<if test="identityNumber != null">
+				#{identityNumber,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 根据用户编码动态更新数据 -->
+	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.user.bean.UserStoreExpBean">
+		update tb_user_store_exp
+		<set>
+			<if test="beSupervisor != null">
+				be_supervisor = #{beSupervisor,jdbcType=TINYINT},
+			</if>
+			<if test="storeId != null">
+				store_id = #{storeId,jdbcType=BIGINT},
+			</if>
+			<if test="identityNumber != null">
+				identity_number = #{identityNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="verifyStatus != null">
+				verify_status = #{verifyStatus,jdbcType=TINYINT},
+			</if>
+			<if test="verifyInfo != null">
+				verify_info = #{verifyInfo,jdbcType=VARCHAR},
+			</if>
+			<if test="verifyUserId != null">
+				verify_user_id = #{verifyUserId,jdbcType=BIGINT},
+			</if>
+			<if test="verifyUserName != null">
+				verify_user_name = #{verifyUserName,jdbcType=VARCHAR},
+			</if>
+			<if test="verifyTime != null">
+				verify_time = #{verifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="verifyRemark != null">
+				verify_remark = #{verifyRemark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where user_id = #{userId,jdbcType=BIGINT}
+	</update>
+	
+	<!-- 根据用户编码跟新数据 -->
+	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.user.bean.UserStoreExpBean">
+		update tb_user_store_exp
+		set be_supervisor = #{beSupervisor,jdbcType=TINYINT},
+		store_id = #{storeId,jdbcType=BIGINT},
+		identity_number = #{identityNumber,jdbcType=VARCHAR}
+		where user_id = #{userId,jdbcType=BIGINT}
+	</update>
+
+	<update id="updateStoreUser" parameterType="com.zhiduan.axp.dao.user.bean.UserStoreExpBean">
+		update tb_user_store_exp
+		set be_supervisor = 0
+		where store_id = #{storeId,jdbcType=BIGINT}
+	</update>
+		<!-- 根据用户编码跟新数据 -->
+	<update id="updateBeSupervisor" parameterType="com.zhiduan.axp.dao.user.bean.UserStoreExpBean">
+		update tb_user_store_exp
+		set be_supervisor = 0
+		where store_id = #{storeId,jdbcType=BIGINT} and user_id!=#{userId,jdbcType=BIGINT}
+	</update>
+</mapper>

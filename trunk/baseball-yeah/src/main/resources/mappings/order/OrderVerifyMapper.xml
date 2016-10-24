@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.order.mapper.OrderVerifyMapper">
+
+
+    <select id="getAuditUsers" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+            resultType="com.zhiduan.axp.dao.user.bean.UserCheckBean">
+        SELECT
+        a.user_id userId,
+        a.phone,
+        a.real_name realName,
+        a.user_name userName,
+        a.age,
+        a.nickname nickName,
+        a.signup_time signupTime,
+        a.id_no idNo,
+        b.state verifyStatus,
+        b.dormitory_address dormitoryAddress,
+        b.college_address collegeAddress,
+        b.update_date verifyTime,
+        c.college_id collegeId,
+        c.full_name collegeFullName,
+        d.city_name cityName,
+        (SELECT property_value FROM tb_property_dict WHERE property_id=a.gender)gender
+        FROM
+        tb_user a
+        inner join p_user b on a.user_id = b.user_id
+        left join tb_college c on b.college_id = c.college_id
+        <if test="cityId != null and cityId != ''">
+            AND c.city_id = #{cityName}
+        </if>
+        left join tb_city d on c.city_id = d.city_id
+        WHERE
+        a.be_deleted = 0
+        -- AND a.gender = e.property_id
+        <if test="userName != '' and userName != null">
+            AND a.user_name like CONCAT('%', TRIM(#{userName}), '%')
+        </if>
+        <if test="realName != '' and realName!=null">
+            AND a.real_name like CONCAT('%',TRIM(#{realName}),'%')
+        </if>
+        <if test="idNo != null and idNo != ''">
+            AND a.id_no like CONCAT ('%', TRIM(#{idNo}), '%')
+        </if>
+        <if test="gender != null and gender != ''">
+            AND a.gender = #{gender}
+        </if>
+        <if test="startDate != null  and startDate != '' ">
+            <![CDATA[ and a.signup_time  >= #{startDate}]]>
+        </if>
+        <if test="endDate != null  and endDate != '' ">
+            <![CDATA[ and a.signup_time  <= #{endDate}]]>
+        </if>
+        <if test="collegeId != null">
+            and b.college_id=#{collegeId}
+        </if>
+        <if test="auditStartDate != null and auditEndDate != null and auditStartDate != '' and auditEndDate != ''">
+            AND (date(b.update_date) between #{auditStartDate} AND #{auditEndDate})
+        </if>
+        <if test="verifyStatus != null">
+            and b.state=#{verifyStatus}
+        </if>
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+
+    </select>
+
+    <select id="getAuditUser" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+            resultType="com.zhiduan.axp.dao.user.bean.UserCheckBean">
+        SELECT
+        a.user_id userId,
+        a.phone,
+        a.real_name realName,
+        a.user_name userName,
+        a.age,
+        a.id_no  idNo,
+        a.nickname nickName,
+        a.signup_time signupTime,
+        b.state verifyStatus,
+        b.stuNo,
+        b.verify_msg verifyMsg,
+        b.dormitory_address dormitoryAddress,
+        b.college_address collegeAddress,
+        b.remark ,
+        c.college_id collegeId,
+        c.full_name collegeFullName
+        FROM
+        tb_user a
+        INNER join p_user b ON a.user_id = b.user_id
+        LEFT JOIN tb_college c ON b.college_id = c.college_id
+        WHERE a.be_deleted = 0
+        AND a.user_id = #{userId}
+    </select>
+
+    <select id="getAuditUsersCount" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+            resultType="int">
+        SELECT
+        count(1)
+        FROM
+        tb_user a
+        inner join p_user b on a.user_id = b.user_id
+        left join tb_college c on b.college_id = c.college_id
+        <if test="cityId != null and cityId != ''">
+            AND c.city_id = #{cityName}
+        </if>
+        left join tb_city d on c.city_id = d.city_id
+        WHERE
+        a.be_deleted = 0
+        -- AND a.gender = e.property_id
+        <if test="userName != '' and userName != null">
+            AND a.user_name like CONCAT('%', TRIM(#{userName}), '%')
+        </if>
+        <if test="realName != '' and realName!=null">
+            AND a.real_name like CONCAT('%',TRIM(#{realName}),'%')
+        </if>
+        <if test="idNo != null and idNo != ''">
+            AND a.id_no like CONCAT ('%', TRIM(#{idNo}), '%')
+        </if>
+        <if test="gender != null and gender != ''">
+            AND a.gender = #{gender}
+        </if>
+        <if test="startDate != null  and startDate != '' ">
+            <![CDATA[ and a.signup_time  >= #{startDate}]]>
+        </if>
+        <if test="endDate != null  and endDate != '' ">
+            <![CDATA[ and a.signup_time  <= #{endDate}]]>
+        </if>
+        <if test="collegeId != null">
+            and b.college_id=#{collegeId}
+        </if>
+        <if test="auditStartDate != null and auditEndDate != null and auditStartDate != '' and auditEndDate != ''">
+            AND (date(b.update_date) between #{auditStartDate} AND #{auditEndDate})
+        </if>
+        <if test="verifyStatus != null">
+            and b.state=#{verifyStatus}
+        </if>
+    </select>
+
+    <!-- 根据用户编码查询用户 -->
+    <select id="selectByPrimaryKey" resultType="com.zhiduan.axp.dao.user.bean.UserStoreExpBean"
+            parameterType="java.lang.Long">
+        select user_id userId,
+        college_id collegeId,
+        college_address collegeAddress,
+        state verifyStatus,
+        verify_msg,
+        remark,
+        stuNo
+        from p_user
+        where user_id = #{userId,jdbcType=BIGINT}
+    </select>
+
+
+    <!-- 根据用户编码动态更新数据 -->
+    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.user.bean.UserPExpBean">
+        update p_user
+        <set>
+            <if test="collegeId != null">
+                college_id = #{collegeId,jdbcType=BIGINT},
+            </if>
+            <if test="collegeAddress != null">
+                college_address = #{collegeAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="dormitoryAddress != null">
+                dormitory_address = #{dormitoryAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=TINYINT},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser,jdbcType=BIGINT},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="verifyMsg != null">
+                verify_msg = #{verifyMsg,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=BIGINT}
+    </update>
+
+
+    <update id="updateActivation" parameterType="com.zhiduan.axp.controller.model.user.UserCheckInfo">
+        update p_user
+        <set>
+            <if test="grabOrderMode != null">
+                grab_order_mode = #{grabOrderMode},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=BIGINT}
+    </update>
+
+    <select id="getManageUsers" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+            resultType="com.zhiduan.axp.dao.user.bean.UserCheckBean">
+        SELECT
+        a.user_id userId,
+        a.phone,
+        a.real_name realName,
+        a.user_name userName,
+        a.age,
+        a.nickname nickName,
+        a.signup_time signupTime,
+        a.id_no idNo,
+        b.state verifyStatus,
+        b.dormitory_address dormitoryAddress,
+        b.college_address collegeAddress,
+        b.update_date verifyTime,
+        c.college_id collegeId,
+        c.full_name collegeFullName,
+        d.city_name cityName,
+        (SELECT property_value FROM tb_property_dict WHERE property_id=a.gender)gender,
+        b.grab_order_mode grabOrderMode
+        FROM
+        tb_user a
+        INNER join p_user b on a.user_id = b.user_id
+        LEFT JOIN tb_college c on b.college_id = c.college_id
+        LEFT join tb_city d on c.city_id = d.city_id
+        WHERE a.be_deleted = 0
+        <if test="userName != '' and userName != null">
+            AND a.user_name like CONCAT('%', TRIM(#{userName}), '%')
+        </if>
+        <if test="phone != '' and phone != null">
+            AND a.phone like CONCAT('%', TRIM(#{phone}), '%')
+        </if>
+        <if test="realName != '' and realName!=null">
+            AND a.real_name like CONCAT('%',TRIM(#{realName}),'%')
+        </if>
+        <if test="collegeId != null">
+            and b.college_id=#{collegeId}
+        </if>
+        <if test="grabOrderMode != null and grabOrderMode != ''">
+            and b.grab_order_mode= #{grabOrderMode,jdbcType=TINYINT}
+        </if>
+        <if test="cityId != null and cityId != ''">
+            AND c.city_id = #{cityId}
+        </if>
+        <if test="gender != null and gender != ''">
+            AND a.gender = #{gender}
+        </if>
+        <if test="idNo != null and idNo != ''">
+            AND a.id_no like CONCAT ('%', TRIM(#{idNo}), '%')
+        </if>
+        <if test="verifyStatus != null">
+            and b.state=#{verifyStatus}
+        </if>
+        <if test="startDate != null  and startDate != '' ">
+            <![CDATA[ and a.signup_time  >= #{startDate}]]>
+        </if>
+        <if test="endDate != null  and endDate != '' ">
+            <![CDATA[ and a.signup_time  <= #{endDate}]]>
+        </if>
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+
+    </select>
+
+    <select id="getManageUsersCount" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+            resultType="int">
+
+        SELECT COUNT(*) FROM (
+        SELECT
+        a.user_id userId,
+        a.phone,
+        a.real_name realName,
+        a.user_name userName,
+        a.age,
+        a.nickname nickName,
+        a.signup_time signupTime,
+        a.id_no idNo,
+        b.state verifyStatus,
+        b.dormitory_address dormitoryAddress,
+        b.college_address collegeAddress,
+        b.update_date verifyTime,
+        c.college_id collegeId,
+        c.full_name collegeFullName,
+        d.city_name cityName,
+        (SELECT property_value FROM tb_property_dict WHERE property_id=a.gender)gender,
+        b.grab_order_mode grabOrderMode
+        FROM
+        tb_user a
+        INNER join p_user b on a.user_id = b.user_id
+        LEFT JOIN tb_college c on b.college_id = c.college_id
+        LEFT join tb_city d on c.city_id = d.city_id
+        WHERE a.be_deleted = 0
+        <if test="userName != '' and userName != null">
+            AND a.user_name like CONCAT('%', TRIM(#{userName}), '%')
+        </if>
+        <if test="phone != '' and phone != null">
+            AND a.phone like CONCAT('%', TRIM(#{phone}), '%')
+        </if>
+        <if test="realName != '' and realName!=null">
+            AND a.real_name like CONCAT('%',TRIM(#{realName}),'%')
+        </if>
+        <if test="collegeId != null">
+            and b.college_id=#{collegeId}
+        </if>
+        <if test="grabOrderMode != null and grabOrderMode != ''">
+            and b.grab_order_mode= #{grabOrderMode,jdbcType=TINYINT}
+        </if>
+        <if test="cityId != null and cityId != ''">
+            AND c.city_id = #{cityId}
+        </if>
+        <if test="gender != null and gender != ''">
+            AND a.gender = #{gender}
+        </if>
+        <if test="idNo != null and idNo != ''">
+            AND a.id_no like CONCAT ('%', TRIM(#{idNo}), '%')
+        </if>
+        <if test="verifyStatus != null">
+            and b.state=#{verifyStatus}
+        </if>
+        <if test="startDate != null  and startDate != '' ">
+            <![CDATA[ and a.signup_time  >= #{startDate}]]>
+        </if>
+        <if test="endDate != null  and endDate != '' ">
+            <![CDATA[ and a.signup_time  <= #{endDate}]]>
+        </if>
+        ) t
+    </select>
+</mapper>

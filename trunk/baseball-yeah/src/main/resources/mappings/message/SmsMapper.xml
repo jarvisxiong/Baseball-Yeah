@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiduan.axp.dao.message.mapper.SmsMapper">
+
+    <resultMap id="BaseResultSmsMap" type="com.zhiduan.axp.dao.message.bean.SmsBean">
+        <id column="sms_id" property="smsId"/>
+        <result column="sms_vendor_id" property="smsVendorId" jdbcType="VARCHAR"/>
+        <result column="message_type_id" property="messageTypeId"
+                jdbcType="VARCHAR"/>
+        <result column="phone" property="phone"/>
+        <result column="content" property="content"/>
+        <result column="submit_time" property="submitTime"/>
+        <result column="status" property="status"/>
+        <result column="sms_code" property="smsCode"/>
+        <result column="return_status" property="returnStatus"/>
+        <result column="return_content" property="returnContent"/>
+        <result column="retry_count" property="retryCount"/>
+        <result column="last_get_data_time" property="lastGetDataTime"/>
+        <result column="user_id" property="userId"/>
+        <result column="store_id" property="storeId"/>
+        <result column="extend_code" property="extendCode"/>
+        <result column="batch_no" property="batchNo"/>
+        <result column="biz_id" property="bizId"/>
+        <result column="be_deleted" property="beDeleted"/>
+        <result column="messageTypeName" property="messageTypeText"/>
+        <result column="sendUserName" property="sendUserText"/>
+        <result column="sendStoreName" property="sendStoreText"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        sms_id, sms_vendor_id, message_type_id, phone, content,
+        submit_time, status,
+        sms_code,
+        return_status, return_content,
+        retry_count, last_get_data_time, user_id, store_id,
+        extend_code,batch_no,biz_id,be_deleted
+    </sql>
+
+    <!-- 根据查询条件查询短信记录 -->
+    <select id="getSmsList" parameterType="com.zhiduan.axp.dao.message.bean.MessageSearchBean"
+            resultType="com.zhiduan.axp.dao.message.bean.SmsBean">
+        SELECT sms_id as smsId, t1.sms_vendor_id as smsVendorId, t1.message_type_id as messageTypeId,t1.phone, content,
+        submit_time as submitTime, t1.status,sms_code as smsCode,return_status as returnStatus, return_content as returnContent,
+        retry_count as retryCount, last_get_data_time as lastGetDataTime, t1.user_id as userId, t1.store_id as storeId,
+        extend_code as extendCode,batch_no as batchNo,biz_id as bizId,t1.be_deleted as beDeleted,t4.`property_value` AS messageTypeText,
+        CONCAT((CASE WHEN ISNULL(t2.`nickname`)=1 or t2.nickname='' THEN '' ELSE CONCAT('[',t2.`nickname`,']') END),t2.`user_name`) AS
+        sendUserText,
+        CONCAT((CASE WHEN ISNULL(t3.`store_code`)=1  or t3.`store_code`='' THEN '' ELSE CONCAT('[',t3.`store_code`,']') END),t3.`store_name`)
+        AS sendStoreText,
+        t5.sms_vendor_name as smsVendorName
+        FROM tb_sms t1
+        LEFT JOIN tb_user t2 ON t1.user_id=t2.`user_id`
+        LEFT JOIN tb_store t3 ON t1.`store_id`=t3.`store_id`
+        LEFT JOIN tb_property_dict t4 ON t1.`message_type_id`=t4.`property_id`
+        LEFT JOIN tb_sms_vendor t5 on t1.sms_vendor_id=t5.sms_vendor_id
+        WHERE t1.`be_deleted`=0
+        AND t1.`submit_time` BETWEEN #{startSubmitTime} AND #{endSubmitTime}
+        <if test="keyWord != null">
+            AND t1.phone=#{keyWord}
+        </if>
+        <if test="sendUserID != null">
+            AND t1.`user_id`=#{sendUserID}
+        </if>
+        <if test="sendStoreID != null">
+            AND t1.`store_id`=#{sendStoreID}
+        </if>
+        <if test="type != null">
+            AND t1.`message_type_id`=#{type}
+        </if>
+        <if test="status != null">
+            AND t1.`status`=#{status}
+        </if>
+        <if test="sendPhone != null">
+            AND t1.`user_id` in (select user_id from tb_user where phone=#{sendPhone})
+        </if>
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="getVendorSmsSumList" parameterType="com.zhiduan.axp.dao.message.bean.MessageSearchBean"
+            resultType="com.zhiduan.axp.dao.message.bean.MessageSumBean">
+        SELECT
+        SUM(CASE WHEN t1.STATUS=2 THEN ((CASE WHEN CHAR_LENGTH(content)&lt;66 THEN 1 ELSE TRUNCATE(((CHAR_LENGTH(content)+4)/67),0)+1 END)) ELSE 0 END) AS sucessCount,
+        SUM(CASE WHEN (t1.STATUS=-1) THEN ((CASE WHEN CHAR_LENGTH(content)&lt;66 THEN 1 ELSE TRUNCATE(((CHAR_LENGTH(content)+4)/67),0)+1 END)) ELSE 0 END) AS failCount,
+        SUM(CASE WHEN (t1.STATUS=1) THEN ((CASE WHEN CHAR_LENGTH(content)&lt;66 THEN 1 ELSE TRUNCATE(((CHAR_LENGTH(content)+4)/67),0)+1 END)) ELSE 0 END) AS sentCount,
+        SUM(CASE WHEN (t1.STATUS=0) THEN ((CASE WHEN CHAR_LENGTH(content)&lt;66 THEN 1 ELSE TRUNCATE(((CHAR_LENGTH(content)+4)/67),0)+1 END)) ELSE 0 END) AS sendingCount,
+        t2.sms_vendor_name AS groupName
+        <if test="sumMethod != null">
+            <if test="sumMethod ==&apos;month&apos;">
+                ,DATE_FORMAT(submit_time,'%Y-%m') AS groupDate
+            </if>
+            <if test="sumMethod ==&apos;day&apos;">
+                ,DATE_FORMAT(submit_time,'%Y-%m-%d') AS groupDate
+            </if>
+
+        </if>
+        FROM tb_sms t1
+        left join tb_sms_vendor t2 on t1.sms_vendor_id=t2.sms_vendor_id
+        WHERE submit_time BETWEEN #{startSubmitTime} AND #{endSubmitTime} GROUP BY groupName
+        <if test="sumMethod != null">
+            <if test="sumMethod !=&apos;all&apos;">
+                ,groupDate
+            </if>
+
+        </if>
+        ORDER BY
+        groupName
+        <if test="sumMethod !=null">
+            <if test="sumMethod !=&apos;all&apos;">
+                ,groupDate
+            </if>
+
+        </if>
+
+    </select>
+
+    <select id="getSmsTotal" parameterType="com.zhiduan.axp.dao.message.bean.MessageSearchBean"
+            resultType="java.lang.Integer">
+
+        SELECT count(1) from tb_sms t1
+        WHERE t1.`be_deleted`=0
+        AND t1.`submit_time` BETWEEN #{startSubmitTime} AND #{endSubmitTime}
+        <if test="keyWord != null">
+            AND t1.phone=#{keyWord}
+        </if>
+        <if test="sendUserID != null">
+            AND t1.`user_id`=#{sendUserID}
+        </if>
+        <if test="sendStoreID != null">
+            AND t1.`store_id`=#{sendStoreID}
+        </if>
+        <if test="type != null">
+            AND t1.`message_type_id`=#{type}
+        </if>
+        <if test="status != null">
+            AND t1.`status`=#{status}
+        </if>
+        <if test="sendPhone != null">
+            AND t1.`user_id` in (select user_id from tb_user where phone=#{sendPhone})
+        </if>
+    </select>
+
+</mapper>

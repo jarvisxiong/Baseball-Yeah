@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.wallet.mapper.WalletDrawMapper">
+	<resultMap type="com.zhiduan.axp.dao.wallet.bean.UserDrawCheckBean"
+		id="rtnUserDraw">
+		<result property="exchangeId" column="exchange_id" />
+		<result property="flowId" column="flow_id" />
+		<result property="createTime" column="create_time" />
+		<result property="state" column="state" />
+		<result property="thdTypeCode" column="thd_type" />
+		<result property="transType" column="type_name" />
+		<result property="drawAmount" column="out_cash" />
+		<result property="userName" column="user_name" />
+		<result property="acctNo" column="acct_no" />
+		<result property="acctBalance" column="balance" />
+		<result property="checkEmp" column="check_emp" />
+		<result property="checkTime" column="check_time" />
+		<result property="arriTime" column="arri_time" />
+		<result property="phone" column="phone" />
+		<result property="thdFlowId" column="thd_flow_id" />
+		<result property="openId" column="open_id" />
+		<result property="idNo" column="id_no" />
+		<result property="nickname" column="real_name" />
+	</resultMap>
+	
+	<resultMap type="com.zhiduan.axp.dao.wallet.bean.AcctExchangeCashBean"
+        id="acctExchangeCash">
+        <result property="exchangeId" column="exchange_id" />
+        <result property="userId" column="user_id" />
+        <result property="acctId" column="acct_id" />
+        <result property="flowId" column="flow_id" />
+        <result property="balance" column="balance" />
+        <result property="type" column="type" />
+        <result property="state" column="state" />
+        <result property="isDel" column="is_del" />
+        <result property="createTime" column="create_time" />
+        <result property="comme" column="comme" />
+        <result property="modifyTime" column="modify_time" />
+        <result property="payTime" column="pay_time" />
+        <result property="thdId" column="thd_id" />
+        <result property="ipAddress" column="ip_address" />
+        <result property="devId" column="dev_id" />
+        <result property="operationId" column="operation_id" />
+        <result property="operationName" column="operation_name" />
+    </resultMap>
+
+	<!-- 用户提现申请列表 -->
+	<select id="getUserDrawList" parameterType="map" resultType="com.zhiduan.axp.dao.wallet.bean.UserDrawCheckBean">
+		SELECT a.exchange_id as exchangeId,a.flow_id as flowId,a.create_time as createTime,a.state,
+		       b.thd_type as thdTypeCode,c.type_name as transType,a.balance as drawAmount,
+		       e.user_name as userName,b.acct_no as acctNo,0 as acctBalance,g.user_name as checkEmp,
+		       f.check_time as checkTime,f1.arri_time as arriTime,e.phone,a.thd_flow_id as thdFlowId,
+		       b.open_id as openId,e.id_no as idNo,e.real_name as nickname
+		from tb_acct_exchange_cash a
+		left join (SELECT tb.exchange_id,max(tb.create_time) as check_time
+		           from tb_acct_exchange_cash_state tb
+		           where tb.state in (2,4)
+		           GROUP BY tb.exchange_id) f on f.exchange_id=a.exchange_id
+		left join (SELECT tb1.exchange_id,max(tb1.create_time) as arri_time
+                   from tb_acct_exchange_cash_state tb1
+                   where tb1.state = 3
+                   GROUP BY tb1.exchange_id) f1 on f1.exchange_id=a.exchange_id
+		inner join tb_acct_thirdparty b on a.thd_id = b.thd_id and b.is_deleted = 0
+		inner join ts_acct_thd_payment_type c on b.thd_type = c.type_code and c.state=1
+		inner join tb_user e on a.user_id = e.user_id
+		left join tb_user_manager g on a.opration_id = g.user_manager_id
+		where a.is_del=0 and a.type=1
+		<if test="thdType != null">
+			and b.thd_type = #{thdType}
+		</if>
+		<if test="state != null">
+			and a.state = #{state}
+		</if>
+		<if test="userId != null">
+			and e.user_name = #{userId}
+		</if>
+		<if test="checkerId != null">
+            and g.user_name = #{checkerId}
+        </if>
+        <if test="thdFlowId != null">
+            and a.thd_flow_id = #{thdFlowId}
+        </if>
+		<if test="applybgnTime!=null and applyendTime!=null">
+			and a.create_time BETWEEN #{applybgnTime} and #{applyendTime}
+		</if>
+		<if test="checkbgnTime != null and checkendTime!=null">
+			and f1.create_time BETWEEN #{checkbgnTime} and #{checkendTime}
+		</if>
+		<if test="arrivebgnTime!=null and arriveendTime!=null">
+			and f.check_time BETWEEN #{arrivebgnTime} and #{arriveendTime}
+		</if>
+		ORDER BY ${sort} ${order}
+		LIMIT #{offset}, #{limit}
+	</select>
+	<select id="getUserDrawListCount" parameterType="map"
+		resultType="int">
+		select count(1)
+		from tb_acct_exchange_cash a
+		left join (SELECT exchange_id,max(create_time) 'check_time'
+		           from tb_acct_exchange_cash_state
+		           where state in (2,4)
+		           GROUP BY exchange_id) f on f.exchange_id=a.exchange_id
+		left join (SELECT exchange_id,max(create_time) 'create_time'
+                    from tb_acct_exchange_cash_state
+                    where state = 3
+                    GROUP BY exchange_id) f1 on f1.exchange_id=a.exchange_id
+        inner join tb_acct_thirdparty b on a.thd_id = b.thd_id and b.is_deleted = 0
+        inner join ts_acct_thd_payment_type c on b.thd_type = c.type_code and c.state=1
+        inner join tb_user e on a.user_id = e.user_id
+        left join tb_user_manager g on a.opration_id = g.user_manager_id
+		where a.is_del=0 and a.type=1
+		<if test="thdType != null">
+            and b.thd_type = #{thdType}
+        </if>
+        <if test="state != null">
+            and a.state = #{state}
+        </if>
+        <if test="userId != null">
+            and e.user_name = #{userId}
+        </if>
+        <if test="checkerId != null">
+            and g.user_name = #{checkerId}
+        </if>
+        <if test="thdFlowId != null">
+            and a.thd_flow_id = #{thdFlowId}
+        </if>
+        <if test="applybgnTime!=null and applyendTime!=null">
+            and a.create_time BETWEEN #{applybgnTime} and #{applyendTime}
+        </if>
+        <if test="checkbgnTime != null and checkendTime!=null">
+            and f1.create_time BETWEEN #{checkbgnTime} and #{checkendTime}
+        </if>
+        <if test="arrivebgnTime!=null and arriveendTime!=null">
+            and f.check_time BETWEEN #{arrivebgnTime} and #{arriveendTime}
+        </if>
+	</select>
+	
+	<!-- 用户提现申请列表 -->
+    <select id="getUserDrawById" parameterType="long" resultMap="acctExchangeCash">
+        select * from tb_acct_exchange_cash
+        where exchange_id = #{exchangeId}
+    </select>
+
+    <resultMap type="HashMap" id="thdPaymentMap">
+        <result property="key" column="type_code"/>
+        <result property="value" column="type_name"/>
+    </resultMap>
+    <!-- 查询交易类型 -->
+	<select id="getThdPaymentType" resultMap="thdPaymentMap">
+		SELECT type_code,type_name FROM ts_acct_thd_payment_type where state=1
+	</select>
+	<!-- 保存提现交易状态 -->
+	<insert id="insertExchangeState" parameterType="map">
+        insert into tb_acct_exchange_cash_state (exchange_id,state,create_time)
+        values (#{exchangeId}, #{state},now())
+    </insert>
+    <!-- 批量保存提现交易状态 -->
+    <insert id="BatchInsertExchangeState" parameterType="map">
+        insert into tb_acct_exchange_cash_state (exchange_id,state,create_time) values
+        <foreach collection ="exchangeId" item="item" index= "index" separator =",">
+           (#{item}, #{state},now())
+        </foreach >
+    </insert>
+    <!-- 更新提现交易状态 -->
+    <update id="updateStateById" parameterType="map">
+        update tb_acct_exchange_cash
+        set state = #{state},
+            <if test="operationId != null">
+                opration_id = #{operationId},
+            </if>
+            <if test="operationName != null">
+                optation_name = #{operationName},
+            </if>
+            <if test="thdFlowId != null">
+                thd_flow_id = #{thdFlowId},
+            </if>
+            modify_time = now()
+        where exchange_id = #{exchangeId} 
+    </update>
+    <!-- 批量更新提现交易状态 -->
+    <update id="BatchUpdateStateById" parameterType="map">
+        update tb_acct_exchange_cash
+        set state = #{state},
+            <if test="operationId != null">
+                opration_id = #{operationId},
+            </if>
+            <if test="operationName != null">
+                optation_name = #{operationName},
+            </if>
+            modify_time = now()
+        where exchange_id in 
+         <foreach collection="exchangeId" item="item" index="index" open="(" separator="," close=")" >    
+            #{item}    
+         </foreach>
+    </update>
+</mapper>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.MonitorMapper">
+    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.MonitorBean">
+        <constructor>
+            <idArg column="monitor_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="monitor_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="monitor_sql" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="threshold" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="start_time" jdbcType="TIME" javaType="java.util.Date"/>
+            <arg column="end_time" jdbcType="TIME" javaType="java.util.Date"/>
+            <arg column="run_interval" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="sendsms_time" jdbcType="TIME" javaType="java.util.Date"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="SelectListMap" type="com.zhiduan.axp.dao.manager.bean.MonitorBean">
+        <id column="monitor_id" property="monitorId" jdbcType="BIGINT" javaType="java.lang.Long"/>
+        <result column="monitor_name" property="monitorName" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result column="monitor_sql" property="monitorSql" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result column="threshold" property="threshold" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+        <result column="start_time" property="startTime" jdbcType="TIME" javaType="java.util.Date"/>
+        <result column="end_time" property="endTime" jdbcType="TIME" javaType="java.util.Date"/>
+        <result column="run_interval" property="runInterval" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <collection property="monitorContactsInfoList" column="monitor_id"
+                    ofType="com.zhiduan.axp.dao.manager.bean.MonitorContactsBean"
+                    select="com.zhiduan.axp.dao.manager.mapper.MonitorContactsMapper.selectByMonitorId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    monitor_id, monitor_name, monitor_sql, threshold, start_time, end_time, run_interval, 
+    create_time, sendsms_time
+  </sql>
+
+    <!-- 按主键查询 -->
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from ts_monitor
+        where monitor_id = #{monitorId,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="selectAll" resultMap="SelectListMap" parameterType="map">
+        select
+        <include refid="Base_Column_List"/>
+        from ts_monitor
+        <where>
+            <if test="monitorName != null and monitorName != ''">
+                monitor_name like CONCAT('%',TRIM(#{monitorName}),'%')
+            </if>
+        </where>
+        ORDER BY monitor_id DESC
+    </select>
+
+    <!-- 按主键删除 -->
+    <delete id="deleteByMonitorId" parameterType="java.lang.Long">
+        delete from ts_monitor
+        where monitor_id = #{monitorId,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 新增 -->
+    <insert id="insertMonitor" parameterType="com.zhiduan.axp.dao.manager.bean.MonitorBean" useGeneratedKeys="true"
+            keyColumn="monitor_id" keyProperty="monitorId">
+        insert into ts_monitor
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="monitorId != null">
+                monitor_id,
+            </if>
+            <if test="monitorName != null">
+                monitor_name,
+            </if>
+            <if test="monitorSql != null">
+                monitor_sql,
+            </if>
+            <if test="threshold != null">
+                threshold,
+            </if>
+            <if test="startTime != null">
+                start_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="runInterval != null">
+                run_interval,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="sendsmsTime != null">
+                sendsms_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="monitorId != null">
+                #{monitorId,jdbcType=BIGINT},
+            </if>
+            <if test="monitorName != null">
+                #{monitorName,jdbcType=VARCHAR},
+            </if>
+            <if test="monitorSql != null">
+                #{monitorSql,jdbcType=VARCHAR},
+            </if>
+            <if test="threshold != null">
+                #{threshold,jdbcType=INTEGER},
+            </if>
+            <if test="startTime != null">
+                #{startTime,jdbcType=TIME},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=TIME},
+            </if>
+            <if test="runInterval != null">
+                #{runInterval,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sendsmsTime != null">
+                #{sendsmsTime,jdbcType=TIME},
+            </if>
+        </trim>
+    </insert>
+
+    <!--更新-->
+    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.MonitorBean">
+        update ts_monitor
+        <set>
+            <if test="monitorName != null">
+                monitor_name = #{monitorName,jdbcType=VARCHAR},
+            </if>
+            <if test="monitorSql != null">
+                monitor_sql = #{monitorSql,jdbcType=VARCHAR},
+            </if>
+            <if test="threshold != null">
+                threshold = #{threshold,jdbcType=INTEGER},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime,jdbcType=TIME},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIME},
+            </if>
+            <if test="runInterval != null">
+                run_interval = #{runInterval,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sendsmsTime != null">
+                sendsms_time = #{sendsmsTime,jdbcType=TIME},
+            </if>
+        </set>
+        where monitor_id = #{monitorId,jdbcType=BIGINT}
+    </update>
+
+</mapper>

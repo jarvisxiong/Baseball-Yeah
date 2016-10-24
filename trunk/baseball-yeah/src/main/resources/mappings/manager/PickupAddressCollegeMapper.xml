@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.PickupAddressCollegeMapper">
+    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.PickupAddressCollegeBean">
+        <constructor>
+            <idArg column="pac_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="pickup_address_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="college_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+    pac_id, pickup_address_id, college_id
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_pickup_address_college
+        where pac_id = #{pacId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from tb_pickup_address_college
+    where pac_id = #{pacId,jdbcType=BIGINT}
+  </delete>
+    <delete id="deleteByPickupAddressId" parameterType="java.lang.Long">
+        delete from tb_pickup_address_college
+        where pickup_address_id = #{pickupAddressId,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressCollegeBean">
+    insert into tb_pickup_address_college (pac_id, pickup_address_id, college_id)
+    values (#{pacId,jdbcType=BIGINT}, #{pickupAddressId,jdbcType=BIGINT}, #{collegeId,jdbcType=BIGINT})
+  </insert>
+
+    <insert id="batchInsert" parameterType="list">
+        insert into tb_pickup_address_college (pickup_address_id, college_id)
+        values
+        <foreach collection="list" item="pacCol" index="index" separator=",">
+            (#{pacCol.pickupAddressId,jdbcType=BIGINT}, #{pacCol.collegeId,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressCollegeBean">
+    update tb_pickup_address_college
+    set pickup_address_id = #{pickupAddressId,jdbcType=BIGINT},
+      college_id = #{collegeId,jdbcType=BIGINT}
+    where pac_id = #{pacId,jdbcType=BIGINT}
+  </update>
+</mapper>

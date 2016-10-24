@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.wallet.mapper.AcctRefundMapper">
+	<sql id="baseSql">
+		refund_id refundId,order_id orderId,flow_id flowId,thd_type thdType,thd_refund_id thdRefundId,pay_amount payAmount,refund_amount refundAmount,
+		create_time createTime,refund_state refundState,refund_reason refundReason,state state,ip_address ipAddress,operation_id operationId,
+		operation_name operationName,modify_time modifyTime,batch_no batchNo
+	</sql>
+
+<resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.wallet.bean.AcctRefundBean" >
+      <result property="refundId" column="refund_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <result property="orderId" column="order_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="flowId" column="flow_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="thdType" column="thdType" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <result property="thdRefundId" column="thd_refund_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="payAmount" column="pay_amount" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <result property="refundAmount" column="refund_amount" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      
+      <result property="createTime" column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date"  />
+      <result property="refundState" column="refund_state" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <result property="refundReason" column="refund_reason" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="state" column="state" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <result property="ipAddress" column="ip_address" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="randomCode" column="random_code" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="operationId" column="operation_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <result property="operationName" column="operation_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP" javaType="java.util.Date"  />
+      <result property="batchNo" column="batch_no" jdbcType="BIGINT" javaType="java.lang.Long" />
+  </resultMap>
+<select id="queryAll" resultMap="BaseResultMap" parameterType="com.zhiduan.axp.controller.model.wallet.AcctRefundInfo">
+    SELECT 
+    tr.refund_id refundId,CONCAT("'",tr.order_id) orderId,CONCAT("'",tr.flow_id) flowId,tr.thd_type thdType,tr.thd_refund_id thdRefundId,tr.pay_amount payAmount,
+    tr.refund_amount refundAmount,tr.create_time createTime,tr.refund_state refundState,tr.refund_reason refundReason,tr.state state,
+    tr.ip_address ipAddress,tr.operation_id operationId,tr.operation_name operationName,tr.modify_time modifyTime,tr.batch_no batchNo,
+    tp.random_code randomCode,tor.create_user_mobile mobile,
+    CASE
+      WHEN tor.`TYPE`="packet" THEN tor.consignee
+      WHEN tor.`TYPE`="agent_packet" THEN tor.consignee
+      WHEN tor.`TYPE`="send" THEN tor.trader_name
+    END AS applicant
+    FROM tb_acct_refund tr
+    LEFT JOIN tb_payflow tp ON tp.flow_id = tr.flow_id
+    LEFT JOIN tb_order tor ON tor.order_id = tr.order_id
+    WHERE tr.state=1
+     <if test="thdType != null">
+        and tr.thd_type =#{thdType}
+    </if>
+     <if test="startTime != null">
+        and tr.modify_time &gt;=#{startTime}
+    </if>
+    <if test="endTime != null">
+        and tr.modify_time &lt;=#{endTime}
+    </if>
+    <if test="refundState != null">
+        and tr.refund_state =#{refundState}
+    </if>
+    <if test="orderId != null and orderId != ''">
+        and tr.order_id =#{orderId}
+    </if>
+    ORDER BY
+        ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+  </select>
+  
+   <!-- 查询数量 -->
+  <select id="getTotal" resultType="int" parameterType="com.zhiduan.axp.controller.model.wallet.AcctRefundInfo">
+    select count(1) 
+    from tb_acct_refund tr
+    left join tb_payflow tp on tp.flow_id = tr.flow_id
+    where tr.state=1
+    <if test="thdType != null">
+        and tr.thd_type =#{thdType}
+    </if>
+     <if test="startTime != null">
+        and tr.modify_time &gt;=#{startTime}
+    </if>
+    <if test="endTime != null">
+        and tr.modify_time &lt;=#{endTime}
+    </if>
+    <if test="refundState != null">
+        and tr.refund_state =#{refundState}
+    </if>
+    <if test="orderId != null and orderId != ''">
+        and tr.order_id =#{orderId}
+    </if>
+  </select>
+</mapper>

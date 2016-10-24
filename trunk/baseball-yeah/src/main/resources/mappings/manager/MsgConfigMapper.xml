@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.MsgConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.MsgConfigBean" >
+      <result property="messageConfigId" column="message_config_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <result property="messageTypeId" column="message_type_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="sendTypeId" column="send_type_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="level" column="level" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <result property="beImmediateSend" column="be_immediate_send" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <result property="maxLength" column="max_length" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <result property="beEnabled" column="be_enabled" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <result property="sendRoleId" column="send_role_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <result property="extendCode" column="extend_code" jdbcType="VARCHAR" javaType="java.lang.String" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    message_config_id messageConfigId, message_type_id messageTypeId, send_type_id sendTypeId, level, be_immediate_send beImmediateSend, 
+    max_length maxLength, be_enabled beEnabled, send_role_id sendRoleId, extend_code extendCode
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_message_config
+    where message_config_id = #{messageConfigId,jdbcType=BIGINT}
+  </select>
+  
+   <select id="selectAll" resultMap="BaseResultMap" parameterType="com.zhiduan.axp.controller.model.manager.MsgConfigInfo">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_message_config where 1=1
+    <if test="messageTypeId != null">
+  		and message_type_id like CONCAT('%',TRIM(#{messageTypeId}),'%')
+  	</if>
+  	 <if test="sendTypeId != null">
+  		and send_type_id like CONCAT('%',TRIM(#{sendTypeId}),'%')
+  	</if>
+  	ORDER BY
+		${sort} ${order}
+		LIMIT #{offset}, #{limit}
+  </select>
+  
+   <!-- 查询数量 -->
+  <select id="getTotal" resultType="int" parameterType="com.zhiduan.axp.controller.model.manager.MsgConfigInfo">
+    select count(1) 
+    from tb_message_config
+    where 1=1
+    <if test="messageTypeId != null">
+  		and message_type_id like CONCAT('%',TRIM(#{messageTypeId}),'%')
+  	</if>
+  	 <if test="sendTypeId != null">
+  		and send_type_id like CONCAT('%',TRIM(#{sendTypeId}),'%')
+  	</if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_message_config
+    where message_config_id = #{messageConfigId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.MsgConfigBean" >
+    insert into tb_message_config (message_type_id, send_type_id, 
+      level, be_immediate_send, max_length, 
+      be_enabled, send_role_id, extend_code
+      )
+    values (#{messageTypeId,jdbcType=VARCHAR}, #{sendTypeId,jdbcType=VARCHAR}, 
+      #{level,jdbcType=TINYINT},#{beImmediateSend,jdbcType=TINYINT}, #{maxLength,jdbcType=INTEGER}, 
+     #{beEnabled,jdbcType=TINYINT}, #{sendRoleId,jdbcType=BIGINT}, #{extendCode,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.MsgConfigBean" >
+    insert into tb_message_config
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="messageConfigId != null" >
+        message_config_id,
+      </if>
+      <if test="messageTypeId != null" >
+        message_type_id,
+      </if>
+      <if test="sendTypeId != null" >
+        send_type_id,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="beImmediateSend != null" >
+        be_immediate_send,
+      </if>
+      <if test="maxLength != null" >
+        max_length,
+      </if>
+      <if test="beEnabled != null" >
+        be_enabled,
+      </if>
+      <if test="sendRoleId != null" >
+        send_role_id,
+      </if>
+      <if test="extendCode != null" >
+        extend_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="messageConfigId != null" >
+        #{messageConfigId,jdbcType=BIGINT},
+      </if>
+      <if test="messageTypeId != null" >
+        #{messageTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="sendTypeId != null" >
+        #{sendTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=TINYINT},
+      </if>
+      <if test="beImmediateSend != null" >
+        #{beImmediateSend,jdbcType=TINYINT},
+      </if>
+      <if test="maxLength != null" >
+        #{maxLength,jdbcType=INTEGER},
+      </if>
+      <if test="beEnabled != null" >
+        #{beEnabled,jdbcType=TINYINT},
+      </if>
+      <if test="sendRoleId != null" >
+        #{sendRoleId,jdbcType=BIGINT},
+      </if>
+      <if test="extendCode != null" >
+        #{extendCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.MsgConfigBean" >
+    update tb_message_config
+    <set >
+      <if test="messageTypeId != null" >
+        message_type_id = #{messageTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="sendTypeId != null" >
+        send_type_id = #{sendTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=TINYINT},
+      </if>
+      <if test="beImmediateSend != null" >
+        be_immediate_send = #{beImmediateSend,jdbcType=TINYINT},
+      </if>
+      <if test="maxLength != null" >
+        max_length = #{maxLength,jdbcType=INTEGER},
+      </if>
+      <if test="beEnabled != null" >
+        be_enabled = #{beEnabled,jdbcType=TINYINT},
+      </if>
+      <if test="sendRoleId != null" >
+        send_role_id = #{sendRoleId,jdbcType=BIGINT},
+      </if>
+      <if test="extendCode != null" >
+        extend_code = #{extendCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where message_config_id = #{messageConfigId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.MsgConfigBean" >
+    update tb_message_config
+    set message_type_id = #{messageTypeId,jdbcType=VARCHAR},
+      send_type_id = #{sendTypeId,jdbcType=VARCHAR},
+      level = #{level,jdbcType=TINYINT},
+      be_immediate_send = #{beImmediateSend,jdbcType=TINYINT},
+      max_length = #{maxLength,jdbcType=INTEGER},
+      be_enabled = #{beEnabled,jdbcType=TINYINT},
+      send_role_id = #{sendRoleId,jdbcType=BIGINT},
+      extend_code = #{extendCode,jdbcType=VARCHAR}
+    where message_config_id = #{messageConfigId,jdbcType=BIGINT}
+  </update>
+  
+  <select id="isMenuExist" resultType="int" parameterType="java.lang.Long">
+  	select count(1) from tb_menu where menu_id = #{menuId,jdbcType=BIGINT}
+  </select>
+</mapper>

@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.MenuMapper" >
+  <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.MenuBean" >
+      <result property="menuId" column="menu_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <result property="menuCtrlPath" column="menu_ctrl_path" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="menuStatusCode" column="menu_status_code" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="menuDevStatusCode" column="menu_dev_status_code" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="beLeaf" column="be_leaf" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <result property="caption" column="caption" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="hint" column="hint" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="parentId" column="parent_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <result property="menuTypeId" column="menu_type_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="siblingSortNo" column="sibling_sort_no" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <result property="dllFile" column="dll_file" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="picFile" column="pic_file" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="hotKey" column="hot_key" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="roleNameAll" column="roleNameAll" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="beMandatory" column="be_mandatory" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <result property="belongSiteKind" column="belong_site_kind" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <result property="action" column="action" jdbcType="VARCHAR" javaType="java.lang.String" />
+  </resultMap>
+  
+  <resultMap id="ZtreeResultMap" type="com.zhiduan.axp.controller.model.Ztree" >
+      <result property="id" column="menu_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <result property="name" column="caption" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="pId" column="parent_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <result property="action" column="aciton"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    tb_menu.menu_id menuId, tb_menu.menu_ctrl_path menuCtrlPath, tb_menu.menu_status_code menuStatusCode, tb_menu.menu_dev_status_code menuDevStatusCode, 
+    tb_menu.be_leaf beLeaf, caption, tb_menu.hint, tb_menu.parent_id parentId, tb_menu.menu_type_id menuTypeId, tb_menu.sibling_sort_no siblingSortNo, 
+    tb_menu.dll_file dllFile, tb_menu.pic_file picFile, tb_menu.hot_key hotKey, tb_menu.be_mandatory beMandatory, 
+    tb_menu.belong_site_kind belongSiteKind, tb_menu.action
+  </sql>
+  
+  <!-- 查询全部 -->
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean">
+  	select
+  	<include refid="Base_Column_List" />
+  	from tb_menu where 1=1 
+  	<if test="caption != null">
+  		and caption like CONCAT('%',#{caption},'%')
+  	</if>
+  	ORDER BY
+		${sort} ${order}
+		LIMIT #{offset}, #{limit}
+  </select>
+  <!-- 查询全部 -->
+  <select id="getTotal" resultType="int" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean">
+  	select count(1) from tb_menu where 1=1
+  		<if test="caption != null">
+  			and caption like CONCAT('%',#{caption},'%')
+  		</if>
+  </select>
+	<!-- 查询非leafMenu,只有非叶子节点才能做parentId-->
+  <select id="selectAllParent" resultType="com.zhiduan.axp.controller.model.manager.MenuInfo">
+  	select menu_id menuId,caption caption
+  	from tb_menu where be_leaf=0 
+  </select>
+  <select id="selectAllForRole" resultMap="BaseResultMap">
+    SELECT
+    a.*,
+    GROUP_CONCAT(b.`role_name`) roleNameAll
+    FROM
+    tb_menu a,
+    tb_role b,
+    tb_role_permission c
+    WHERE c.`menu_id` = a.`menu_id`
+    AND c.`role_id` = b.`role_id`
+    GROUP BY a.`menu_id`
+    ORDER BY sibling_sort_no
+  </select>
+
+  <!-- 按主键查询 -->
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_menu
+    where menu_id = #{menuId,jdbcType=BIGINT}
+  </select>
+  
+  <!-- 删除 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_menu
+    where menu_id = #{menuId,jdbcType=BIGINT}
+  </delete>
+  
+  <!-- 新增 -->
+  <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean" >
+    insert into tb_menu (menu_ctrl_path, menu_status_code, 
+      menu_dev_status_code, be_leaf, caption, 
+      hint, parent_id, menu_type_id, 
+      sibling_sort_no, dll_file, pic_file, 
+      hot_key, be_mandatory, belong_site_kind, 
+      action)
+    values (#{menuCtrlPath,jdbcType=VARCHAR}, #{menuStatusCode,jdbcType=VARCHAR}, 
+      #{menuDevStatusCode,jdbcType=VARCHAR}, #{beLeaf,jdbcType=TINYINT}, #{caption,jdbcType=VARCHAR}, 
+      #{hint,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT}, #{menuTypeId,jdbcType=VARCHAR}, 
+      #{siblingSortNo,jdbcType=INTEGER}, #{dllFile,jdbcType=VARCHAR}, #{picFile,jdbcType=VARCHAR}, 
+      #{hotKey,jdbcType=VARCHAR}, #{beMandatory,jdbcType=TINYINT}, #{belongSiteKind,jdbcType=INTEGER}, 
+      #{action,jdbcType=VARCHAR})
+  </insert>
+  
+  <!-- 新增 -->
+  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean" >
+    insert into tb_menu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="menuCtrlPath != null" >
+        menu_ctrl_path,
+      </if>
+      <if test="menuStatusCode != null" >
+        menu_status_code,
+      </if>
+      <if test="menuDevStatusCode != null" >
+        menu_dev_status_code,
+      </if>
+      <if test="beLeaf != null" >
+        be_leaf,
+      </if>
+      <if test="caption != null" >
+        caption,
+      </if>
+      <if test="hint != null" >
+        hint,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="menuTypeId != null" >
+        menu_type_id,
+      </if>
+      <if test="siblingSortNo != null" >
+        sibling_sort_no,
+      </if>
+      <if test="dllFile != null" >
+        dll_file,
+      </if>
+      <if test="picFile != null" >
+        pic_file,
+      </if>
+      <if test="hotKey != null" >
+        hot_key,
+      </if>
+      <if test="beMandatory != null" >
+        be_mandatory,
+      </if>
+      <if test="belongSiteKind != null" >
+        belong_site_kind,
+      </if>
+      <if test="action != null" >
+        action,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="menuCtrlPath != null" >
+        #{menuCtrlPath,jdbcType=VARCHAR},
+      </if>
+      <if test="menuStatusCode != null" >
+        #{menuStatusCode,jdbcType=VARCHAR},
+      </if>
+      <if test="menuDevStatusCode != null" >
+        #{menuDevStatusCode,jdbcType=VARCHAR},
+      </if>
+      <if test="beLeaf != null" >
+        #{beLeaf,jdbcType=TINYINT},
+      </if>
+      <if test="caption != null" >
+        #{caption,jdbcType=VARCHAR},
+      </if>
+      <if test="hint != null" >
+        #{hint,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="menuTypeId != null" >
+        #{menuTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="siblingSortNo != null" >
+        #{siblingSortNo,jdbcType=INTEGER},
+      </if>
+      <if test="dllFile != null" >
+        #{dllFile,jdbcType=VARCHAR},
+      </if>
+      <if test="picFile != null" >
+        #{picFile,jdbcType=VARCHAR},
+      </if>
+      <if test="hotKey != null" >
+        #{hotKey,jdbcType=VARCHAR},
+      </if>
+      <if test="beMandatory != null" >
+        #{beMandatory,jdbcType=TINYINT},
+      </if>
+      <if test="belongSiteKind != null" >
+        #{belongSiteKind,jdbcType=INTEGER},
+      </if>
+      <if test="action != null" >
+        #{action,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 更新 -->
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean" >
+    update tb_menu
+    <set >
+      <if test="menuCtrlPath != null" >
+        menu_ctrl_path = #{menuCtrlPath,jdbcType=VARCHAR},
+      </if>
+      <if test="menuStatusCode != null" >
+        menu_status_code = #{menuStatusCode,jdbcType=VARCHAR},
+      </if>
+      <if test="menuDevStatusCode != null" >
+        menu_dev_status_code = #{menuDevStatusCode,jdbcType=VARCHAR},
+      </if>
+      <if test="beLeaf != null" >
+        be_leaf = #{beLeaf,jdbcType=TINYINT},
+      </if>
+      <if test="caption != null" >
+        caption = #{caption,jdbcType=VARCHAR},
+      </if>
+      <if test="hint != null" >
+        hint = #{hint,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="menuTypeId != null" >
+        menu_type_id = #{menuTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="siblingSortNo != null" >
+        sibling_sort_no = #{siblingSortNo,jdbcType=INTEGER},
+      </if>
+      <if test="dllFile != null" >
+        dll_file = #{dllFile,jdbcType=VARCHAR},
+      </if>
+      <if test="picFile != null" >
+        pic_file = #{picFile,jdbcType=VARCHAR},
+      </if>
+      <if test="hotKey != null" >
+        hot_key = #{hotKey,jdbcType=VARCHAR},
+      </if>
+      <if test="beMandatory != null" >
+        be_mandatory = #{beMandatory,jdbcType=TINYINT},
+      </if>
+      <if test="belongSiteKind != null" >
+        belong_site_kind = #{belongSiteKind,jdbcType=INTEGER},
+      </if>
+      <if test="action != null" >
+        action = #{action,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where menu_id = #{menuId,jdbcType=BIGINT}
+  </update>
+  
+  <!-- 更新 -->
+  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean" >
+    update tb_menu
+    set menu_ctrl_path = #{menuCtrlPath,jdbcType=VARCHAR},
+      menu_status_code = #{menuStatusCode,jdbcType=VARCHAR},
+      menu_dev_status_code = #{menuDevStatusCode,jdbcType=VARCHAR},
+      be_leaf = #{beLeaf,jdbcType=TINYINT},
+      caption = #{caption,jdbcType=VARCHAR},
+      hint = #{hint,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      menu_type_id = #{menuTypeId,jdbcType=VARCHAR},
+      sibling_sort_no = #{siblingSortNo,jdbcType=INTEGER},
+      dll_file = #{dllFile,jdbcType=VARCHAR},
+      pic_file = #{picFile,jdbcType=VARCHAR},
+      hot_key = #{hotKey,jdbcType=VARCHAR},
+      be_mandatory = #{beMandatory,jdbcType=TINYINT},
+      belong_site_kind = #{belongSiteKind,jdbcType=INTEGER},
+      action = #{action,jdbcType=VARCHAR}
+    where menu_id = #{menuId,jdbcType=BIGINT}
+  </update>
+  
+  <!-- 同一父菜单下菜单标题唯一 -->
+  <select id="isMenuExistUnderSameParent" resultType="int" parameterType="map">
+  	select count(1) from tb_menu
+  	<where>
+  		<if test="caption != null">
+  			caption = #{caption,jdbcType=VARCHAR}
+  		</if>
+  		<if test="parentId != null">
+  			and parent_id = #{parentId,jdbcType=BIGINT}
+  		</if>
+  		<if test="menuId != null">
+  			and menu_id != #{menuId,jdbcType=BIGINT}
+  		</if>
+  	</where>
+  </select>
+ 
+  <!-- 验证父菜单是否存在 -->
+  <select id="isMenuExist" resultType="int" parameterType="java.lang.Long">
+  	select count(1) from tb_menu where menu_id = #{menuId,jdbcType=BIGINT} and be_leaf != 1
+  </select>
+  
+  <!-- 获取用户的menu树-->
+  <select id="getZtree" resultMap="ZtreeResultMap" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean">
+  	select menu_id,caption,parent_id,action
+  	from tb_menu where 1=1 
+  </select>
+  
+  <select id="getRoleMenu" resultType="com.zhiduan.axp.controller.model.manager.MenuInfo" parameterType="java.lang.Long">
+  	SELECT DISTINCT a.menu_id menuId,b.action FROM tb_menu a LEFT JOIN tb_role_permission b  on a.menu_id=b.menu_id where b.role_id=#{roleId}
+  </select>
+  
+	<select id="selectAllMenuId" resultType="java.lang.Long">
+		select menu_id from tb_menu 
+	</select>
+</mapper>

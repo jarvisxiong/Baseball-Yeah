@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.CollegeMapper">
+
+    <resultMap id="CollegeResultMap"
+               type="com.zhiduan.axp.dao.manager.bean.CollegeBean">
+        <constructor>
+            <idArg column="college_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="college_code" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="full_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="simple_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="province_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="city_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="county_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="nature" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="college_type" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="remark" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="status" jdbcType="TINYINT" javaType="java.lang.Byte"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap type="com.zhiduan.axp.dao.manager.bean.CollegeManageBean"
+               id="selectManageRtn">
+        <result column="college_id" property="collegeId"/>
+        <result column="college_code" property="collegeCode"/>
+        <result column="full_name" property="fullName"/>
+        <result column="simple_name" property="simpleName"/>
+        <result column="province_id" property="provinceId"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="city_id" property="cityId"/>
+        <result column="city_name" property="cityName"/>
+        <result column="county_id" property="countyId"/>
+        <result column="county_name" property="countyName"/>
+        <result column="nature" property="natureCode"/>
+        <result column="nature_value" property="natureValue"/>
+        <result column="college_type" property="collegeTypeCode"/>
+        <result column="college_type_value" property="collegeTypeValue"/>
+        <result column="remark" property="remark"/>
+        <result column="status" property="status"/>
+        <result column="packet_mode" property="packetMode"/>
+    </resultMap>
+
+    <resultMap id="CollegeSelectResultMap"
+               type="com.zhiduan.axp.dao.manager.bean.CollegeSelectBean">
+        <constructor>
+            <idArg column="college_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="simple_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="full_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+    <!-- 查询全部 -->
+    <select id="selectAll" resultMap="CollegeResultMap">
+		select
+		t.college_id,t.college_code,t.full_name,t.simple_name,t.province_id,t.city_id,
+		t.county_id,t.nature,t.college_type,t.remark,t.status
+		from tb_college t
+	</select>
+
+    <!-- 查询全部 -->
+    <select id="selectById" resultMap="CollegeResultMap">
+        select
+        t.college_id,t.college_code,t.full_name,t.simple_name,t.province_id,t.city_id,
+        t.county_id,t.nature,t.college_type,t.remark,t.status
+        from tb_college t
+        where t.college_id = #{collegeId}
+    </select>
+
+    <!-- 查询下拉列表 -->
+    <select id="querySelect" resultMap="CollegeSelectResultMap">
+		select
+		t.college_id,t.simple_name,t.full_name from tb_college t
+	</select>
+    <!-- 学校管理查询 -->
+    <select id="selectManageCollegeInfo" resultMap="selectManageRtn">
+		select
+		t.college_id,t.college_code,t.full_name,t.simple_name,t.province_id,t1.province_name,t.city_id,t2.city_name,t.county_id,
+		t3.county_name,t.nature,t4.property_value 'nature_value',t.college_type,
+		t5.property_value 'college_type_value',t.remark,IF(t.status=1,1,0) status,packet_mode
+		from tb_college t
+		left join tb_province t1 on t.province_id = t1.province_id
+		left join tb_city t2 on t.city_id = t2.city_id
+		left join tb_county t3 on t.county_id = t3.county_id
+		LEFT JOIN tb_property_dict t4 on t.nature = t4.property_id
+		left join tb_property_dict t5 on t.college_type = t5.property_id
+	</select>
+
+
+    <select id="selectCollegeAJAX" parameterType="com.zhiduan.axp.dao.manager.bean.CollegeBean" resultMap="selectManageRtn">
+        select
+        t.college_id,t.simple_name,t.full_name from tb_college t
+        where
+        1=1
+        <if test="fullName != null and fullName != ''">
+            AND t.full_name like CONCAT ('%', TRIM(#{fullName}), '%')
+        </if>
+        <if test="editCollegeId != null and editCollegeId != ''">
+            <![CDATA[ OR t.college_id in (#{editCollegeId})]]>
+        </if>
+        LIMIT 0, 100
+
+    </select>
+
+    <select id="selectCollegeForEdit" parameterType="com.zhiduan.axp.dao.manager.bean.CollegeBean" resultMap="selectManageRtn">
+        select
+        t.college_id,t.simple_name,t.full_name from tb_college t
+        where
+        1=1
+        <if test="editCollegeList != null and editCollegeList != ''">
+
+           AND t.college_id in
+            <foreach collection="editCollegeList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
+    <select id="selectByCityId"
+            resultType="com.zhiduan.axp.dao.manager.bean.CityCollegeBean">
+		select
+		t.college_id,t.college_code,t.full_name,t1.county_id,t1.county_name
+		from tb_college t
+		left join tb_county t1 on t.county_id = t1.county_id
+		where t.city_id=#{cityId,jdbcType=BIGINT}
+	</select>
+
+    <!-- 删除 -->
+    <delete id="delete" parameterType="java.lang.Long">
+		delete from tb_college
+		where
+		college_id = #{collegeId,jdbcType=BIGINT}
+	</delete>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.zhiduan.axp.dao.manager.bean.CollegeBean">
+        update tb_college
+        <set>
+            <if test="collegeCode != null">
+                college_code = #{collegeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="fullName != null">
+                full_name = #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="simpleName != null">
+                simple_name = #{simpleName,jdbcType=VARCHAR},
+            </if>
+            <if test="provinceId != null">
+                province_id = #{provinceId,jdbcType=BIGINT},
+            </if>
+            <if test="cityId != null">
+                city_id = #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="countyId != null">
+                county_id = #{countyId,jdbcType=BIGINT},
+            </if>
+            <if test="nature != null">
+                nature = #{nature,jdbcType=VARCHAR},
+            </if>
+            <if test="collegeType != null">
+                college_type = #{collegeType,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where college_id = #{collegeId,jdbcType=BIGINT}
+    </update>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.CollegeBean">
+        insert into tb_college
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="collegeCode != null">
+                college_code,
+            </if>
+            <if test="fullName != null">
+                full_name,
+            </if>
+            <if test="simpleName != null">
+                simple_name,
+            </if>
+            <if test="provinceId != null">
+                province_id,
+            </if>
+            <if test="cityId != null">
+                city_id,
+            </if>
+            <if test="countyId != null">
+                county_id,
+            </if>
+            <if test="nature != null">
+                nature,
+            </if>
+            <if test="collegeType != null">
+                college_type,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="collegeCode != null">
+                #{collegeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="fullName != null">
+                #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="simpleName != null">
+                #{simpleName,jdbcType=VARCHAR},
+            </if>
+            <if test="provinceId != null">
+                #{provinceId,jdbcType=BIGINT},
+            </if>
+            <if test="cityId != null">
+                #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="countyId != null">
+                #{countyId,jdbcType=BIGINT},
+            </if>
+            <if test="nature != null">
+                #{nature,jdbcType=VARCHAR},
+            </if>
+            <if test="collegeType != null">
+                #{collegeType,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 判断学校编号,全称唯一 -->
+    <select id="isCollegeExist" resultType="int" parameterType="map">
+        select count(1) from tb_college t
+        where
+        (t.college_code=#{collegeCode,jdbcType=VARCHAR} OR
+        t.full_name=#{fullName,jdbcType=VARCHAR}
+        )
+        <if test="collegeId != null">
+            AND t.college_id != #{collegeId,jdbcType=BIGINT}
+        </if>
+    </select>
+
+    <!-- 更新 -->
+    <update id="changePacketModel" parameterType="map">
+        update tb_college
+        set packet_mode = #{isOk}
+        where college_id in
+        <foreach collection="collegeIds" item="collegeId" index="index" open="(" separator="," close=")">
+            #{collegeId}
+        </foreach>
+    </update>
+    <select id="getPacketMode" parameterType="map" resultType="java.lang.String">
+        SELECT group_concat(packet_mode) packetMode from tb_college
+        where college_id in
+        <foreach collection="collegeIds" item="collegeId" index="index" open="(" separator="," close=")">
+            #{collegeId}
+        </foreach>
+    </select>
+</mapper> 

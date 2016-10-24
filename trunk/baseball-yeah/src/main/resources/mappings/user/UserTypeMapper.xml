@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.user.mapper.UserTypeMapper" >
+
+  
+  <!-- 动态插入数据 -->
+  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.user.bean.UserTypeBean" >
+    insert into tb_user_type
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userTypeId != null" >
+        user_type_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userType != null" >
+        user_type,
+      </if>
+      <if test="beEnabled != null" >
+        be_enabled,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userTypeId != null" >
+        #{userTypeId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="userType != null" >
+        #{userType,jdbcType=INTEGER},
+      </if>
+      <if test="beEnabled != null" >
+        #{beEnabled,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <!-- 更新收件人状态-->
+  <update id="updateCuserStatus" parameterType="map">
+     UPDATE tb_user_type
+       <set>
+         <if test="beEnabled!=null">
+           be_enabled=#{beEnabled}
+         </if>
+     </set>
+     <where>
+       user_id=#{userId} AND user_type=4
+     </where>
+  </update>
+</mapper>

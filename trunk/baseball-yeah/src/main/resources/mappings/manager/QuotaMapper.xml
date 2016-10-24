@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.QuotaMapper">
+    <sql id="Base_Column_List">
+        quota_id,quota_name,field_name,state
+    </sql>
+    <select id="selectById" resultType = "com.zhiduan.axp.dao.manager.bean.QuotaBean"
+        parameterType="int">
+        select
+        <include refid="Base_Column_List" />
+        from ts_acct_quota
+        where quota_id = #{quotaId}
+    </select>
+    <select id="selectAll" resultType="com.zhiduan.axp.dao.manager.bean.QuotaBean">
+        select
+        <include refid="Base_Column_List" />
+        from ts_acct_quota
+        where state=1
+    </select>
+    <select id="getQuotaCount" resultType="int">
+        select count(1)
+        from ts_acct_quota
+        where state=1 
+    </select>
+    <delete id="deleteById" parameterType="com.zhiduan.axp.dao.manager.bean.QuotaBean">
+        update ts_acct_quota
+        set state = 0
+        where quota_id = #{quotaId}
+    </delete>
+    <delete id="deleteBatchByIds" parameterType="list">
+        update ts_acct_quota
+        set state = 0
+        where quota_id in 
+        <foreach collection="list" item="quotaId" index="index" open="(" separator="," close=")">
+            #{quotaId}
+        </foreach>
+    </delete>
+    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.QuotaBean">
+        insert into ts_acct_quota (quota_id,quota_name,field_name,state)
+        values (#{quotaId},#{quotaName}, #{fieldName},1)
+    </insert>
+    <update id="updateById" parameterType="com.zhiduan.axp.dao.manager.bean.QuotaBean">
+        update ts_acct_quota
+        set quota_name = #{quotaName,jdbcType=VARCHAR},
+        field_name = #{fieldName,jdbcType=VARCHAR}
+        where quota_id = #{quotaId}
+    </update>
+    <select id="isQuotaIdExist" parameterType="com.zhiduan.axp.dao.manager.bean.QuotaBean" resultType="int">
+        select count(1)
+        from ts_acct_quota
+        where state=1
+        AND quota_id = #{quotaId}
+    </select>
+     <select id="isQuotaExist" parameterType="com.zhiduan.axp.dao.manager.bean.QuotaBean" resultType="int">
+        select count(1)
+        from ts_acct_quota
+        where state=1
+        and (quota_name = #{quotaName} or field_name = #{fieldName})
+        <if test="quotaId != null">
+            AND quota_id != #{quotaId}
+        </if>
+    </select>
+</mapper>

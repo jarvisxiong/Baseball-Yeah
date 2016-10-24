@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.FocusPicMapper">
+
+
+    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.FocusPicBean"
+            useGeneratedKeys="true" keyProperty="userId">
+        insert into ts_ad_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            <if test="adTitle != null">
+                ad_title,
+            </if>
+            <if test="adImg != null">
+                ad_img,
+            </if>
+            <if test="adType != null">
+                ad_type,
+            </if>
+            <if test="userType != null">
+                user_type,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="adTitle != null">
+                #{adTitle},
+            </if>
+            <if test="adImg != null">
+                #{adImg},
+            </if>
+            <if test="adType != null">
+                #{adType},
+            </if>
+            <if test="userType != null">
+                #{userType},
+            </if>
+            <if test="url != null">
+                #{url},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from ts_ad_info where  ad_id = #{adId,jdbcType=BIGINT}
+    </delete>
+
+    <select id="selectAll" resultType="com.zhiduan.axp.dao.manager.bean.FocusPicBean" parameterType="com.zhiduan.axp.dao.manager.bean.FocusPicBean">
+        SELECT ad_id adId,ad_title adTitle,
+        ad_img adImg,ad_type adType,user_type userType,
+        url,create_time createTime
+        FROM ts_ad_info
+        where 1=1
+        <if test="adTitle != ''and adTitle!=null">
+            and ad_title like CONCAT('%',TRIM(#{adTitle}),'%')
+        </if>
+        <if test="adType != null">
+            and ad_type=#{adType}
+        </if>
+        <if test="userType != null">
+            and user_type=#{userType}
+        </if>
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectAllCount" resultType="integer" parameterType="com.zhiduan.axp.dao.manager.bean.FocusPicBean" >
+
+        select count(1) from (
+        SELECT ad_id adId,ad_title adTitle,
+        ad_img adImg,ad_type adType,user_type userType,
+        url,create_time createTime
+        FROM ts_ad_info
+        where 1=1
+        <if test="adTitle != ''and adTitle!=null">
+            and ad_title like CONCAT('%',TRIM(#{adTitle}),'%')
+        </if>
+        <if test="adType != null">
+            and ad_type=#{adType}
+        </if>
+        <if test="userType != null">
+            and user_type=#{userType}
+        </if> ) t1
+    </select>
+</mapper>

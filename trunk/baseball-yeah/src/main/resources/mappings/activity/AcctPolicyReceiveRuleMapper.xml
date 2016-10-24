@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.activity.mapper.AcctPolicyReceiveRuleMapper" >
+  <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.activity.bean.AcctPolicyReceiveRuleBean" >
+    <constructor >
+      <idArg column="rule_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="policy_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="quota_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="quota_field" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="operator" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="quota_value" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    rule_id, policy_id, quota_id, quota_field, operator, quota_value
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_acct_policy_receive_rule
+    where rule_id = #{ruleId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByPolicyId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_acct_policy_receive_rule
+    where policy_id = #{PolicyId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tb_acct_policy_receive_rule
+    where policy_id = #{policyId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyReceiveRuleBean" >
+    insert into tb_acct_policy_receive_rule (rule_id, policy_id, quota_id, 
+      quota_field, operator, quota_value
+      )
+    values (#{ruleId,jdbcType=INTEGER}, #{policyId,jdbcType=INTEGER}, #{quotaId,jdbcType=INTEGER}, 
+      #{quotaField,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, #{quotaValue,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyReceiveRuleBean" >
+    insert into tb_acct_policy_receive_rule
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ruleId != null" >
+        rule_id,
+      </if>
+      <if test="policyId != null" >
+        policy_id,
+      </if>
+      <if test="quotaId != null" >
+        quota_id,
+      </if>
+      <if test="quotaField != null" >
+        quota_field,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="quotaValue != null" >
+        quota_value,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ruleId != null" >
+        #{ruleId,jdbcType=INTEGER},
+      </if>
+      <if test="policyId != null" >
+        #{policyId,jdbcType=INTEGER},
+      </if>
+      <if test="quotaId != null" >
+        #{quotaId,jdbcType=INTEGER},
+      </if>
+      <if test="quotaField != null" >
+        #{quotaField,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="quotaValue != null" >
+        #{quotaValue,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyReceiveRuleBean" >
+    update tb_acct_policy_receive_rule
+    <set >
+      <if test="policyId != null" >
+        policy_id = #{policyId,jdbcType=INTEGER},
+      </if>
+      <if test="quotaId != null" >
+        quota_id = #{quotaId,jdbcType=INTEGER},
+      </if>
+      <if test="quotaField != null" >
+        quota_field = #{quotaField,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null" >
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="quotaValue != null" >
+        quota_value = #{quotaValue,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where rule_id = #{ruleId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyReceiveRuleBean" >
+    update tb_acct_policy_receive_rule
+    set policy_id = #{policyId,jdbcType=INTEGER},
+      quota_id = #{quotaId,jdbcType=INTEGER},
+      quota_field = #{quotaField,jdbcType=VARCHAR},
+      operator = #{operator,jdbcType=VARCHAR},
+      quota_value = #{quotaValue,jdbcType=VARCHAR}
+    where rule_id = #{ruleId,jdbcType=INTEGER}
+  </update>
+</mapper>

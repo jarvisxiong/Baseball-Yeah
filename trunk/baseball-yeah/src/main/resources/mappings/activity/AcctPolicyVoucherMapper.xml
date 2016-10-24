@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.zhiduan.axp.dao.activity.mapper.AcctPolicyVoucherMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean">
+		<constructor>
+			<idArg column="voucher_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="policy_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="user_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="face_value" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="effect_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+			<arg column="expire_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+			<arg column="receive_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+			<arg column="use_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+			<arg column="state" jdbcType="TINYINT" javaType="java.lang.Byte" />
+		</constructor>
+	</resultMap>
+	<sql id="Base_Column_List">
+		voucher_id, policy_id, user_id, face_value, effect_time, expire_time,
+		receive_time,
+		use_time, state
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from tb_acct_policy_voucher
+		where voucher_id = #{voucherId,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from tb_acct_policy_voucher
+		where voucher_id = #{voucherId,jdbcType=BIGINT}
+	</delete>
+
+	<delete id="deleteByPolicyId" parameterType="java.lang.Integer">
+		update tb_acct_policy_voucher set be_deleted=1
+		where policy_id = #{policyId,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="insert"
+		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean">
+		insert into tb_acct_policy_voucher (voucher_id, policy_id, user_id,
+		face_value, effect_time, expire_time,
+		receive_time, use_time, state
+		)
+		values (#{voucherId,jdbcType=BIGINT}, #{policyId,jdbcType=INTEGER},
+		#{userId,jdbcType=BIGINT},
+		#{faceValue,jdbcType=INTEGER}, #{effectTime,jdbcType=TIMESTAMP}, #{expireTime,jdbcType=TIMESTAMP},
+		#{receiveTime,jdbcType=TIMESTAMP}, #{useTime,jdbcType=TIMESTAMP},
+		#{state,jdbcType=TINYINT}
+		)
+	</insert>
+	<insert id="insertSelective"
+		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean">
+		insert into tb_acct_policy_voucher
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="voucherId != null">
+				voucher_id,
+			</if>
+			<if test="policyId != null">
+				policy_id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="faceValue != null">
+				face_value,
+			</if>
+			<if test="effectTime != null">
+				effect_time,
+			</if>
+			<if test="expireTime != null">
+				expire_time,
+			</if>
+			<if test="receiveTime != null">
+				receive_time,
+			</if>
+			<if test="useTime != null">
+				use_time,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+			<if test="beDeleted != null">
+				be_deleted
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="voucherId != null">
+				#{voucherId,jdbcType=BIGINT},
+			</if>
+			<if test="policyId != null">
+				#{policyId,jdbcType=INTEGER},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=BIGINT},
+			</if>
+			<if test="faceValue != null">
+				#{faceValue,jdbcType=INTEGER},
+			</if>
+			<if test="effectTime != null">
+				#{effectTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="expireTime != null">
+				#{expireTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="receiveTime != null">
+				#{receiveTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="useTime != null">
+				#{useTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=TINYINT},
+			</if>
+			<if test="beDeleted != null">
+				#{beDeleted,jdbcType=TINYINT}
+			</if>
+
+		</trim>
+	</insert>
+	<insert id="insertSelectiveBatch" useGeneratedKeys="true" parameterType="java.util.List">
+
+		insert into tb_acct_policy_voucher (policy_id,state,be_deleted,face_value)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.policyId},#{item.state},#{item.beDeleted},#{item.faceValue})
+		</foreach>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean">
+		update tb_acct_policy_voucher
+		<set>
+			<if test="policyId != null">
+				policy_id = #{policyId,jdbcType=INTEGER},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=BIGINT},
+			</if>
+			<if test="faceValue != null">
+				face_value = #{faceValue,jdbcType=INTEGER},
+			</if>
+			<if test="effectTime != null">
+				effect_time = #{effectTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="expireTime != null">
+				expire_time = #{expireTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="receiveTime != null">
+				receive_time = #{receiveTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="useTime != null">
+				use_time = #{useTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=TINYINT},
+			</if>
+		</set>
+		where voucher_id = #{voucherId,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean">
+		update tb_acct_policy_voucher
+		set policy_id = #{policyId,jdbcType=INTEGER},
+		user_id = #{userId,jdbcType=BIGINT},
+		face_value = #{faceValue,jdbcType=INTEGER},
+		effect_time = #{effectTime,jdbcType=TIMESTAMP},
+		expire_time = #{expireTime,jdbcType=TIMESTAMP},
+		receive_time = #{receiveTime,jdbcType=TIMESTAMP},
+		use_time = #{useTime,jdbcType=TIMESTAMP},
+		state = #{state,jdbcType=TINYINT}
+		where voucher_id = #{voucherId,jdbcType=BIGINT}
+	</update>
+
+	<!-- 重新启用代金券 -->
+	<update id="cancleVoucher" parameterType="java.lang.Long">
+		UPDATE tb_acct_policy_voucher SET state=0 WHERE voucher_id=#{voucherId};
+	</update>
+
+	<!-- 查询用户代金券 -->
+	<select id="getUserVoucher" parameterType="java.lang.Long" resultType="com.zhiduan.axp.controller.model.activity.ReturnVoucherInfo">
+		SELECT voucher_id voucherId,CASE state WHEN 0 THEN '已失效'WHEN 1 THEN '已领取'
+		WHEN 2 THEN '已使用' WHEN 3 THEN '已生成' END stateStr,state,state,effect_time effectTime,expire_time expireTime,receive_time receiveTime,use_time usetime
+		FROM tb_acct_policy_voucher WHERE user_id=#{userId} AND state IN (0,1,2);
+	</select>
+	
+	<!-- 使用代金券 -->
+	<update id="useVoucher" parameterType="java.lang.Long">
+		UPDATE tb_acct_policy_voucher SET state=2 WHERE voucher_id=#{voucherId};
+	</update>
+	
+	<!-- 查询用户可使用代金券数量 -->
+	<select id="getUserVoucherCount" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean" resultType="java.lang.Integer">
+		select count(voucher_id) from tb_acct_policy_voucher where user_id=#{userId} and state=#{state}
+	</select>
+	<!-- 查询用户可使用代金券列表 -->
+	<select id="queryUserVoucherList" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean" resultType="com.zhiduan.axp.controller.model.activity.UsableVoucherInfo">
+		SELECT pv.voucher_id,pv.user_id phone,pv.face_value,pv.effect_time effectTime,pv.expire_time expireTime,p.policy_name policyName  
+		FROM tb_acct_policy_voucher pv LEFT JOIN tb_acct_activity_policy p ON pv.policy_id = p.policy_id  WHERE 
+		pv.user_id = #{userId} and pv.state = #{state} ORDER BY pv.receive_time DESC 
+	</select>
+
+	<select id="selectPolicyVoucherInfo" parameterType="com.zhiduan.axp.controller.model.wallet.AcctPolicyVoucherInfo" resultType="com.zhiduan.axp.controller.model.wallet.AcctPolicyVoucherInfo">
+		select t1.policy_id policyId,t1.effect_time effectTime,t1.expire_time
+		expireTime,t1.face_value faceValue,
+		t1.receive_time receiveTime,CASE t1.state WHEN 0 THEN '已失效' WHEN 1 THEN '已领取' WHEN 2
+		THEN '已使用' WHEN 3 THEN '已生成' ELSE '其他' END stateName,
+		t1.state,t1.use_time useTime,t1.user_id userId,t1.voucher_id
+		voucherId,t2.policy_name policyName,t3.activity_name
+		activityName,t4.nickname nickName,t4.user_name userName,t2.activity_id
+		activityId from tb_acct_policy_voucher t1
+		INNER JOIN tb_acct_activity_policy t2 ON t1.policy_id=t2.policy_id
+		INNER JOIN tb_acct_activity t3 ON t3.activity_id=t2.activity_id
+		LEFT JOIN tb_user t4 ON t4.user_id=t1.user_id
+		<where>
+			1=1
+			<if test="activityId!=null and activityId!=''">
+				and t3.activity_id= #{activityId}
+			</if>
+			<if test="policyId!=null and policyId!=''">
+				and t2.policy_id= #{policyId}
+			</if>
+			<if test="useStartTime!=null and useStartTime!=''">
+				and   <![CDATA[t1.use_time>#{useStartTime}]]>
+			</if>
+			<if test="useEndTime!=null and useEndTime!=''">
+				and <![CDATA[t1.use_time<#{useEndTime}]]>
+			</if>
+			<if test="receiveStartTime!=null and receiveStartTime!=''">
+				and   <![CDATA[t1.receive_time>#{receiveStartTime}]]>
+			</if>
+			<if test="receiveEndTime!=null and receiveEndTime!=''">
+				and <![CDATA[t1.receive_time<#{receiveEndTime}]]>
+			</if>
+			<if test="state!=null">
+				and t1.state=#{state}
+			</if>
+		</where>
+		ORDER BY ${sort} ${order}
+		LIMIT #{offset},
+		#{limit}
+	</select>
+	<select id="selectPolicyVoucherInfoCount" parameterType="com.zhiduan.axp.controller.model.wallet.AcctPolicyVoucherInfo" resultType="int">
+		select  count(1) from tb_acct_policy_voucher t1
+		INNER JOIN tb_acct_activity_policy t2 ON t1.policy_id=t2.policy_id
+		INNER JOIN tb_acct_activity t3 ON t3.activity_id=t2.activity_id
+		LEFT JOIN tb_user t4 ON t4.user_id=t1.user_id
+		<where>
+			1=1
+			<if test="activityId!=null and activityId!=''">
+				and t3.activity_id= #{activityId}
+			</if>
+			<if test="policyId!=null and policyId!=''">
+				and t2.policy_id= #{policyId}
+			</if>
+			<if test="useStartTime!=null and useStartTime!=''">
+				and   <![CDATA[t1.use_time>#{useStartTime}]]>
+			</if>
+			<if test="useEndTime!=null and useEndTime!=''">
+				and <![CDATA[t1.use_time<#{useEndTime}]]>
+			</if>
+			<if test="receiveStartTime!=null and receiveStartTime!=''">
+				and   <![CDATA[t1.receive_time>#{receiveStartTime}]]>
+			</if>
+			<if test="receiveEndTime!=null and receiveEndTime!=''">
+				and <![CDATA[t1.receive_time<#{receiveEndTime}]]>
+			</if>
+			<if test="state!=null">
+				and t1.state=#{state}
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiduan.axp.dao.report.mapper.ReportStoreSmsMapper">
+
+    <resultMap type="com.zhiduan.axp.dao.report.bean.ReportStoreSmsBean" id="reportStoreSmsBeanResult">
+        <result property="collegeName" column="collegeName"/>
+        <result property="storeCode" column="storeCode"/>
+        <result property="storeName" column="storeName"/>
+        <result property="location" column="location"/>
+        <result property="supervisor" column="supervisor"/>
+        <result property="phone" column="phone"/>
+        <result property="expressCompanyName" column="expressCompanyName"/>
+        <result property="status" column="status"/>
+        <result property="submit_time" column="submitTime"/>
+        <result property="totalCount" column="totalCount"/>
+        <result property="billCount" column="billCount"/>
+        <result property="sucessCount" column="sucessCount"/>
+        <result property="failCount" column="failCount"/>
+    </resultMap>
+
+    <!-- 货源短信统计日报表 -->
+    <select id="getStoreSmsDayReport" resultMap="reportStoreSmsBeanResult" parameterType="map">
+        select ta.full_name 'collegeName',ta.store_code 'storeCode',ta.store_name 'storeName',
+        ta.location,tu.user_name 'supervisor',tu.phone,te.simple_name 'expressCompanyName',
+        if(ta.status=1,'启用','禁用') status,
+        date_format(t1.submit_time,'%Y-%m-%d') 'submit_time',
+        count(1) totalCount,
+        sum(if(t6.sms_id is null,0,1)) as 'billCount',
+        sum(if(t1.status!=-1,1,0)) as 'sucessCount',
+        sum(if(t1.status=-1,1,0)) as 'failCount'
+        FROM tb_sms t1
+        LEFT join (SELECT DISTINCT t2.sms_id,t2.waybill_number
+        FROM tb_scan t2,tb_waybill t3
+        WHERE t2.waybill_number = t3.waybill_no
+        and t2.express_company_id=t3.express_company_id
+        and t3.be_virtual = 0
+        and t2.scan_type='p_scan_come'
+        and t2.scan_time between #{startDate} and DATE_ADD(#{endDate},INTERVAL "5" DAY) )t6 on t1.sms_id=t6.sms_id
+        INNER JOIN (SELECT t5.store_id,t5.store_code,t5.store_name,t5.status,t5.location,group_concat(t8.full_name)
+        'full_name'
+        from tb_store t5
+        LEFT JOIN tb_store_college_rel t7 ON T5.store_id = T7.store_id
+        LEFT JOIN tb_college t8 ON t7.college_id = t8.college_id
+        where t5.be_deleted=0 and t5.be_virtual=0
+        group by t5.store_id) ta on t1.store_id = ta.store_id
+        INNER JOIN (SELECT t9.store_id,t9.user_id,t10.user_name,t10.phone
+        from tb_user_store_exp t9,tb_user t10
+        where t9.user_id = t10.user_id
+        and t9.be_supervisor=1 and t10.be_deleted=0) tu on t1.store_id = tu.store_id
+        LEFT JOIN (SELECT t11.store_id,t12.simple_name,t12.express_company_id
+        from tb_store_ec_rel t11,tb_express_company t12
+        where t11.express_company_id = t12.express_company_id
+        and t11.be_default=1
+        and t12.be_enabled=1) te on t1.store_id = te.store_id
+        WHERE t1.message_type_id = 'p_noticetype_come'
+        <if test="storeName != null">
+            and ta.store_name = #{storeName}
+        </if>
+        <if test="storeId != null">
+            and t1.store_id = #{storeId}
+        </if>
+        <if test="supervisor != null">
+            and tu.user_name = #{supervisor}
+        </if>
+        <if test="expressId != null">
+            and te.express_company_id = #{expressId}
+        </if>
+        <if test="status != null">
+            and ta.status = #{status}
+        </if>
+        and t1.submit_time between #{startDate} and #{endDate}
+        GROUP BY ta.full_name,ta.store_id,tu.user_name,te.simple_name,TO_DAYS(t1.submit_time)
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="getStoreSmsReportCount" resultType="int" parameterType="map">
+        SELECT count(1)
+        from (
+        select ta.full_name,tu.user_name,te.simple_name,
+        date_format(t1.submit_time,'%Y-%m-%d') 'submit_time',
+        count(1) totalCount
+        FROM tb_sms t1
+        LEFT join (SELECT DISTINCT t2.sms_id,t2.waybill_number
+        FROM tb_scan t2,tb_waybill t3
+        WHERE t2.waybill_number = t3.waybill_no
+        and t2.express_company_id=t3.express_company_id
+        and t3.be_virtual = 0
+        and t2.scan_type='p_scan_come'
+        and t2.scan_time between #{startDate} and DATE_ADD(#{endDate},INTERVAL "5" DAY) )t6 on t1.sms_id=t6.sms_id
+        INNER JOIN (SELECT t5.store_id,t5.store_code,t5.store_name,t5.status,group_concat(t8.full_name) 'full_name'
+        from tb_store t5
+        LEFT JOIN tb_store_college_rel t7 ON T5.store_id = T7.store_id
+        LEFT JOIN tb_college t8 ON t7.college_id = t8.college_id
+        where t5.be_deleted=0 and t5.be_virtual=0
+        group by t5.store_id) ta on t1.store_id = ta.store_id
+        INNER JOIN (SELECT t9.store_id,t9.user_id,t10.user_name
+        from tb_user_store_exp t9,tb_user t10
+        where t9.user_id = t10.user_id
+        and t9.be_supervisor=1 and t10.be_deleted=0) tu on t1.store_id = tu.store_id
+        LEFT JOIN (SELECT t11.store_id,t12.simple_name,t12.express_company_id
+        from tb_store_ec_rel t11,tb_express_company t12
+        where t11.express_company_id = t12.express_company_id
+        and t11.be_default=1
+        and t12.be_enabled=1) te on t1.store_id = te.store_id
+        WHERE t1.message_type_id = 'p_noticetype_come'
+        <if test="storeName != null">
+            and ta.store_name = #{storeName}
+        </if>
+        <if test="storeId != null">
+            and t1.store_id = #{storeId}
+        </if>
+        <if test="supervisor != null">
+            and tu.user_name = #{supervisor}
+        </if>
+        <if test="expressId != null">
+            and te.express_company_id = #{expressId}
+        </if>
+        <if test="status != null">
+            and ta.status = #{status}
+        </if>
+        and t1.submit_time between #{startDate} and #{endDate}
+        GROUP BY ta.full_name,ta.store_id,tu.user_name,te.simple_name,TO_DAYS(t1.submit_time)
+        )t
+    </select>
+
+    <resultMap id="searchStoreSmsTotal"
+               type="com.zhiduan.axp.dao.report.bean.SearchStoreSmsTotalBean">
+        <id column="storeId" property="storeId"/>
+        <result column="storeName" property="storeName"/>
+        <result column="totalCount" property="totalCount"/>
+        <result column="billCount" property="billCount"/>
+        <result column="sucessCount" property="sucessCount"/>
+        <result column="failCount" property="failCount"/>
+    </resultMap>
+    <!-- 门店短信统计-汇总 -->
+    <select id="selectStoreSmsTotalInfo" resultMap="searchStoreSmsTotal" parameterType="map">
+        select t4.store_id 'storeId', t4.store_name 'storeName',
+        count(1) totalCount,
+        sum(if(t5.sms_id is null,0,1)) as 'billCount',
+        sum(if(t1.status!=-1,1,0)) as 'sucessCount',
+        sum(if(t1.status=-1,1,0))as 'failCount'
+        from tb_sms t1
+        LEFT join (SELECT DISTINCT t2.sms_id
+        FROM tb_scan t2,tb_waybill t3
+        WHERE t2.waybill_number = t3.waybill_no
+        and t2.express_company_id=t3.express_company_id
+        and t3.be_virtual = 0
+        and t2.scan_type='p_scan_come'
+        and t2.scan_time between #{startDate} and #{endDate})t5 on t1.sms_id=t5.sms_id
+        inner join tb_store t4 on t4.store_id = t1.store_id
+        where t4.be_deleted = 0
+        and t4.be_deleted = 0
+        <if test="storeId != null and storeId != ''">
+            and t4.store_id = #{storeId}
+        </if>
+        and t1.submit_time between #{startDate} and #{endDate}
+        GROUP BY t4.store_id ,t4.store_name
+    </select>
+    <resultMap id="searchStoreSmsDetails"
+               type="com.zhiduan.axp.dao.report.bean.SearchStoreSmsDetailBean">
+        <result column="storeName" property="storeName"/>
+        <result column="billNo" property="billNo"/>
+        <result column="phone" property="phone"/>
+        <result column="status" property="status"/>
+        <result column="sendTime" property="sendTime"/>
+        <result column="sendName" property="sendName"/>
+    </resultMap>
+    <!-- 门店短信统计-明细 -->
+    <select id="selectStoreSmsDetailInfo" resultMap="searchStoreSmsDetails" parameterType="map">
+        select t4.store_name 'storeName',t6.waybill_number 'billNo',t1.phone,
+        case t1.status
+        when 0 then '发送中'
+        when 1 then '已发送'
+        when 2 then '发送成功'
+        else
+        '发送失败' END status,
+        t1.submit_time 'sendTime',t5.user_name 'sendName'
+        from tb_sms t1
+        left join (SELECT DISTINCT t2.sms_id,t2.waybill_number
+        FROM tb_scan t2,tb_waybill t3
+        WHERE t2.waybill_number = t3.waybill_no
+        and t2.express_company_id=t3.express_company_id
+        and t3.be_virtual=0
+        and t2.scan_type='p_scan_come'
+        and t2.scan_time between #{startDate} AND #{endDate}) t6 on t1.sms_id = t6.sms_id
+        inner join tb_store t4 on t4.store_id = t1.store_id
+        inner join tb_user t5 on t1.user_id = t5.user_id
+        where t4.be_deleted = 0
+        and t5.be_deleted = 0
+        and t4.store_id = #{storeId}
+        <if test="status == 0 or status ==1 or status ==2">
+            and t1.status in (0,1,2)
+        </if>
+        <if test="status == -1">
+            and t1.status = -1
+        </if>
+        <if test="beVirtual != null">
+            and t6.waybill_number is not null
+        </if>
+        and t1.submit_time between #{startDate} AND #{endDate}
+    </select>
+
+    <!--用户短信模板查询-->
+    <select id="getuserSmsModelList" resultType="com.zhiduan.axp.dao.report.bean.ReportUserSmsModelBean"
+            parameterType="map">
+        SELECT a.sms_model_id AS smsModelId,d.store_name AS storeName,b.real_name AS userName,b.phone,
+        a.template_name as modelName,a.model_content AS modelContent
+        FROM tb_sms_model_for_user a
+        INNER JOIN tb_user b ON a.user_id = b.user_id
+        INNER JOIN tb_user_store_exp c ON b.user_id = c.user_id
+        INNER JOIN tb_store d on d.store_id=c.store_id
+        <where>
+            <if test="storeId != null">
+                and d.store_id = #{storeId}
+            </if>
+            <if test="phone != null">
+                and b.phone = #{phone}
+            </if>
+            <if test="userName != null">
+                and b.real_name like TRIM(CONCAT('%', #{userName}, '%'))
+            </if>
+            <if test="modelContent != null">
+                and a.model_content like TRIM(CONCAT('%', #{modelContent}, '%'))
+            </if>
+        </where>
+        LIMIT #{offset},#{limit}
+    </select>
+    <select id="getuserSmsModelListCount" resultType="java.lang.Integer"
+            parameterType="map">
+        SELECT count(1)
+        FROM tb_sms_model_for_user a
+        INNER JOIN tb_user b ON a.user_id = b.user_id
+        INNER JOIN tb_user_store_exp c ON b.user_id = c.user_id
+        INNER JOIN tb_store d on d.store_id=c.store_id
+        <where>
+            <if test="storeId != null">
+                and d.store_id = #{storeId}
+            </if>
+            <if test="phone != null">
+                and b.phone = #{phone}
+            </if>
+            <if test="userName != null">
+                and b.real_name like TRIM(CONCAT('%', #{userName}, '%'))
+            </if>
+            <if test="modelContent != null">
+                and a.model_content like TRIM(CONCAT('%', #{modelContent}, '%'))
+            </if>
+        </where>
+    </select>
+</mapper>

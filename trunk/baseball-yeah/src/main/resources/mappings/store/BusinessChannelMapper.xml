@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.store.mapper.BusinessChannelMapper">
+    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.store.bean.BusinessChannelBean">
+        <constructor>
+            <idArg column="channel_id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="channel_code" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="channel_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="contacts" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="connect_phone" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="spread_url" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="target_url" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="remark" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="state" jdbcType="TINYINT" javaType="java.lang.Byte"/>
+            <arg column="is_deleted" jdbcType="TINYINT" javaType="java.lang.Byte"/>
+            <arg column="create_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="create_user" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+    channel_id, channel_code, channel_name, contacts, connect_phone, spread_url, target_url, 
+    remark, state, is_deleted, create_date, create_user
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_business_channel
+        where channel_id = #{channelId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tb_business_channel
+    where channel_id = #{channelId,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.zhiduan.axp.dao.store.bean.BusinessChannelBean">
+    insert into tb_business_channel (channel_id, channel_code, channel_name, 
+      contacts, connect_phone, spread_url, 
+      target_url, remark, state, 
+      is_deleted, create_date, create_user
+      )
+    values (#{channelId,jdbcType=INTEGER}, #{channelCode,jdbcType=VARCHAR}, #{channelName,jdbcType=VARCHAR}, 
+      #{contacts,jdbcType=VARCHAR}, #{connectPhone,jdbcType=VARCHAR}, #{spreadUrl,jdbcType=VARCHAR}, 
+      #{targetUrl,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{state,jdbcType=TINYINT}, 
+      #{isDeleted,jdbcType=TINYINT}, #{createDate,jdbcType=TIMESTAMP}, #{createUser,jdbcType=INTEGER}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.store.bean.BusinessChannelBean">
+        insert into tb_business_channel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="channelId != null">
+                channel_id,
+            </if>
+            <if test="channelCode != null">
+                channel_code,
+            </if>
+            <if test="channelName != null">
+                channel_name,
+            </if>
+            <if test="contacts != null">
+                contacts,
+            </if>
+            <if test="connectPhone != null">
+                connect_phone,
+            </if>
+            <if test="spreadUrl != null">
+                spread_url,
+            </if>
+            <if test="targetUrl != null">
+                target_url,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="state != null">
+                state,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="createUser != null">
+                create_user,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="channelId != null">
+                #{channelId,jdbcType=INTEGER},
+            </if>
+            <if test="channelCode != null">
+                #{channelCode,jdbcType=VARCHAR},
+            </if>
+            <if test="channelName != null">
+                #{channelName,jdbcType=VARCHAR},
+            </if>
+            <if test="contacts != null">
+                #{contacts,jdbcType=VARCHAR},
+            </if>
+            <if test="connectPhone != null">
+                #{connectPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="spreadUrl != null">
+                #{spreadUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="targetUrl != null">
+                #{targetUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null">
+                #{state,jdbcType=TINYINT},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=TINYINT},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUser != null">
+                #{createUser,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.store.bean.BusinessChannelBean">
+        update tb_business_channel
+        <set>
+            <if test="channelCode != null">
+                channel_code = #{channelCode,jdbcType=VARCHAR},
+            </if>
+            <if test="channelName != null">
+                channel_name = #{channelName,jdbcType=VARCHAR},
+            </if>
+            <if test="contacts != null">
+                contacts = #{contacts,jdbcType=VARCHAR},
+            </if>
+            <if test="connectPhone != null">
+                connect_phone = #{connectPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="spreadUrl != null">
+                spread_url = #{spreadUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="targetUrl != null">
+                target_url = #{targetUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=TINYINT},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=TINYINT},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUser != null">
+                create_user = #{createUser,jdbcType=INTEGER},
+            </if>
+        </set>
+        where channel_id = #{channelId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.store.bean.BusinessChannelBean">
+    update tb_business_channel
+    set channel_code = #{channelCode,jdbcType=VARCHAR},
+      channel_name = #{channelName,jdbcType=VARCHAR},
+      contacts = #{contacts,jdbcType=VARCHAR},
+      connect_phone = #{connectPhone,jdbcType=VARCHAR},
+      spread_url = #{spreadUrl,jdbcType=VARCHAR},
+      target_url = #{targetUrl,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      state = #{state,jdbcType=TINYINT},
+      is_deleted = #{isDeleted,jdbcType=TINYINT},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=INTEGER}
+    where channel_id = #{channelId,jdbcType=INTEGER}
+  </update>
+
+    <!--查询所有商户渠道-->
+    <select id="selectAllBusinessChl" resultType="com.zhiduan.axp.controller.model.store.BusinessChannelInfo"
+            parameterType="com.zhiduan.axp.controller.model.store.BusinessChannelInfo">
+        SELECT
+        tbbc.channel_id channelId,
+        tbbc.channel_code channelCode,
+        tbbc.channel_name channelName,
+        tbbc.contacts,
+        tbbc.connect_phone connectPhone,
+        tbbc.spread_url spreadUrl,
+        tbbc.target_url targetUrl,
+        tbbc.remark,
+        tbbc.create_user createUserId,
+        tbbc.create_date createDate,
+        tbbc.state,
+        tbu.user_name nickName
+        FROM tb_business_channel tbbc LEFT JOIN tb_user_manager tbu ON tbbc.create_user = tbu.user_manager_id
+        WHERE is_deleted = 0 AND is_sys = 0
+        <if test="channelId != null">
+            AND tbbc.channel_id =#{channelId}
+        </if>
+        <if test="channelName != null and  channelName!=''">
+            AND tbbc.channel_name LIKE CONCAT('%',#{channelName},'%')
+        </if>
+        <if test="state != null">
+            AND tbbc.state = #{state}
+        </if>
+        <if test="nickName != null and nickName!=''">
+            AND tbu.user_name LIKE CONCAT('%',#{nickName},'%')
+        </if>
+        <if test="createStartDate != null and createStartDate !=''">
+            <![CDATA[ AND tbbc.create_date >= #{createStartDate}]]>
+        </if>
+        <if test="createEndDate != null and createEndDate!=''">
+            <![CDATA[ AND tbbc.create_date <= #{createEndDate}]]>
+        </if>
+        <if test="contacts != null and contacts!=null">
+            AND tbbc.contacts LIKE CONCAT('%',#{contacts},'%')
+        </if>
+        <if test="connectPhone != null and connectPhone!='' ">
+            AND tbbc.connect_phone LIKE CONCAT('%',#{connectPhone},'%')
+        </if>
+        ORDER BY
+        ${sort} ${order}
+        LIMIT #{offset},#{limit}
+    </select>
+
+    <!-- 查询商户渠道总数-->
+    <select id="selectAllBusinessChlTotal" resultType="java.lang.Integer"
+            parameterType="com.zhiduan.axp.controller.model.store.BusinessChannelInfo">
+        SELECT
+        count(1)
+        FROM tb_business_channel tbbc LEFT JOIN tb_user tbu ON tbbc.create_user = tbu.user_id
+        WHERE is_deleted = 0 AND is_sys = 0
+        <if test="channelId != null">
+            AND tbbc.channel_id =#{channelId}
+        </if>
+        <if test="channelName != null and  channelName!=''">
+            AND tbbc.channel_name LIKE CONCAT('%',#{channelName},'%')
+        </if>
+        <if test="state != null">
+            AND tbbc.state = #{state}
+        </if>
+        <if test="nickName != null and nickName!=''">
+            AND tbu.nickName LIKE CONCAT('%',#{nickName},'%')
+        </if>
+        <if test="createStartDate != null and createStartDate !=''">
+            <![CDATA[ AND tbbc.create_date >= #{createStartDate}]]>
+        </if>
+        <if test="createEndDate != null and createEndDate!=''">
+            <![CDATA[ AND tbbc.create_date <= #{createEndDate}]]>
+        </if>
+        <if test="contacts != null and contacts!=null">
+            AND tbbc.contacts LIKE CONCAT('%',#{contacts},'%')
+        </if>
+        <if test="connectPhone != null and connectPhone!='' ">
+            AND tbbc.connect_phone LIKE CONCAT('%',#{connectPhone},'%')
+        </if>
+    </select>
+
+    <!--逻辑删除商户渠道-->
+    <update id="delBussinessChl" parameterType="java.lang.Long">
+    UPDATE tb_business_channel SET is_deleted=1 WHERE channel_id=#{channel_id}
+  </update>
+
+    <!--启用商户渠道-->
+    <update id="cancleBussinessChl" parameterType="java.lang.Long">
+    UPDATE tb_business_channel SET state=1 WHERE channel_id=#{channel_id}
+  </update>
+
+    <!--禁用商户渠道-->
+    <update id="enabledBussinessChl" parameterType="java.lang.Long">
+    UPDATE tb_business_channel SET state=0 WHERE channel_id=#{channel_id}
+  </update>
+
+    <!--商户渠道编码是否存在-->
+    <select id="ifExistChannelCode" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT count(1) FROM tb_business_channel WHERE channel_code =#{channelCode}
+  </select>
+</mapper>

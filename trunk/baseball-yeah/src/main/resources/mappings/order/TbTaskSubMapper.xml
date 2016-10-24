@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.order.mapper.TbTaskSubMapper">
+    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+        <constructor>
+            <idArg column="task_sub_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="task_no" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="task_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="task_unit_price" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="unit_total" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="upper_limit" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="task_unit_num" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="college_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="effective_start_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="effective_end_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="deadline" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="publish_user_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="publish_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="state" jdbcType="TINYINT" javaType="java.lang.Byte"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+    task_sub_id, task_no, task_id, task_unit_price, unit_total, upper_limit, task_unit_num, 
+    college_id, effective_start_date, effective_end_date, deadline, publish_user_id, 
+    publish_time, state
+  </sql>
+    <select id="selectByTask" resultType="com.zhiduan.axp.dao.order.bean.TbTaskSub" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+    select 
+    a.task_sub_id taskSubId, a.task_no taskNo, a.task_id taskId, a.task_unit_price taskUnitPrice, a.unit_total unitTotal, a.upper_limit upperLimit,
+    a.task_unit_num taskUnitNum, b.full_name collegeName,
+    a.college_id collegeId, a.effective_start_date effectiveStartDate, a.effective_end_date effectiveEndDate, a.deadline, a.publish_user_id publishUserId,
+    a.publish_time publishTime, a.state
+    from tb_task_sub a INNER  JOIN  tb_college b
+    on a.college_id=b.college_id
+    where task_id = #{taskId,jdbcType=BIGINT}
+  </select>
+
+    <select id="selectByTaskAndCollege" resultType="com.zhiduan.axp.dao.order.bean.TbTaskSub" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+    select
+    a.task_sub_id taskSubId, a.task_no taskNo, a.task_id taskId, a.task_unit_price taskUnitPrice, a.unit_total unitTotal, a.upper_limit upperLimit,
+    a.task_unit_num taskUnitNum, b.full_name collegeName,
+    a.college_id collegeId, a.effective_start_date effectiveStartDate, a.effective_end_date effectiveEndDate, a.deadline, a.publish_user_id publishUserId,
+    a.publish_time publishTime, a.state
+    from tb_task_sub a INNER  JOIN  tb_college b
+    on a.college_id=b.college_id
+    where a.task_id = #{taskId,jdbcType=BIGINT} and a.college_id=#{collegeId,jdbcType=BIGINT}
+  </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_task_sub
+        where task_sub_id = #{taskSubId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from tb_task_sub
+    where task_sub_id = #{taskSubId,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+    insert into tb_task_sub (task_sub_id, task_no, task_id, 
+      task_unit_price, unit_total, upper_limit, 
+      task_unit_num, college_id, effective_start_date, 
+      effective_end_date, deadline, publish_user_id, 
+      publish_time, state)
+    values (#{taskSubId,jdbcType=BIGINT}, #{taskNo,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, 
+      #{taskUnitPrice,jdbcType=INTEGER}, #{unitTotal,jdbcType=INTEGER}, #{upperLimit,jdbcType=INTEGER}, 
+      #{taskUnitNum,jdbcType=INTEGER}, #{collegeId,jdbcType=BIGINT}, #{effectiveStartDate,jdbcType=TIMESTAMP}, 
+      #{effectiveEndDate,jdbcType=TIMESTAMP}, #{deadline,jdbcType=TIMESTAMP}, #{publishUserId,jdbcType=BIGINT}, 
+      #{publishTime,jdbcType=TIMESTAMP}, #{state,jdbcType=TINYINT})
+  </insert>
+    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+        insert into tb_task_sub
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskSubId != null">
+                task_sub_id,
+            </if>
+            <if test="taskNo != null">
+                task_no,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="taskUnitPrice != null">
+                task_unit_price,
+            </if>
+            <if test="unitTotal != null">
+                unit_total,
+            </if>
+            <if test="upperLimit != null">
+                upper_limit,
+            </if>
+            <if test="taskUnitNum != null">
+                task_unit_num,
+            </if>
+            <if test="collegeId != null">
+                college_id,
+            </if>
+            <if test="effectiveStartDate != null">
+                effective_start_date,
+            </if>
+            <if test="effectiveEndDate != null">
+                effective_end_date,
+            </if>
+            <if test="deadline != null">
+                deadline,
+            </if>
+            <if test="publishUserId != null">
+                publish_user_id,
+            </if>
+            <if test="publishTime != null">
+                publish_time,
+            </if>
+            <if test="state != null">
+                state,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskSubId != null">
+                #{taskSubId,jdbcType=BIGINT},
+            </if>
+            <if test="taskNo != null">
+                #{taskNo,jdbcType=BIGINT},
+            </if>
+            <if test="taskId != null">
+                #{taskId,jdbcType=BIGINT},
+            </if>
+            <if test="taskUnitPrice != null">
+                #{taskUnitPrice,jdbcType=INTEGER},
+            </if>
+            <if test="unitTotal != null">
+                #{unitTotal,jdbcType=INTEGER},
+            </if>
+            <if test="upperLimit != null">
+                #{upperLimit,jdbcType=INTEGER},
+            </if>
+            <if test="taskUnitNum != null">
+                #{taskUnitNum,jdbcType=INTEGER},
+            </if>
+            <if test="collegeId != null">
+                #{collegeId,jdbcType=BIGINT},
+            </if>
+            <if test="effectiveStartDate != null">
+                #{effectiveStartDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="effectiveEndDate != null">
+                #{effectiveEndDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deadline != null">
+                #{deadline,jdbcType=TIMESTAMP},
+            </if>
+            <if test="publishUserId != null">
+                #{publishUserId,jdbcType=BIGINT},
+            </if>
+            <if test="publishTime != null">
+                #{publishTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null">
+                #{state,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+        update tb_task_sub
+        <set>
+            <if test="taskNo != null">
+                task_no = #{taskNo,jdbcType=BIGINT},
+            </if>
+            <if test="taskId != null">
+                task_id = #{taskId,jdbcType=BIGINT},
+            </if>
+            <if test="taskUnitPrice != null">
+                task_unit_price = #{taskUnitPrice,jdbcType=INTEGER},
+            </if>
+            <if test="unitTotal != null">
+                unit_total = #{unitTotal,jdbcType=INTEGER},
+            </if>
+            <if test="upperLimit != null">
+                upper_limit = #{upperLimit,jdbcType=INTEGER},
+            </if>
+            <if test="taskUnitNum != null">
+                task_unit_num = #{taskUnitNum,jdbcType=INTEGER},
+            </if>
+            <if test="collegeId != null">
+                college_id = #{collegeId,jdbcType=BIGINT},
+            </if>
+            <if test="effectiveStartDate != null">
+                effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="effectiveEndDate != null">
+                effective_end_date = #{effectiveEndDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deadline != null">
+                deadline = #{deadline,jdbcType=TIMESTAMP},
+            </if>
+            <if test="publishUserId != null">
+                publish_user_id = #{publishUserId,jdbcType=BIGINT},
+            </if>
+            <if test="publishTime != null">
+                publish_time = #{publishTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=TINYINT},
+            </if>
+        </set>
+        where task_sub_id = #{taskSubId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+        update tb_task_sub
+        set task_no = #{taskNo,jdbcType=BIGINT},
+        task_id = #{taskId,jdbcType=BIGINT},
+        task_unit_price = #{taskUnitPrice,jdbcType=INTEGER},
+        unit_total = #{unitTotal,jdbcType=INTEGER},
+        upper_limit = #{upperLimit,jdbcType=INTEGER},
+        task_unit_num = #{taskUnitNum,jdbcType=INTEGER},
+        college_id = #{collegeId,jdbcType=BIGINT},
+        effective_start_date = #{effectiveStartDate,jdbcType=TIMESTAMP},
+        effective_end_date = #{effectiveEndDate,jdbcType=TIMESTAMP},
+        deadline = #{deadline,jdbcType=TIMESTAMP},
+        publish_user_id = #{publishUserId,jdbcType=BIGINT},
+        publish_time = #{publishTime,jdbcType=TIMESTAMP},
+        state = #{state,jdbcType=TINYINT}
+        where task_sub_id = #{taskSubId,jdbcType=BIGINT}
+    </update>
+</mapper>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.user.mapper.FeedBackMapper">
+	<resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.user.bean.FeedBackBean">
+		<constructor>
+			<idArg column="feedback_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="user_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="name" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="phone" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="content" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="ip" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="submitted_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+		</constructor>
+	</resultMap>
+	<sql id="Base_Column_List">
+		feedback_id feedbackId, user_id userId, name, phone, content, ip, submitted_time
+		submittedTime
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from tb_feedback
+		where feedback_id = #{feedbackId,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteBatch" parameterType="com.zhiduan.axp.controller.model.user.FeedBackInfo">
+	 <foreach collection="feedbackIds" item="feedbackId" index="index">delete from tb_feedback
+		where feedback_id = #{feedbackId,jdbcType=BIGINT}</foreach>
+
+	</delete>
+	<insert id="insert" parameterType="com.zhiduan.axp.dao.user.bean.FeedBackBean">
+		insert into tb_feedback ( user_id, name,
+		phone, content, ip,
+		submitted_time)
+		values (#{userId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
+		#{phone,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
+		#{ip,jdbcType=VARCHAR},
+		NOW())
+	</insert>
+	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.user.bean.FeedBackBean">
+		insert into tb_feedback
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="feedbackId != null">
+				feedback_id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="ip != null">
+				ip,
+			</if>
+			<if test="submittedTime != null">
+				submitted_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="feedbackId != null">
+				#{feedbackId,jdbcType=BIGINT},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=BIGINT},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="ip != null">
+				#{ip,jdbcType=VARCHAR},
+			</if>
+			<if test="submittedTime != null">
+				#{submittedTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.user.bean.FeedBackBean">
+		update tb_feedback
+		<set>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=BIGINT},
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="ip != null">
+				ip = #{ip,jdbcType=VARCHAR},
+			</if>
+			<if test="submittedTime != null">
+				submitted_time = #{submittedTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where feedback_id = #{feedbackId,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.user.bean.FeedBackBean">
+		update tb_feedback
+		set user_id = #{userId,jdbcType=BIGINT},
+		name = #{name,jdbcType=VARCHAR},
+		phone = #{phone,jdbcType=VARCHAR},
+		content = #{content,jdbcType=VARCHAR},
+		ip = #{ip,jdbcType=VARCHAR},
+		submitted_time = #{submittedTime,jdbcType=TIMESTAMP}
+		where feedback_id = #{feedbackId,jdbcType=BIGINT}
+	</update>
+
+	<select id="selectAll" parameterType="com.zhiduan.axp.controller.model.user.FeedBackInfo"
+		resultType="com.zhiduan.axp.controller.model.user.FeedBackInfo">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM tb_feedback
+		<if test="phone != null and phone!=''">
+			where phone like CONCAT('%',#{phone},'%')
+		</if>
+		ORDER BY
+		${sort} ${order}
+		LIMIT #{offset}, #{limit}
+	</select>
+	<select id="getfeedBackTotal" resultType="int" parameterType="com.zhiduan.axp.controller.model.user.FeedBackInfo">
+		select
+		count(1)
+		FROM tb_feedback
+			<if test="phone != null and phone!=''">
+			where phone like CONCAT('%',#{phone},'%')
+		</if>
+	</select>
+	<select id="selectByUserId" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from tb_feedback
+		where user_id = #{userId,jdbcType=BIGINT}
+	</select>
+</mapper>

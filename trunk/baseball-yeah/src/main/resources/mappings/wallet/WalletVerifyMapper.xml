@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.wallet.mapper.WalletVerifyMapper">  
+    <select id="selectWalletVerify" resultType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo" parameterType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo">
+	SELECT a.user_id userId,a.phone,a.user_name userName,a.id_no
+	identityNumber,a.real_name realName,b.user_type userType ,case
+	b.user_type when 1 then '货源' when 3 then '众包' end
+	userTypeName,d.verify_status
+	verifyStatus,d.verifyInfo,d.verifyTime,a.signup_time signupTime,
+	case d.verify_status when 0 then '未完善' when 1 then '待审核' when 2 then '审核成功'
+	when 3 then '审
+	核失败' end verifyStatusName,d.verify_user_name auditName
+	FROM tb_user a INNER JOIN tb_user_type b ON a.user_id = b.user_id
+	inner join tb_acct_user c on a.user_id=c.user_id
+	inner join (select user_id,verify_status,1 user_type,verify_time
+	verifyTime,verify_info verifyInfo,verify_remark verifyRemark,verify_user_id,
+      verify_user_name from
+	tb_user_store_exp where verify_status > 0
+	UNION all select user_id,state verify_status,3 user_type,update_date
+	verifyTime,verify_msg verifyInfo,remark verifyRemark,update_user verify_user_id,um.user_name
+  verify_user_name
+  from p_user pu INNER  JOIN  tb_user_manager um on pu.update_user=um.user_manager_id where
+	state > 0) d
+	on a.user_id=d.user_id and b.user_type=d.user_type
+	where c.active_state=0 and c.pwd is not null and a.be_deleted=0
+
+	<if test="phone!=null and phone!=''">
+	   	and  a.phone like  '${phone}%'
+	</if>
+	<if test="userType!=null">
+	   	and  b.user_type=#{userType}
+	</if>
+	<if test="userName!=null and userName!=''">
+	    and d.verify_user_name like '${userName}%'
+	</if>
+	<if test="verifyStatus!=null">
+	    and d.verify_status=#{verifyStatus}
+	</if>
+	<if test="verifyStartTime!=null and verifyStartTime!=''">
+	     and <![CDATA[d.verifyTime>#{verifyStartTime}]]>
+	</if>
+	<if test="verifyEndTime!=null and verifyEndTime!=''">
+	   and <![CDATA[d.verifyTime<#{verifyEndTime}]]>
+	</if>
+	<if test="signupStartTime!=null and signupStartTime!=''">
+	     and <![CDATA[a.signup_time>#{signupStartTime}]]>
+	</if>
+	<if test="signupEndTime!=null and signupEndTime!=''">
+	   and <![CDATA[a.signup_time<#{signupEndTime}]]>
+	</if>
+    </select>
+    <!-- 查询单个钱包审核账户 -->
+    <select id="selectWalletUserInfo" resultType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo" parameterType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo">
+	SELECT a.user_id userId,a.phone,a.user_name userName,a.id_no
+	identityNumber,a.real_name realName,b.user_type userType ,case
+	b.user_type when 1 then '货源' when 3 then '众包' end
+	userTypeName,d.verify_status
+	verifyStatus,d.verifyInfo,d.verifyTime,a.signup_time signupTime,
+	case d.verify_status when 0 then '未完善' when 1 then '待审核' when 2 then '审核成功'
+	when 3 then '审
+	核失败' end verifyStatusName
+	FROM tb_user a INNER JOIN tb_user_type b ON a.user_id = b.user_id
+	inner join tb_acct_user c on a.user_id=c.user_id
+	inner join (select user_id,verify_status,1 user_type,verify_time
+	verifyTime,verify_info verifyInfo,verify_remark verifyRemark from
+	tb_user_store_exp where verify_status > 0
+	UNION all select user_id,state verify_status,3 user_type,update_date
+	verifyTime,verify_msg verifyInfo,remark verifyRemark from p_user where
+	state > 0) d
+	on a.user_id=d.user_id and b.user_type=d.user_type
+	where c.active_state=0 and c.pwd is not null and a.be_deleted=0
+	<if test="userId!=null and userId!=''">
+	   	and  a.user_id=#{userId}
+	</if>
+    </select>
+    <update id="updatePuserVerify"  parameterType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo">
+      update p_user 
+      <set>
+         <if test="verifyStatus!=null">
+            state=#{verifyStatus},
+         </if>
+          <if test="verifyInfo!=null">
+            verify_msg=#{verifyInfo},
+         </if>
+          <if test="verifyRemark!=null">
+           remark=#{verifyRemark},
+         </if>
+            update_date=now(),
+            <if test="verifyUserId!=null">
+             update_user=#{verifyUserId},
+            </if>
+      </set>
+      <where>
+         <if test="userId!=null">
+             user_id=#{userId};   
+         </if>
+      </where>
+    </update>
+    
+    <update id="updateExpUserVerify"  parameterType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo">
+      update tb_user_store_exp 
+      <set>
+         <if test="verifyStatus!=null">
+            verify_status=#{verifyStatus},
+         </if>
+          <if test="verifyInfo!=null">
+            verify_info=#{verifyInfo},
+         </if>
+          <if test="verifyRemark!=null">
+            verify_remark=#{verifyRemark},
+         </if>
+            verify_time=now(),
+            <if test="verifyUserId!=null">
+             verify_user_id=#{verifyUserId},
+            </if>
+            <if test="verifyUserName!=null">
+             verify_user_name=#{verifyUserName},
+            </if>
+      </set>
+       where user_id=#{userId};   
+    </update>
+    <!-- 修改钱包账户激活状态 -->
+     <update id="updateAcctUserVerifyStatus"  parameterType="java.lang.Long">
+      update tb_acct_user set active_state=1 
+       where user_id=#{userId}   
+    </update>
+</mapper>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.PickupAddressMapper">
+    <resultMap id="Pickup_Address_Map" type="com.zhiduan.axp.dao.manager.bean.PickupAddressBean">
+        <id property="pickupAddressId" column="pickup_address_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="storePhone" column="store_phone"/>
+        <result property="address" column="address"/>
+        <result property="createTime" column="create_time"/>
+        <!--<collection property="colleges" ofType="com.zhiduan.axp.dao.manager.bean.CollegeBean">
+            <id property="collegeId" column="college_id"/>
+            <result property="fullName" column="full_name"/>
+        </collection>-->
+        <result property="collegeIds" column="collegeIds"/>
+        <result property="collegeNames" column="collegeNames"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    pickup_address_id, store_name, store_phone, address, create_time
+  </sql>
+    <sql id="College_Column_List">
+        college_id, college_name
+    </sql>
+    <!-- 按主键查询 -->
+    <select id="selectByPrimaryKey" resultType="com.zhiduan.axp.dao.manager.bean.PickupAddressBean"
+            parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_pickup_address
+        where pickup_address_id = #{pickupAddressId,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="selectList" resultMap="Pickup_Address_Map" parameterType="map">
+        SELECT a.pickup_address_id,a.store_name,a.store_phone,a.address,
+        a.create_time,group_concat(b.college_id) collegeIds,group_concat(c.full_name) collegeNames
+        FROM
+        tb_pickup_address a,tb_pickup_address_college b,tb_college c
+        WHERE a.pickup_address_id = b.pickup_address_id
+        and b.college_id = c.college_id
+        and a.is_system = 1
+        and a.is_deleted = 0
+        <if test="storeName != null">
+            and a.store_name like #{storeName}
+        </if>
+        <if test="storePhone != null">
+            and a.store_phone like #{storePhone}
+        </if>
+        GROUP BY a.pickup_address_id
+        ORDER BY a.pickup_address_id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 查询列表总数 -->
+    <select id="selectListCount" parameterType="map" resultType="int">
+        select count(1)
+        from tb_pickup_address
+        where is_deleted = 0
+        and is_system = 1
+        and EXISTS (select 1 from tb_pickup_address_college
+        where pickup_address_id=tb_pickup_address.pickup_address_id)
+        <if test="storeName != null">
+            and store_name like #{storeName}
+        </if>
+        <if test="storePhone != null">
+            and store_phone like #{storePhone}
+        </if>
+    </select>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressBean" useGeneratedKeys="true"
+            keyProperty="pickupAddressId">
+    insert into tb_pickup_address (
+      store_name,store_phone, address, province_id,
+      city_id, county_id, is_system)
+    values (
+      #{storeName,jdbcType=VARCHAR},#{storePhone,jdbcType=VARCHAR},
+      #{address,jdbcType=VARCHAR}, #{provinceId,jdbcType=BIGINT},
+      #{cityId,jdbcType=BIGINT}, #{countyId,jdbcType=BIGINT},
+      1)
+  </insert>
+
+    <!-- 动态新增 -->
+    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressBean">
+        insert into tb_pickup_address
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pickupAddressId != null">
+                pickup_address_id,
+            </if>
+            <if test="storeName != null">
+                store_name,
+            </if>
+            <if test="storePhone != null">
+                store_phone,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="provinceId != null">
+                province_id,
+            </if>
+            <if test="cityId != null">
+                city_id,
+            </if>
+            <if test="countyId != null">
+                county_id,
+            </if>
+            <if test="isSystem != null">
+                is_system,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pickupAddressId != null">
+                #{pickupAddressId,jdbcType=BIGINT},
+            </if>
+            <if test="storeName != null">
+                #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="storePhone != null">
+                #{storePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="provinceId != null">
+                #{provinceId,jdbcType=BIGINT},
+            </if>
+            <if test="cityId != null">
+                #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="countyId != null">
+                #{countyId,jdbcType=BIGINT},
+            </if>
+            <if test="isSystem != null">
+                1,
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 动态更新 -->
+    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressBean">
+        update tb_pickup_address
+        <set>
+            <if test="storeName != null">
+                store_name = #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="storePhone != null">
+                store_phone = #{storePhone,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="provinceId != null">
+                province_id = #{provinceId,jdbcType=BIGINT},
+            </if>
+            <if test="cityId != null">
+                city_id = #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="countyId != null">
+                county_id = #{countyId,jdbcType=BIGINT},
+            </if>
+        </set>
+        where pickup_address_id = #{pickupAddressId,jdbcType=BIGINT}
+    </update>
+
+    <!-- 更新 -->
+    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressBean">
+    update tb_pickup_address
+    set user_id = #{userId,jdbcType=BIGINT},
+      store_name = #{storeName,jdbcType=VARCHAR},
+      store_phone = #{storeName,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      province_id = #{provinceId,jdbcType=BIGINT},
+      city_id = #{cityId,jdbcType=BIGINT},
+      county_id = #{countyId,jdbcType=BIGINT}
+    where pickup_address_id = #{pickupAddressId,jdbcType=BIGINT}
+  </update>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteByPrimaryKey" parameterType="list">
+        update tb_pickup_address
+        set is_deleted = 1
+        where pickup_address_id IN
+        <foreach collection="list" item="pickupAddressId" open="(" separator="," close=")">
+            #{pickupAddressId}
+        </foreach>
+
+    </update>
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.wallet.mapper.AcctThdPaymentTypeMapper" >
+  <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.wallet.bean.AcctThdPaymentTypeBean" >
+    <constructor >
+      <idArg column="type_code" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <arg column="type_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="state" jdbcType="TINYINT" javaType="java.lang.Byte" />
+      <arg column="opt_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    type_code, type_name, state, opt_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Byte" >
+    select 
+    <include refid="Base_Column_List" />
+    from ts_acct_thd_payment_type
+    where type_code = #{typeCode,jdbcType=TINYINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Byte" >
+    delete from ts_acct_thd_payment_type
+    where type_code = #{typeCode,jdbcType=TINYINT}
+  </delete>
+  <insert id="insert" parameterType="com.zhiduan.axp.dao.wallet.bean.AcctThdPaymentTypeBean" >
+    insert into ts_acct_thd_payment_type (type_code, type_name, state, 
+      opt_time)
+    values (#{typeCode,jdbcType=TINYINT}, #{typeName,jdbcType=VARCHAR}, #{state,jdbcType=TINYINT}, 
+      #{optTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.wallet.bean.AcctThdPaymentTypeBean" >
+    insert into ts_acct_thd_payment_type
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="typeCode != null" >
+        type_code,
+      </if>
+      <if test="typeName != null" >
+        type_name,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="optTime != null" >
+        opt_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="typeCode != null" >
+        #{typeCode,jdbcType=TINYINT},
+      </if>
+      <if test="typeName != null" >
+        #{typeName,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=TINYINT},
+      </if>
+      <if test="optTime != null" >
+        #{optTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.wallet.bean.AcctThdPaymentTypeBean" >
+    update ts_acct_thd_payment_type
+    <set >
+      <if test="typeName != null" >
+        type_name = #{typeName,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=TINYINT},
+      </if>
+      <if test="optTime != null" >
+        opt_time = #{optTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where type_code = #{typeCode,jdbcType=TINYINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.wallet.bean.AcctThdPaymentTypeBean" >
+    update ts_acct_thd_payment_type
+    set type_name = #{typeName,jdbcType=VARCHAR},
+      state = #{state,jdbcType=TINYINT},
+      opt_time = #{optTime,jdbcType=TIMESTAMP}
+    where type_code = #{typeCode,jdbcType=TINYINT}
+  </update>
+  
+  <select id="getAllPayType" resultType="com.zhiduan.axp.dao.wallet.bean.AcctThdPaymentTypeBean">
+  	SELECT type_code,type_name FROM ts_acct_thd_payment_type
+  </select>
+</mapper>

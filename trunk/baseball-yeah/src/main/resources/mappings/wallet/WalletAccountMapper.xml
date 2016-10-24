@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.wallet.mapper.WalletAccountMapper">
+    <select id="selectWalletAccount" parameterType="com.zhiduan.axp.controller.model.wallet.WalletAccountInfo"
+            resultType="com.zhiduan.axp.controller.model.wallet.WalletAccountInfo">
+        select t.acct_id acctId,CASE t.active_state WHEN 0 THEN '未激活'WHEN 1
+        THEN '激活' END activeStateName,t.state,CASE t.state WHEN 0 THEN '已锁定'
+        WHEN 1 THEN '已解锁' END stateName,t2.nickname nickName,
+        t.balance,t.frozen_balance frozenBalance,date_format(t.update_time,'%Y-%m-%d %h:%i:%s') activeTime,t2.user_name
+        userName,t.active_state activeState,t.user_id userId
+        from tb_acct_user t LEFT JOIN tb_user t2 ON t2.user_id=t.user_id
+        <where>
+            t2.be_deleted=0
+            <if test="userName!=null and userName!=''">
+                and t2.user_name like '${userName}%'
+            </if>
+            <if test="activeStartTime!=null and activeStartTime!=''">
+                and   <![CDATA[t.update_time>#{activeStartTime}]]>
+            </if>
+            <if test="activeEndTime!=null and activeEndTime!=''">
+                and <![CDATA[t.update_time<#{activeEndTime}]]>
+            </if>
+            <if test="activeState!=null">
+                and t.active_state=#{activeState}
+            </if>
+            <if test="state!=null">
+                and t.state=#{state}
+            </if>
+        </where>
+    </select>
+    <select id="selectCashShow" parameterType="map" resultType="com.zhiduan.axp.controller.model.wallet.WalletCashShowInfo">
+        select t.acct_id,t.acct_no,t.thd_type,t2.type_name from
+        tb_acct_thirdparty t
+        LEFT JOIN ts_acct_thd_payment_type t2 on t.thd_type=t2.type_code
+        where t2.state=1 and t.is_deleted=0
+        <if test="acctId!=null">
+            and t.acct_id=#{acctId}
+        </if>
+    </select>
+    <!-- 帐号冻结 -->
+    <update id="lockAccount" parameterType="Integer">
+        update tb_acct_user
+        <set>
+            state=0
+        </set>
+        <where>
+            <if test="_parameter!=null">
+                acct_id=#{_parameter}
+            </if>
+        </where>
+    </update>
+    <!-- 帐号解锁 -->
+    <update id="unlockAccount" parameterType="Integer">
+        update tb_acct_user
+        <set>
+            state=1
+        </set>
+        <where>
+            <if test="_parameter!=null">
+                acct_id=#{_parameter}
+            </if>
+        </where>
+    </update>
+    <select id="selectCapitalChange" parameterType="com.zhiduan.axp.controller.model.CapitalChangeInfo"
+            resultType="com.zhiduan.axp.controller.model.CapitalChangeInfo">
+        select a.acct_id acctId,d.user_name userName,
+        b.type_name,e.acct_no acctNo,a.after_balance afterBalance,a.create_time createTime, a.opt_amount optAmount,
+        CASE a.state WHEN 1 THEN '有效' WHEN 0 THEN '无效' ELSE '无效' END state,
+        CASE f.pay_type WHEN 1 THEN '充值' WHEN 2 THEN '提现' WHEN 3 THEN '收款' ELSE
+        '其他' END paymentName,
+        a.flow_id flowId,a.before_balance beforeBalance,f.pay_type payType
+        from tb_acct_user_detail a
+        LEFT JOIN ts_acct_thd_payment_type b ON a.thd_type=b.type_code
+        LEFT JOIN tb_acct_user c ON c.acct_id=a.acct_id
+        LEFT JOIN tb_user d on d.user_id=c.user_id
+        LEFT JOIN tb_acct_thirdparty e ON a.acct_id=e.acct_id
+        LEFT JOIN ts_acct_payment f ON f.payment_code=a.payment_code
+        <where>
+            1=1
+            <if test="acctId!=null">
+                and a.acct_id =#{acctId}
+            </if>
+            <if test="startTime!=null and startTime!=''">
+                and   <![CDATA[a.create_time>#{startTime}]]>
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                and <![CDATA[a.create_time<#{endTime}]]>
+            </if>
+            <if test="payType!=null and payType!=''">
+                and f.pay_type=#{payType}
+            </if>
+        </where>
+    </select>
+</mapper>

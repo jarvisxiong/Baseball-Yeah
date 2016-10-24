@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.waybill.mapper.WaybillProblemMapper">
+	<select id="selectWaybillProblemTypeList"
+		parameterType="com.zhiduan.axp.controller.model.waybill.WayBillProblemTypeInfo"
+		resultType="com.zhiduan.axp.controller.model.waybill.WayBillProblemTypeInfo">
+		select t.do_return doReturn,t.update_user_id updateUserId,
+		CASE
+		t.problem_type_group WHEN 1 THEN '货源' WHEN 2 THEN '门店' WHEN 3 THEN
+		'众包' WHEN 4 THEN '收件人' ELSE '其他' END groupName,
+		t.do_uplaodfile
+		doUplaodfile,t.is_enabled isEnabled,t.problem_type_code
+		problemTypeCode,
+		t.problem_type_group
+		problemTypeGroup,t.problem_type_name problemTypeName
+		,t.sort_no
+		sortNo,date_format(t.update_time,'%Y-%m-%d %h:%i:%s')
+		updateTime,t2.nickname nickName
+		from tb_waybill_problem_type t LEFT
+		JOIN tb_user t2 ON
+		t2.user_id=t.update_user_id
+		<where>
+			1=1
+			<if test="problemTypeGroup!=null and problemTypeGroup!=''">
+				and t.problem_type_group=#{problemTypeGroup}
+			</if>
+			<if test="updateStartTime!=null and updateStartTime!=''">
+				and   <![CDATA[t.update_time>#{updateStartTime}]]>
+			</if>
+			<if test="updateEndTime!=null and updateEndTime!=''">
+				and <![CDATA[t.update_time<#{updateEndTime}]]>
+			</if>
+		</where>
+	</select>
+	<insert id="insertWaybillProblem"
+		parameterType="com.zhiduan.axp.controller.model.waybill.WayBillProblemTypeInfo">
+		INSERT INTO tb_waybill_problem_type (problem_type_code,
+		problem_type_name,
+		problem_type_group, sort_no, is_enabled, do_return,
+		do_uplaodfile,
+		update_time, update_user_id)
+		VALUES
+		(#{problemTypeCode},#{problemTypeName},#{problemTypeGroup},#{sortNo},#{isEnabled},#{doReturn},#{doUplaodfile},now(),#{updateUserId})
+	</insert>
+	<!-- 更新问题类型 -->
+	<update id="updateWaybillProblem"
+		parameterType="com.zhiduan.axp.controller.model.waybill.WayBillProblemTypeInfo">
+		update tb_waybill_problem_type
+		<set>
+			<if test="problemTypeName!=null">
+				problem_type_name=#{problemTypeName},
+			</if>
+			<if test="problemTypeGroup!=null">
+				problem_type_group=#{problemTypeGroup},
+			</if>
+			<if test="updateUserId!=null">
+				update_user_id=#{updateUserId},
+			</if>
+			<if test="isEnabled!=null">
+			    is_enabled=#{isEnabled},
+			</if>
+			<if test="doReturn!=null">
+				do_return=#{doReturn},
+			</if>
+			<if test="doUplaodfile!=null">
+				do_uplaodfile=#{doUplaodfile},
+			</if>
+			<if test="sortNo!=null">
+				sort_no=#{sortNo},
+			</if>
+			update_time=now()
+		</set>
+		<where>
+			<if test="problemTypeCode!=null">
+				problem_type_code=#{problemTypeCode}
+			</if>
+		</where>
+	</update>
+   <delete id="deleteWaybillProblem" parameterType="String">
+       delete from tb_waybill_problem_type where problem_type_code=#{problemTypeCode}
+   </delete>
+
+</mapper>

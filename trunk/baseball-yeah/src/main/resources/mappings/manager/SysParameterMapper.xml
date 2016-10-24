@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.SysParameterMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zhiduan.axp.dao.manager.bean.SysParameterBean">
+		<constructor>
+			<idArg column="sys_parameter_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="parameter_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="value" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="description" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="be_enabled" jdbcType="TINYINT" javaType="java.lang.Byte" />
+		</constructor>
+	</resultMap>
+	<sql id="Base_Column_List">
+		sys_parameter_id, parameter_name, value, description, be_enabled
+	</sql>
+
+	<!-- 查询全部 -->
+	<select id="selectAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from tb_sys_parameter
+	</select>
+
+	<!-- 按名称查询 -->
+	<select id="selectByParaName" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from tb_sys_parameter
+		where parameter_name =
+		#{parameterName,jdbcType=VARCHAR}
+	</select>
+
+	<!-- 按主键查询 -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from tb_sys_parameter
+		where sys_parameter_id =
+		#{sysParameterId,jdbcType=BIGINT}
+	</select>
+
+	<select id="getAging" resultType="String">
+		select value
+
+		from tb_sys_parameter
+		where parameter_name = "sms_timeout"
+	</select>
+
+	<!-- 删除 -->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from
+		tb_sys_parameter
+		where sys_parameter_id =
+		#{sysParameterId,jdbcType=BIGINT}
+	</delete>
+
+	<!-- 新增 -->
+	<insert id="insert"
+		parameterType="com.zhiduan.axp.dao.manager.bean.SysParameterBean">
+		insert into tb_sys_parameter
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<!-- <if test="sysParameterId != null"> sys_parameter_id, </if> -->
+			<if test="parameterName != null">
+				parameter_name,
+			</if>
+			<if test="value != null">
+				value,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="beEnabled != null">
+				be_enabled,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<!-- <if test="sysParameterId != null"> #{sysParameterId,jdbcType=INTEGER}, 
+				</if> -->
+			<if test="parameterName != null">
+				#{parameterName,jdbcType=VARCHAR},
+			</if>
+			<if test="value != null">
+				#{value,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="beEnabled != null">
+				#{beEnabled,jdbcType=TINYINT},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 更新 -->
+	<update id="updateByPrimaryKey"
+		parameterType="com.zhiduan.axp.dao.manager.bean.SysParameterBean">
+		update tb_sys_parameter
+		<set>
+			<if test="parameterName != null">
+				parameter_name = #{parameterName,jdbcType=VARCHAR},
+			</if>
+			<if test="value != null">
+				value = #{value,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="beEnabled != null">
+				be_enabled = #{beEnabled,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where sys_parameter_id = #{sysParameterId,jdbcType=BIGINT}
+	</update>
+
+	<!-- 系统参数名称唯一 -->
+	<select id="isSysParaNameExists" resultType="int" parameterType="map">
+		select count(1) from tb_sys_parameter
+		<where>
+			<if test="parameterName != null">
+				parameter_name = #{parameterName,jdbcType=VARCHAR}
+			</if>
+			<if test="sysParameterId != null">
+				and sys_parameter_id !=
+				#{sysParameterId,jdbcType=BIGINT}
+			</if>
+		</where>
+	</select>
+</mapper>

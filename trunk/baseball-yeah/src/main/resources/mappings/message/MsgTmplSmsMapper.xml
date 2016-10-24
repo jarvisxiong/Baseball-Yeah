@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.message.mapper.MsgTmplSmsMapper">
+    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.message.bean.MsgTmplSmsBean">
+        <constructor>
+            <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="tmpl_code" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="tmpl_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="tmpl_content" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="place_sign" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="state" jdbcType="TINYINT" javaType="java.lang.Byte"/>
+            <arg column="msg_type" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="msg_type_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, tmpl_code, tmpl_name, tmpl_content, place_sign, create_time, update_time, state,
+        msg_type
+    </sql>
+
+    <!--按主键查询-->
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from ts_msg_tmpl_sms
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!--查询列表-->
+    <select id="selectAll" resultMap="BaseResultMap" parameterType="map">
+        select b.msg_type_name,a.*
+        from ts_msg_tmpl_sms a,ts_msg_type b
+        where a.msg_type = b.msg_type
+        and a.state = 1
+        <if test="msgType != null">
+           and a.msg_type = #{msgType}
+        </if>
+        limit #{offset},#{limit}
+    </select>
+
+    <!--查询条数-->
+    <select id="selectAllCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        select COUNT(1)
+        from ts_msg_tmpl_sms
+        where state = 1
+        <if test="msgType != null">
+            and msg_type = #{msgType}
+        </if>
+    </select>
+
+    <!--删除-->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from ts_msg_tmpl_sms
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!--新增-->
+    <insert id="insert" parameterType="com.zhiduan.axp.dao.message.bean.MsgTmplSmsBean">
+        insert into ts_msg_tmpl_sms
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="tmplCode != null">
+                tmpl_code,
+            </if>
+            <if test="tmplName != null">
+                tmpl_name,
+            </if>
+            <if test="tmplContent != null">
+                tmpl_content,
+            </if>
+            <if test="placeSign != null">
+                place_sign,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="state != null">
+                state,
+            </if>
+            <if test="msgType != null">
+                msg_type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="tmplCode != null">
+                #{tmplCode,jdbcType=INTEGER},
+            </if>
+            <if test="tmplName != null">
+                #{tmplName,jdbcType=VARCHAR},
+            </if>
+            <if test="tmplContent != null">
+                #{tmplContent,jdbcType=VARCHAR},
+            </if>
+            <if test="placeSign != null">
+                #{placeSign,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null">
+                #{state,jdbcType=TINYINT},
+            </if>
+            <if test="msgType != null">
+                #{msgType,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <!--更新-->
+    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.message.bean.MsgTmplSmsBean">
+        update ts_msg_tmpl_sms
+        <set>
+            <if test="tmplCode != null">
+                tmpl_code = #{tmplCode,jdbcType=INTEGER},
+            </if>
+            <if test="tmplName != null">
+                tmpl_name = #{tmplName,jdbcType=VARCHAR},
+            </if>
+            <if test="tmplContent != null">
+                tmpl_content = #{tmplContent,jdbcType=VARCHAR},
+            </if>
+            <if test="placeSign != null">
+                place_sign = #{placeSign,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=TINYINT},
+            </if>
+            <if test="msgType != null">
+                msg_type = #{msgType,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+</mapper>

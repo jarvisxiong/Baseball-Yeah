@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.SysNoticeMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+		<constructor>
+			<idArg column="sys_notice_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="caption" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="url" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="be_push" jdbcType="TINYINT" javaType="java.lang.Byte" />
+			<arg column="publish_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+			<arg column="user_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="be_deleted" jdbcType="TINYINT" javaType="java.lang.Byte" />
+		</constructor>
+	</resultMap>
+	<resultMap id="ResultMapWithBLOBs"
+		type="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+		<constructor>
+			<idArg column="sys_notice_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="caption" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="url" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="be_push" jdbcType="TINYINT" javaType="java.lang.Byte" />
+			<arg column="publish_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+			<arg column="user_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="be_deleted" jdbcType="TINYINT" javaType="java.lang.Byte" />
+			<arg column="content" jdbcType="LONGVARCHAR" javaType="java.lang.String" />
+			<arg column="push_type" jdbcType="VARCHAR" javaType="java.lang.String" />
+		</constructor>
+	</resultMap>
+	<sql id="Base_Column_List">
+		sys_notice_id sysNoticeId, caption, url, be_push bePush, publish_time publishTime, user_id userId, be_deleted beDeleted, push_type pushType
+	</sql>
+	<sql id="Blob_Column_List">
+		content
+	</sql>
+	<select id="selectByPrimaryKey" resultType = "com.zhiduan.axp.dao.manager.bean.SysNoticeBean"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from tb_sys_notice
+		where sys_notice_id = #{sysNoticeId,jdbcType=BIGINT}
+	</select>
+	<select id="selectAll" parameterType="com.zhiduan.axp.controller.model.manager.SysNoticeInfo" resultType="com.zhiduan.axp.controller.model.manager.SysNoticeInfo">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from tb_sys_notice
+		where be_deleted=0   
+				<if test="caption != null and caption!=''">
+			and caption like CONCAT('%',#{caption},'%')
+		</if>	
+		ORDER BY
+		${sort} ${order}
+		LIMIT #{offset}, #{limit} 
+	</select>
+	<select id="getSysNoticeTotal" resultType="int" parameterType="com.zhiduan.axp.controller.model.manager.SysNoticeInfo">
+		select
+	count(1)
+		from tb_sys_notice
+		where be_deleted=0
+				<if test="caption != null and caption!=''">
+			and caption like CONCAT('%',#{caption},'%')
+		</if>
+	</select>
+	<delete id="deleteBatch" parameterType="com.zhiduan.axp.controller.model.manager.SysNoticeInfo">
+	    <foreach collection="sysNoticeIds" item="sysNoticeId" index="index">delete from tb_sys_notice
+	where sys_notice_id = #{sysNoticeId,jdbcType=BIGINT}</foreach>
+
+	</delete>
+	<insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+		insert into tb_sys_notice (caption, url,
+		be_push, publish_time, user_id,
+		be_deleted, content,push_type)
+		values (#{caption,}, #{url},
+		 #{bePush},  #{publishTime}, #{userId},
+		#{beDeleted}, #{content},#{pushType})
+	</insert>
+	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+		insert into tb_sys_notice
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="sysNoticeId != null">
+				sys_notice_id,
+			</if>
+			<if test="caption != null">
+				caption,
+			</if>
+			<if test="url != null">
+				url,
+			</if>
+			<if test="bePush != null">
+				be_push,
+			</if>
+			<if test="publishTime != null">
+				publish_time,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="beDeleted != null">
+				be_deleted,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="pushType != null">
+                push_type,
+            </if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="sysNoticeId != null">
+				#{sysNoticeId,jdbcType=BIGINT},
+			</if>
+			<if test="caption != null">
+				#{caption,jdbcType=VARCHAR},
+			</if>
+			<if test="url != null">
+				#{url,jdbcType=VARCHAR},
+			</if>
+			<if test="bePush != null">
+				#{bePush,jdbcType=TINYINT},
+			</if>
+			<if test="publishTime != null">
+				#{publishTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=BIGINT},
+			</if>
+			<if test="beDeleted != null">
+				#{beDeleted,jdbcType=TINYINT},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="pushType != null">
+                #{pushType,jdbcType=VARCHAR},
+            </if>
+		</trim>
+	</insert>
+	<insert id="insertBatch" parameterType="java.util.List">
+        insert into tb_sys_notice 
+        (caption, url,be_push, publish_time, user_id,be_deleted, content,push_type)
+        values 
+         <foreach collection ="list" item="noticeBean" index= "index" separator =",">
+            (#{noticeBean.caption,}, #{noticeBean.url},
+            #{noticeBean.bePush},  #{noticeBean.publishTime}, #{noticeBean.userId},
+            #{noticeBean.beDeleted}, #{noticeBean.content},#{noticeBean.pushType})
+        </foreach >
+    </insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+		update tb_sys_notice
+		<set>
+			<if test="caption != null">
+				caption = #{caption,jdbcType=VARCHAR},
+			</if>
+			<if test="url != null">
+				url = #{url,jdbcType=VARCHAR},
+			</if>
+			<if test="bePush != null">
+				be_push = #{bePush,jdbcType=TINYINT},
+			</if>
+			<if test="publishTime != null">
+				publish_time = #{publishTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=BIGINT},
+			</if>
+			<if test="beDeleted != null">
+				be_deleted = #{beDeleted,jdbcType=TINYINT},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="pushType != null">
+                push_type = #{pushType,jdbcType=VARCHAR},
+            </if>
+		</set>
+		where sys_notice_id = #{sysNoticeId,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+		update tb_sys_notice
+		set caption = #{caption,jdbcType=VARCHAR},
+		url = #{url,jdbcType=VARCHAR},
+		be_push = #{bePush,jdbcType=TINYINT},
+		publish_time = #{publishTime,jdbcType=TIMESTAMP},
+		user_id = #{userId,jdbcType=BIGINT},
+		be_deleted = 0,
+		content = #{content,jdbcType=LONGVARCHAR},
+		push_type = #{pushType,jdbcType=VARCHAR}
+		where sys_notice_id = #{sysNoticeId,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.controller.model.manager.SysNoticeInfo">
+		update tb_sys_notice
+		set caption = #{caption,jdbcType=VARCHAR},
+		content = #{content,jdbcType=VARCHAR},
+		url = #{url,jdbcType=VARCHAR},
+		be_push = #{bePush,jdbcType=TINYINT},
+		publish_time = NOW(),
+		user_id = #{userId,jdbcType=BIGINT},
+		be_deleted = #{beDeleted,jdbcType=TINYINT},
+		push_type = #{pushType,jdbcType=VARCHAR}
+		where sys_notice_id = #{sysNoticeId,jdbcType=BIGINT}
+	</update>
+	<update id="auditUpdate" parameterType="map">
+        update tb_sys_notice
+        set be_push = #{bePush},
+        verify_time = NOW(),
+        verify_user_id = #{verifyUserId}
+        where sys_notice_id = #{sysNoticeId}
+    </update>
+</mapper>

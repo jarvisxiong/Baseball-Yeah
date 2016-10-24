@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiduan.axp.dao.report.mapper.ReportWaybillMapper">
+    <!-- 获取学校手机号统计信息 -->
+    <select id="getPhoneCount" resultType="com.zhiduan.axp.dao.report.bean.SearchPhoneCountBean"
+            parameterType="com.zhiduan.axp.dao.report.bean.SearchPhoneCountBean">
+        select t1.college_id as collegeId,t1.full_name as collegeName,count(tepphone.phone) as phoneCount
+        from tb_college t1 left join tb_store_college_rel t2 on
+        t1.college_id=t2.college_id
+        left join tb_store t3 on t3.store_id=t2.store_id
+        left join
+        (select t7.sto_axp_id as store_id,t5.phone,tep.express_company_id from
+        (select t4.waybill_number,t4.scan_side,t4.express_company_id ,t4.scan_side as store_id from tb_scan t4 group by t4.waybill_number,t4.express_company_id) tep
+        left join tb_store_exp_axp_rel t6 on t6.sto_exp_id=tep.store_id
+        left join tb_store_axp t7 on t7.sto_axp_id=t6.sto_axp_id
+        left join tb_waybill t5 on t5.waybill_no=tep.waybill_number and tep.express_company_id=t5.express_company_id
+        where t5.phone is not null and t7.sto_axp_id is not null
+        group by t5.phone order by store_id desc) tepphone
+        on tepphone.store_id=t3.store_id
+        where 1=1 and tepphone.phone is not null
+        <if test="collegeId!=null">
+            and t1.college_id=#{collegeId}
+        </if>
+        group by collegeId
+    </select>
+
+    <!-- 获取学校手机号明细信息 -->
+    <select id="getPhoneDetailCount" resultType="com.zhiduan.axp.dao.report.bean.SearchPhoneCountBean"
+            parameterType="com.zhiduan.axp.dao.report.bean.SearchPhoneCountBean">
+        select t1.college_id as collegeId,t1.full_name as
+        collegeName,tepphone.phone from tb_college t1 left join
+        tb_store_college_rel t2 on t1.college_id=t2.college_id
+        left join tb_store t3 on t3.store_id=t2.store_id
+        left join
+        (select t7.sto_axp_id as store_id,t5.phone,tep.express_company_id from
+        (select t4.waybill_number,t4.scan_side,t4.express_company_id ,t4.scan_side as store_id from tb_scan t4 group by t4.waybill_number,t4.express_company_id) tep
+        left join tb_store_exp_axp_rel t6 on t6.sto_exp_id=tep.store_id
+        left join tb_store_axp t7 on t7.sto_axp_id=t6.sto_axp_id
+        left join tb_waybill t5 on t5.waybill_no=tep.waybill_number and tep.express_company_id=t5.express_company_id
+        where t5.phone is not null and t7.sto_axp_id is not null
+        group by t5.phone order by store_id desc) tepphone
+        on tepphone.store_id=t3.store_id
+        where 1=1 and tepphone.phone is not null
+        <if test="collegeId!=null">
+            and t1.college_id=#{collegeId}
+        </if>
+       <!--  LIMIT #{offset}, #{limit} -->
+    </select>
+
+    <!-- 获取所有学校手机号的统计信息 -->
+    <select id="getPhoneAllCount" resultType="com.zhiduan.axp.dao.report.bean.SearchPhoneCountBean">
+        select (select count(*) from tb_college) as collegeCount,
+        count(tepphone.phone) as phoneCount from tb_college t1 left join
+        tb_store_college_rel t2 on t1.college_id=t2.college_id
+        left join tb_store t3 on t3.store_id=t2.store_id
+        left join
+        (select t7.sto_axp_id as store_id,t5.phone,tep.express_company_id from
+        (select t4.waybill_number,t4.scan_side,t4.express_company_id ,t4.scan_side as store_id from tb_scan t4 group by t4.waybill_number,t4.express_company_id) tep
+        left join tb_store_exp_axp_rel t6 on t6.sto_exp_id=tep.store_id
+        left join tb_store_axp t7 on t7.sto_axp_id=t6.sto_axp_id
+        left join tb_waybill t5 on t5.waybill_no=tep.waybill_number and tep.express_company_id=t5.express_company_id
+        where t5.phone is not null and t7.sto_axp_id is not null
+        group by t5.phone order by store_id desc) tepphone
+        on tepphone.store_id=t3.store_id
+        where 1=1 and tepphone.phone is not null
+    </select>
+    <select id="getSqlDataList" parameterType="Map" resultType="Map">
+        ${sqlString}
+    </select>
+     <select id="selectCityPhoneCount" resultType="com.zhiduan.axp.controller.model.report.ReportCityPhoneInfo" parameterType="Map">
+		<!-- select aa.city_id cityId,aa.city_name cityName,aa.total_phone_num totalPhoneNum,aa.total_reg_num totalRegNum,bb.new_num newNum,
+		if(total_phone_num>0, round((aa.total_reg_num/aa.total_phone_num*100),2),0) regRate,
+		if(total_phone_num>0, round((bb.new_num/aa.total_phone_num*100),2),0)  growRate
+		from
+		(SELECT   SUM(if(potential.phone is null,0,1)) total_phone_num,
+		         SUM(if(Axpuser.phone is null,0,1)) total_reg_num,
+		  city.city_name,city.city_id from tb_city city
+		LEFT JOIN tb_college college ON college.city_id=city.city_id
+		LEFT JOIN tb_store_college_rel screl ON screl.college_id=college.college_id
+		LEFT JOIN  (SELECT   phone,store_id FROM tb_user_of_potential  WHERE TO_DAYS(subdate(#{selectDate},INTERVAL 0 DAY)) >= TO_DAYS(add_time)) potential
+		    on potential.store_id=screl.store_id
+		LEFT JOIN (SELECT DISTINCT  phone FROM tb_user  WHERE TO_DAYS(subdate(#{selectDate},INTERVAL 0 DAY)) >= TO_DAYS(signup_time)) Axpuser
+		  ON   Axpuser.phone=potential.phone
+		GROUP BY  city.city_id) aa,
+		(SELECT   SUM(if(potential.phone is null,0,1)) new_num,
+		  city.city_name,city.city_id from tb_city city
+		LEFT JOIN tb_college college ON college.city_id=city.city_id
+		LEFT JOIN tb_store_college_rel screl ON screl.college_id=college.college_id
+		LEFT JOIN  (SELECT  phone,store_id FROM  tb_user_of_potential WHERE
+		           TO_DAYS(subdate(#{selectDate},INTERVAL 0 DAY)) = TO_DAYS(add_time) GROUP BY phone) potential
+		on potential.store_id=screl.store_id
+		GROUP BY  city.city_id) bb
+		where aa.city_id=bb.city_id  -->
+	select aa.city_id cityId,aa.city_name cityName,aa.total_phone_num
+	totalPhoneNum,aa.total_reg_num totalRegNum,
+	if(total_phone_num>0, round((aa.total_reg_num/aa.total_phone_num*100),2),0) regRate,
+	bb.new_num newNum,
+	if(bb.new_num>0, round((bb.new_num/aa.total_phone_num*100),2),0) growRate,
+	aa.full_name colName,aa.store_name userName
+	from
+	(SELECT SUM(if(potential.phone is null,0,1)) total_phone_num,
+	SUM(if(Axpuser.phone is null,0,1))
+	total_reg_num,college.full_name,college.college_id,Axpuser.user_name,
+	city.city_name,city.city_id,store.store_id,store.store_name from
+	tb_store store
+	LEFT JOIN tb_store_college_rel screl ON screl.store_id=store.store_id
+	LEFT JOIN tb_college college ON college.college_id=screl.college_id
+	LEFT JOIN tb_city city on city.city_id=college.city_id
+	LEFT JOIN (SELECT phone,store_id,add_time FROM tb_user_of_potential WHERE
+	TO_DAYS(subdate(#{selectDate},INTERVAL 0 DAY)) >= TO_DAYS(add_time)
+	GROUP BY phone) potential
+	on potential.store_id=store.store_id
+	LEFT JOIN (SELECT DISTINCT phone,user_name FROM tb_user WHERE
+	TO_DAYS(subdate(#{selectDate},INTERVAL 0 DAY)) >= TO_DAYS(signup_time)) Axpuser
+	ON Axpuser.phone=potential.phone
+	GROUP BY store.store_id ) aa,
+	(SELECT college.full_name,college.college_id,Axpuser.user_name,
+	city.city_name,city.city_id,store.store_id,store.store_name,SUM(if(potential.phone
+	is null,0,1)) new_num from tb_store store
+	LEFT JOIN tb_store_college_rel screl ON screl.store_id=store.store_id
+	LEFT JOIN tb_college college ON college.college_id=screl.college_id
+	LEFT JOIN tb_city city on city.city_id=college.city_id
+	LEFT JOIN (SELECT phone,store_id,add_time FROM tb_user_of_potential WHERE
+	TO_DAYS(subdate(#{selectDate},INTERVAL 0 DAY)) = TO_DAYS(add_time)
+	GROUP BY phone) potential
+	on potential.store_id=store.store_id
+	LEFT JOIN (SELECT DISTINCT phone,user_name FROM tb_user WHERE
+	TO_DAYS(subdate(#{selectDate},INTERVAL 0 DAY)) >= TO_DAYS(signup_time)) Axpuser
+	ON Axpuser.phone=potential.phone
+	GROUP BY store.store_id ) bb
+	where bb.store_id=aa.store_id
+		<if test="cityId!=null and cityId!=''">
+		     and aa.city_id=#{cityId}
+		</if>
+     </select>
+     <select id="selectWayBillLogInfo" parameterType="com.zhiduan.axp.controller.model.WayBillLogInfo" resultType="com.zhiduan.axp.controller.model.WayBillLogInfo">
+	select waybill_no
+	wayBillNo,operation,content,date_format(log_time,'%Y-%m-%d %h:%i:%s')
+	logTime,b.store_name storeName,d.full_name expressCompanyName,a.express_company_id expressCompanyId,c.user_name userName
+	from tb_waybill_log a
+	LEFT JOIN tb_store b ON b.store_id=a.store_id
+	LEFT JOIN
+	tb_user c ON c.user_id=a.user_id
+	LEFT JOIN tb_express_company d ON d.express_company_id=a.express_company_id
+	<where>
+	   <if test="wayBillNo!=null and wayBillNo!=''">
+	      waybill_no=#{wayBillNo}  
+	   </if>
+	   <if test="startTime!=null and startTime!=''">
+	     and  <![CDATA[a.log_time>#{startTime}]]>
+	   </if>
+	    <if test="endTime!=null and endTime!=''">
+	     and  <![CDATA[a.log_time<#{endTime}]]>
+	   </if>
+	   <if test="operation!=null and operation!=''">
+	   and a.operation=#{operation}
+	   </if>
+	     <if test="expressCompanyId!=null">
+	   and a.express_company_id=#{expressCompanyId}
+	   </if>
+	</where>
+	LIMIT #{offset},#{limit}
+     </select>
+       <select id="selectWayBillLogTotalCount" parameterType="com.zhiduan.axp.controller.model.WayBillLogInfo" resultType="int">
+	select count(1) totalCount
+	from tb_waybill_log a
+	LEFT JOIN tb_store b ON b.store_id=a.store_id
+	LEFT JOIN
+	tb_user c ON c.user_id=a.user_id
+	LEFT JOIN tb_express_company d ON d.express_company_id=a.express_company_id
+	<where>
+	   <if test="wayBillNo!=null and wayBillNo!=''">
+	      waybill_no=#{wayBillNo}  
+	   </if>
+	   <if test="startTime!=null and startTime!=''">
+	      and <![CDATA[a.log_time>#{startTime}]]>
+	   </if>
+	    <if test="endTime!=null and endTime!=''">
+	      and <![CDATA[a.log_time<#{endTime}]]>
+	   </if>
+	   <if test="operation!=null and operation!=''">
+	    and  a.operation=#{operation}
+	   </if>
+	     <if test="expressCompanyId!=null">
+	   and a.express_company_id=#{expressCompanyId}
+	   </if>
+	</where>
+     </select>
+</mapper>

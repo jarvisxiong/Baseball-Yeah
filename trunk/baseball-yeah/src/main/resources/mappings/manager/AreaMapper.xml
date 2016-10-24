@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.AreaMapper">
+    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.AreaBean">
+        <constructor >
+            <idArg column="area_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+            
+            <arg column="area_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+            <arg column="sort_no" jdbcType="INTEGER" javaType="java.lang.Integer" />
+            <arg column="business_principal" jdbcType="VARCHAR" javaType="java.lang.String" />
+            <arg column="contact_phone" jdbcType="VARCHAR" javaType="java.lang.String" />
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List" >
+        area_id,area_name,sort_no,business_principal,contact_phone
+    </sql>
+
+    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.AreaBean" >
+        insert into TB_AREA
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="areaName != null" >
+            area_name,
+            </if>
+            <if test="sortNo != null" >
+            sort_no,
+            </if>
+            <if test="businessPrincipal != null" >
+            business_principal,
+            </if>
+            <if test="contactPhone != null" >
+            contact_phone,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="areaName != null" >
+            #{areaName,jdbcType=VARCHAR},
+            </if>
+            <if test="sortNo != null" >
+            #{sortNo,jdbcType=INTEGER},
+            </if>
+            <if test="businessPrincipal != null" >
+            #{businessPrincipal,jdbcType=VARCHAR},
+            </if>
+            <if test="contactPhone != null" >
+            #{contactPhone,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+        delete from TB_AREA where  area_id = #{areaId,jdbcType=BIGINT}
+    </delete>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.AreaBean" >
+        update TB_AREA
+        <set >
+            <if test="areaName != null" >
+            area_name = #{areaName,jdbcType=VARCHAR},
+            </if>
+            <if test="sortNo != null" >
+            sort_no = #{sortNo,jdbcType=INTEGER},
+            </if>
+            <if test="businessPrincipal != null" >
+            business_principal = #{businessPrincipal,jdbcType=VARCHAR},
+            </if>
+            <if test="contactPhone != null" >
+            contact_phone = #{contactPhone,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where  area_id = #{areaId,jdbcType=BIGINT}
+    </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select
+        <include refid="Base_Column_List" />
+        from TB_AREA
+        where  area_id = #{areaId,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select  * from TB_AREA
+    </select>
+      	<select id="isAreaExists" resultType="int" parameterType="com.zhiduan.axp.dao.manager.bean.AreaBean" >
+		SELECT
+		count(1)
+		FROM TB_AREA where
+		area_name=#{areaName}
+		<if test="areaId != null">
+				AND area_id != #{areaId}
+			</if>
+	</select>
+</mapper>

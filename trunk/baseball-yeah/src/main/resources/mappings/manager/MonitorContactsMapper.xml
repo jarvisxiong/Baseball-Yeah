@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.MonitorContactsMapper">
+    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.MonitorContactsBean">
+        <constructor>
+            <idArg column="monitor_contact_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="monitor_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="contact_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="phone" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="email" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+    monitor_contact_id, monitor_id, contact_name, phone, email, create_time
+  </sql>
+    <!-- 按主键查询 -->
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from ts_monitor_contacts
+        where monitor_contact_id = #{monitorContactId,jdbcType=BIGINT}
+    </select>
+
+    <!-- 按monitorId查询 -->
+    <select id="selectByMonitorId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from ts_monitor_contacts
+        where monitor_id = #{monitorId,jdbcType=BIGINT}
+    </select>
+
+    <!-- 按按monitorId查询删除 -->
+    <delete id="deleteByMonitorId" parameterType="java.lang.Long">
+        delete from ts_monitor_contacts
+        where monitor_id = #{monitorId,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="list">
+        insert into ts_monitor_contacts
+        (monitor_id,contact_name,phone,email)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator =",">
+            (#{item.monitorId,jdbcType=BIGINT}, #{item.contactName,jdbcType=VARCHAR},
+            #{item.phone,jdbcType=VARCHAR},#{item.email,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.MonitorContactsBean">
+        update ts_monitor_contacts
+        <set>
+            <if test="monitorId != null">
+                monitor_id = #{monitorId,jdbcType=BIGINT},
+            </if>
+            <if test="contactName != null">
+                contact_name = #{contactName,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where monitor_contact_id = #{monitorContactId,jdbcType=BIGINT}
+    </update>
+
+</mapper>

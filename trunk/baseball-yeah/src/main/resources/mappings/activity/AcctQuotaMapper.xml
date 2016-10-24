@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.activity.mapper.AcctQuotaMapper" >
+  <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.activity.bean.AcctQuotaBean" >
+    <constructor >
+      <idArg column="quota_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="quota_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="field_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="state" jdbcType="BIT" javaType="java.lang.Boolean" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    quota_id, quota_name, field_name, state
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ts_acct_quota
+    where quota_id = #{quotaId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ts_acct_quota
+    where quota_id = #{quotaId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zhiduan.axp.dao.activity.bean.AcctQuotaBean" >
+    insert into ts_acct_quota (quota_id, quota_name, field_name, 
+      state)
+    values (#{quotaId,jdbcType=INTEGER}, #{quotaName,jdbcType=VARCHAR}, #{fieldName,jdbcType=VARCHAR}, 
+      #{state,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.activity.bean.AcctQuotaBean" >
+    insert into ts_acct_quota
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="quotaId != null" >
+        quota_id,
+      </if>
+      <if test="quotaName != null" >
+        quota_name,
+      </if>
+      <if test="fieldName != null" >
+        field_name,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="quotaId != null" >
+        #{quotaId,jdbcType=INTEGER},
+      </if>
+      <if test="quotaName != null" >
+        #{quotaName,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldName != null" >
+        #{fieldName,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.activity.bean.AcctQuotaBean" >
+    update ts_acct_quota
+    <set >
+      <if test="quotaName != null" >
+        quota_name = #{quotaName,jdbcType=VARCHAR},
+      </if>
+      <if test="fieldName != null" >
+        field_name = #{fieldName,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=BIT},
+      </if>
+    </set>
+    where quota_id = #{quotaId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.activity.bean.AcctQuotaBean" >
+    update ts_acct_quota
+    set quota_name = #{quotaName,jdbcType=VARCHAR},
+      field_name = #{fieldName,jdbcType=VARCHAR},
+      state = #{state,jdbcType=BIT}
+    where quota_id = #{quotaId,jdbcType=INTEGER}
+  </update>
+</mapper>

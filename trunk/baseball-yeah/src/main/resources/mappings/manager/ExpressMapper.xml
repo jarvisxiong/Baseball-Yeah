@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.ExpressMapper">
+	<resultMap id="ExpressCompanyResultMap" type="com.zhiduan.axp.dao.manager.bean.ExpressBean">
+		<constructor>
+			<idArg column="express_company_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="full_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="simple_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="code" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="sort_no" jdbcType="SMALLINT" javaType="java.lang.Long" />
+			<arg column="importance" jdbcType="TINYINT" javaType="java.lang.Byte" />
+			<arg column="logo" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="level" jdbcType="TINYINT" javaType="java.lang.Byte" />
+			<arg column="hotline" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="be_enabled" jdbcType="TINYINT" javaType="java.lang.Byte" />
+			<arg column="modify_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+			<arg column="ec_gcode" jdbcType="VARCHAR" javaType="java.lang.String" />
+		</constructor>
+	</resultMap>
+
+	<select id="GetExpressList" resultMap="ExpressCompanyResultMap">
+		select
+		express_company_id,full_name,simple_name,code,sort_no,importance,
+		logo,level,hotline,be_enabled,modify_time,ec_gcode from
+		tb_express_company
+		
+	</select>
+	
+	<select id="getExpressById" resultMap="ExpressCompanyResultMap">
+        select
+        express_company_id,full_name,simple_name,code,sort_no,importance,
+        logo,level,hotline,be_enabled,modify_time,ec_gcode 
+        from tb_express_company
+        where express_company_id = #{expresscompanyid}
+    </select>
+	
+	<select id="GetAllEnabledExpressList" resultMap="ExpressCompanyResultMap">
+		select
+		express_company_id,full_name,simple_name,code,sort_no,importance,
+		logo,level,hotline,be_enabled,modify_time,ec_gcode from
+		tb_express_company where be_enabled=1
+	</select>
+	<select id="selectTotalCount" resultType="int">
+		select count(1) from tb_express_company
+	</select>
+	<select id="GetExpressListByModifyTime" resultMap="ExpressCompanyResultMap">
+		select
+		express_company_id,full_name,simple_name,code,sort_no,importance,
+		logo,level,hotline,be_enabled,modify_time,ec_gcode from
+		tb_express_company
+		where
+		<!-- be_enabled=1 and -->
+		modify_time>#{modifyTime}
+	</select>
+	<insert id="Insert" parameterType="com.zhiduan.axp.dao.manager.bean.ExpressBean">
+		insert into tb_express_company
+		(full_name,simple_name,
+		code,sort_no,importance,logo,level,hotline,be_enabled,modify_time,ec_gcode)
+		values (
+		#{fullname,jdbcType=VARCHAR},
+		#{simplename,jdbcType=VARCHAR},
+		#{code,jdbcType=VARCHAR},
+		#{sortno,jdbcType=SMALLINT},
+		#{importance,jdbcType=TINYINT},
+		#{logo,jdbcType=VARCHAR},
+		#{level,jdbcType=TINYINT},
+		#{hotline,jdbcType=VARCHAR},
+		#{beenabled,jdbcType=TINYINT},
+		#{modifyTime,jdbcType=TIMESTAMP},
+		#{ecGcode,jdbcType=VARCHAR})
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.ExpressBean">
+		update tb_express_company
+		<set>
+			<if test="fullname != null">
+				full_name = #{fullname,jdbcType=VARCHAR},
+			</if>
+			<if test="simplename != null">
+				simple_name = #{simplename,jdbcType=VARCHAR},
+			</if>
+			<if test="code != null">
+				code = #{code,jdbcType=VARCHAR},
+			</if>
+			<if test="importance != null">
+				importance = #{importance,jdbcType=TINYINT},
+			</if>
+			<if test="sortno != null">
+				sort_no = #{sortno,jdbcType=SMALLINT},
+			</if>
+			<if test="logo != null">
+				logo = #{logo,jdbcType=VARCHAR},
+			</if>
+			<if test="level != null">
+				level = #{level,jdbcType=TINYINT},
+			</if>
+			<if test="hotline != null">
+				hotline = #{hotline,jdbcType=VARCHAR},
+			</if>
+			<if test="beenabled != null">
+				be_enabled = #{beenabled,jdbcType=TINYINT},
+			</if>
+			<if test="modifyTime != null">
+				modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ecGcode != null">
+				ec_gcode = #{ecGcode,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where express_company_id = #{expresscompanyid,jdbcType=BIGINT}
+	</update>
+	<delete id="deleteByPrimaryKey">
+		delete from tb_express_company where
+		express_company_id = #{expresscompanyid,jdbcType=BIGINT}
+	</delete>
+	<!-- 判断编辑的快递公司是否唯一 -->
+	<select id="isExpressExist" resultType="int" parameterType="map">
+		select count(1) from tb_express_company t
+		where
+		(t.code=#{code,jdbcType=VARCHAR} OR
+		t.full_name=#{fullname,jdbcType=VARCHAR} OR
+		t.simple_name=#{simplename,jdbcType=VARCHAR})
+		<if test="expresscompanyid != null">
+			AND t.express_company_id !=
+			#{expresscompanyid,jdbcType=BIGINT}
+		</if>
+
+	</select>
+</mapper> 

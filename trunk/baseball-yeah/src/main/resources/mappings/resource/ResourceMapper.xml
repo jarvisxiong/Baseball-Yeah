@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.resource.mapper.ResourceMapper">
+	<resultMap id="ServerResultMap" type="com.zhiduan.axp.dao.resource.bean.ServerBean">
+		<result property="serverId" column="attachment_server_id" />
+		<result property="serverName" column="attachment_server_name"/>
+		<result property="endpoint" column="endpoint"/>
+		<result property="accessKeyId" column="access_key_id"/>
+		<result property="accessKeySecret" column="access_key_secret"/>
+		<result property="accessKeySecret" column="access_key_secret"/>
+		<result property="bucketName" column="bucket_name"/>
+		<result property="accessUrl" column="access_url"/>
+		<result property="beEnabled" column="be_enabled" javaType="short" jdbcType="TINYINT"/>
+	</resultMap>
+	
+	<select id="getServer" parameterType="string" resultMap="ServerResultMap">
+		select * from tb_attachment_server where attachment_server_id=#{id} and be_enabled = 1
+	</select>
+	<insert id="insertAttachment" parameterType="com.zhiduan.axp.dao.resource.bean.AttachmentBean">
+		insert into tb_attachment(source_id,attachment_server_id,
+		attachment_type_id,file_url,file,extension,size,user_id,user_name,upload_time) 
+		values(#{sourceId},#{attachmentServerId},#{attachmentTypeId},#{fileUrl},
+		#{file},#{extension},#{size},#{userId},#{userName},#{uploadTime})
+	</insert>
+	<update id="updateAttachment" parameterType="com.zhiduan.axp.dao.resource.bean.AttachmentBean">
+		update tb_attachment set 
+			<if test="sourceId != null">
+				source_id=#{sourceId},
+			</if>
+			<if test="attachmentServerId != null">
+				attachment_server_id=#{attachmentServerId},
+			</if>
+			<if test="attachmentTypeId != null">
+				attachment_type_id=#{attachmentTypeId},
+			</if>
+			<if test="file != null">
+				file=#{file},
+			</if>
+			<if test="extension != null">
+				extension=#{extension},
+			</if>
+			<if test="size != null">
+				size=#{size},
+			</if>
+			<if test="userName != null">
+				user_name=#{userName},
+			</if>
+			<if test="uploadTime != null">
+				upload_time=#{uploadTime},
+			</if>
+			<if test="fileUrl != null">
+				file_url=#{fileUrl}
+			</if>
+			where user_id=#{userId} and (file_url=#{fileUrl} or LEFT(file_url,LOCATE(SUBSTRING_INDEX(file_url, ".", -1),file_url)-2) 
+			= LEFT(#{fileUrl},LOCATE(SUBSTRING_INDEX(#{fileUrl}, ".", -1),#{fileUrl})-2))
+	</update>
+	<select id="ifExist" parameterType="map" resultType="int">
+		select count(1) from tb_attachment where user_id=#{userId} and (file_url=#{fileUrl} or LEFT(file_url,LOCATE(SUBSTRING_INDEX(file_url, ".", -1),file_url)-2) 
+			= LEFT(#{fileUrl},LOCATE(SUBSTRING_INDEX(#{fileUrl}, ".", -1),#{fileUrl})-2))
+	</select>
+	<select id="getBucketName" parameterType="string" resultType="string">
+        select t.bucket_name from tb_attachment_type t where t.attachment_type_id=#{id} 
+    </select>
+    <!-- 获取用户上传证件的fileKey -->
+    <select id="getCredentialFileKey" parameterType="map" resultType="string">
+        select t.file_url from tb_attachment t where t.user_id=#{userId} and t.attachment_type_id=#{typeId}
+    </select>
+</mapper> 

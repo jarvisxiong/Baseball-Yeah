@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.order.mapper.TbSysTaskOrderMapper">
+    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.order.bean.TbSysTaskOrder">
+        <constructor>
+            <arg column="order_id" jdbcType="BIGINT" javaType="java.lang.String"/>
+            <arg column="task_sub_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="college_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="overall_score" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="audit_remark" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="accept_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="submit_audit_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="audit_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="audit_user" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="cancel_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+    order_id, task_id, college_id, overall_score, audit_remark
+  </sql>
+    <insert id="insert" parameterType="com.zhiduan.axp.controller.model.order.TbSysTaskOrderInfo">
+      insert into tb_sys_task_order (order_id, task_sub_id, college_id,
+      overall_score, audit_remark, accept_date,
+      submit_audit_date,audit_user)
+      values (#{orderId,jdbcType=BIGINT}, #{taskSubId,jdbcType=BIGINT}, #{collegeId,jdbcType=BIGINT},
+      #{overallScore,jdbcType=INTEGER}, #{auditRemark,jdbcType=VARCHAR}, #{acceptDate,jdbcType=TIMESTAMP},
+      now(), #{auditUser,jdbcType=BIGINT}
+  )
+  </insert>
+    <update id="updateAuditResult" parameterType="com.zhiduan.axp.controller.model.order.TbSysTaskOrderInfo">
+        update tb_sys_task_order
+        <set>
+            <if test="overallScore!=null">
+                overall_score=#{overallScore},
+            </if>
+            <if test="auditRemark!=null">
+                audit_remark=#{auditRemark},
+            </if>
+            <if test="auditDate!=null">
+                audit_date=now(),
+            </if>
+            <if test="auditUser!=null">
+                audit_user=#{auditUser}
+            </if>
+        </set>
+        <where>
+            order_id=#{orderId}
+        </where>
+    </update>
+    <update id="updateOrderStatus" parameterType="map">
+        update tb_order
+        <set>
+            final_money=#{finalMoney}
+        </set>
+        <where>
+            order_id=#{orderId}
+        </where>
+    </update>
+    <select id="selectDoOrderTaskListByParams" parameterType="com.zhiduan.axp.dao.order.bean.DoOrderTaskSearchBean"
+            resultType="com.zhiduan.axp.dao.order.bean.DoOrderTaskResultBean">
+        select t1.task_id taskId,t5.task_sub_id taskSubId, t5.task_no taskNo,t2.order_id orderId,t3.state,t4.real_name
+        winner,t6.full_name collegeName,t1.theme,
+        t4.phone,t3.delivery_end_date endTime,t2.accept_date receiveTime,t2.submit_audit_date auditTime,
+        t3.winner_remark remark ,t3.final_money finalMoney,t5.task_unit_price taskUnitPrice
+        from tb_task t1
+        INNER JOIN tb_task_sub t5 ON t5.task_id=t1.task_id
+        LEFT JOIN tb_sys_task_order t2 ON t5.task_sub_id=t2.task_sub_id
+        LEFT JOIN tb_order t3 ON t3.order_id=t2.order_id
+        LEFT JOIN tb_user t4 ON t4.user_id=t3.winner
+        LEFT JOIN tb_college t6 ON t6.college_id=t5.college_id
+        <where>
+            <if test="mainTaskNo != null  and mainTaskNo != ''">
+                and t1.task_no like '${mainTaskNo}%'
+            </if>
+            <if test="orderId != null and orderId!=''">
+                and t2.order_id like '${orderId}%'
+            </if>
+            <if test="taskNo != null  and taskNo!=''">
+                and t5.task_no like '${taskNo}%'
+            </if>
+            <if test="state != null">
+                and t3.state=#{state}
+            </if>
+            <if test="winnerName != null  and winnerName!=''">
+                and t4.real_name like '${winnerName}%'
+            </if>
+            <if test="phone != null and phone!=''">
+                and t4.phone like '${phone}%'
+            </if>
+            <if test="startReceiveTime!=null and startReceiveTime!=''">
+                and   <![CDATA[t2.accept_date>#{startReceiveTime}]]>
+            </if>
+            <if test="endReceiveTime!=null and endReceiveTime!=''">
+                and <![CDATA[t2.accept_date<#{endReceiveTime}]]>
+            </if>
+            <if test="startOverTime!=null and startOverTime!=''">
+                and   <![CDATA[t3.delivery_end_date>#{startOverTime}]]>
+            </if>
+            <if test="endOverTime!=null and endOverTime!=''">
+                and <![CDATA[t3.delivery_end_date<#{endOverTime}]]>
+            </if>
+            <if test="startAuditTime!=null and startAuditTime!=''">
+                and   <![CDATA[t2.audit_date>#{startAuditTime}]]>
+            </if>
+            <if test="endAuditTime!=null and endAuditTime!=''">
+                and <![CDATA[t2.audit_date<#{endAuditTime}]]>
+            </if>
+        </where>
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset},
+        #{limit}
+    </select>
+    <select id="selectDoOrderTaskCount" parameterType="com.zhiduan.axp.dao.order.bean.DoOrderTaskSearchBean"
+            resultType="int">
+        select count(1) from tb_task t1
+        INNER JOIN tb_task_sub t5 ON t5.task_id=t1.task_id
+        LEFT JOIN tb_sys_task_order t2 ON t5.task_sub_id=t2.task_sub_id
+        LEFT JOIN tb_order t3 ON t3.order_id=t2.order_id
+        LEFT JOIN tb_user t4 ON t4.user_id=t3.winner
+        <where>
+            <if test="mainTaskNo != null  and mainTaskNo != ''">
+                and t1.task_no like '${mainTaskNo}%'
+            </if>
+            <if test="orderId != null and orderId!=''">
+                and t2.order_id like '${orderId}%'
+            </if>
+            <if test="taskNo != null  and taskNo!=''">
+                and t5.task_no like '${taskNo}%'
+            </if>
+            <if test="state != null">
+                and t3.state=#{state}
+            </if>
+            <if test="winnerName != null  and winnerName!=''">
+                and t4.real_name like '${winnerName}%'
+            </if>
+            <if test="phone != null and phone!=''">
+                and t4.phone like '${phone}%'
+            </if>
+            <if test="startReceiveTime!=null and startReceiveTime!=''">
+                and   <![CDATA[t2.accept_date>#{startReceiveTime}]]>
+            </if>
+            <if test="endReceiveTime!=null and endReceiveTime!=''">
+                and <![CDATA[t2.accept_date<#{endReceiveTime}]]>
+            </if>
+            <if test="startOverTime!=null and startOverTime!=''">
+                and   <![CDATA[t3.delivery_end_date>#{startOverTime}]]>
+            </if>
+            <if test="endOverTime!=null and endOverTime!=''">
+                and <![CDATA[t3.delivery_end_date<#{endOverTime}]]>
+            </if>
+            <if test="startAuditTime!=null and startAuditTime!=''">
+                and   <![CDATA[t2.audit_date>#{startAuditTime}]]>
+            </if>
+            <if test="endAuditTime!=null and endAuditTime!=''">
+                and <![CDATA[t2.audit_date<#{endAuditTime}]]>
+            </if>
+        </where>
+    </select>
+    <select id="selectDoOrderTaskDetail" resultType="com.zhiduan.axp.controller.model.order.DoOrderTaskDetailInfo"
+            parameterType="map">
+      select t1.task_id taskId,t5.task_sub_id taskSubId,t5.task_no taskNo,t2.order_id orderId,t3.state,t4.real_name winner,
+      t4.phone,date_format(t3.delivery_end_date,'%Y-%m-%d %H:%i:%s') endTime, date_format(t2.accept_date,'%Y-%m-%d %H:%i:%s') receiveTime,
+      date_format(t2.submit_audit_date,'%Y-%m-%d %H:%i:%s') auditTime,t3.remark,t3.total_money totalMoney,
+      date_format(t5.publish_time,'%Y-%m-%d %H:%i:%s') publishTime,t1.task_level taskLevel,
+      date_format(t5.deadline,'%Y-%m-%d %H:%i:%s') deadLine,t1.claim,t6.full_name college,t1.task_id taskId,t3.winner winnerId,
+      t3.winner_remark winnerRemark,t2.overall_score overallScore,t2.audit_remark auditRemark,t6.college_id collegeId,t1.rule
+      from tb_task t1
+      LEFT JOIN tb_task_sub t5 ON t5.task_id=t1.task_id
+      LEFT JOIN tb_sys_task_order t2 ON t5.task_sub_id=t2.task_sub_id
+      LEFT JOIN tb_order t3 ON t3.order_id=t2.order_id
+      LEFT JOIN tb_user t4 ON t4.user_id=t3.winner
+      LEFT JOIN tb_college t6 ON t6.college_id=t5.college_id
+      WHERE t2.order_id=#{orderId}
+  </select>
+    <select id="selectTotalPrice" parameterType="java.lang.Long" resultType="Long">
+       select total_money from tb_order where order_id=#{orderId}
+  </select>
+
+    <select id="checkWaitAudit" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(1) from tb_order where order_id=#{orderId} AND state!=10
+    </select>
+
+    <select id="checkIsAudit" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select count(1) from tb_order where order_id=#{orderId} AND state=5
+    </select>
+    <select id="checkTaskExist" parameterType="java.lang.Long" resultType="int">
+       select count(1) from tb_sys_task_order where task_sub_id=#{taskSubId}
+    </select>
+
+    <select id="selectSysTaskOrder" parameterType="java.lang.Long" resultMap="BaseResultMap">
+            select  order_id, task_sub_id, college_id, overall_score, audit_remark, accept_date, submit_audit_date,
+    audit_date, audit_user, cancel_date from tb_sys_task_order WHERE task_sub_id=#{taskSubId}
+    </select>
+    <select id="selectOverallScore" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select ifnull(overall_score,0) overallScore from tb_sys_task_order WHERE order_id=#{orderId}
+    </select>
+</mapper>

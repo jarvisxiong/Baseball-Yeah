@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiduan.axp.dao.report.mapper.ReportThirdPartyMapper">
+    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.report.bean.ReportThirdPartyBean">
+        <constructor>
+            <idArg column="report_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+
+            <arg column="report_date" jdbcType="DATE" javaType="java.util.Date"/>
+            <arg column="college_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="college_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="area_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="area_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="business_principal" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="total_phone_num" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="total_reg_num" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="total_unreg_num" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="reg_rate" jdbcType="DECIMAL" javaType="java.lang.Long"/>
+            <arg column="new_num" jdbcType="BIGINT" javaType="java.lang.Long"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+        report_id,report_date,college_id,college_name,area_id,area_name,business_principal,total_phone_num,total_reg_num,total_unreg_num,reg_rate,new_num
+    </sql>
+
+    <select id="selectCountOfAll" resultType="java.lang.Integer">
+      SELECT count(potential_user_id) FROM tb_user_of_potential
+      UNION ALL
+      SELECT count(phone) FROM (SELECT DISTINCT phone FROM tb_thirdparty_login) aa
+    </select>
+
+    <select id="getReportByParam" resultType="com.zhiduan.axp.dao.report.bean.ReportThirdPartyBean">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM tb_report_third_party trtp
+        WHERE TO_DAYS(trtp.report_date) between TO_DAYS(#{startDate}) AND TO_DAYS(#{endDate})
+        <if test="collegeIds!=null">
+            AND trtp.college_id IN
+            <foreach collection="collegeIds" item="collegeId" index="index" open="(" close=")" separator=",">
+                #{collegeId}
+            </foreach>
+        </if>
+        <if test="areaIds!=null">
+            AND trtp.area_Id IN
+            <foreach collection="areaIds" item="areaId" index="index" open="(" close=")" separator=",">
+                #{areaId}
+            </foreach>
+        </if>
+    </select>
+    <select id="getPhoneByCollege" resultType="com.zhiduan.axp.controller.model.report.ReportThirdPartyPhoneInfo">
+        SELECT potential.phone, college.full_name college_name
+        FROM tb_college college
+        LEFT JOIN tb_store_college_rel screl
+          ON college.college_id = screl.college_id
+        LEFT JOIN tb_store store
+          ON screl.store_id = store.store_id
+        LEFT JOIN tb_store_exp_axp_rel srel on store.store_id = srel.sto_axp_id
+		LEFT JOIN tb_user_of_potential potential ON potential.store_id = srel.sto_exp_id
+        WHERE TO_DAYS(#{1}) >= TO_DAYS(potential.add_time) AND college.college_id=#{0}
+          GROUP BY college.college_id,potential.phone
+    </select>
+    <select id="getRegPhoneByCollege" resultType="com.zhiduan.axp.controller.model.report.ReportThirdPartyPhoneInfo">
+        SELECT college.full_name college_name, thirdparty.phone
+        FROM tb_college college
+        LEFT JOIN tb_store_college_rel screl
+          ON college.college_id = screl.college_id
+        LEFT JOIN tb_store store
+          ON screl.store_id = store.store_id
+        LEFT JOIN tb_store_exp_axp_rel srel on store.store_id = srel.sto_axp_id
+		LEFT JOIN tb_user_of_potential potential ON potential.store_id = srel.sto_exp_id
+        LEFT JOIN (SELECT DISTINCT phone, DATE_FORMAT(regtime, '%Y-%m-%d') regtime FROM tb_thirdparty_login WHERE be_deleted=0) thirdparty
+          ON potential.phone = thirdparty.phone
+        WHERE TO_DAYS(#{1}) >= TO_DAYS(thirdparty.regtime) AND college.college_id=#{0}
+          GROUP BY college.college_id,thirdparty.phone
+    </select>
+
+    <select id="getUnregPhoneByCollege" resultType="com.zhiduan.axp.controller.model.report.ReportThirdPartyPhoneInfo">
+        SELECT college_name,phone FROM (
+        SELECT college.college_id, college.full_name college_name, potential.phone
+        FROM tb_college college
+        LEFT JOIN tb_store_college_rel screl
+        ON college.college_id = screl.college_id
+        LEFT JOIN tb_store store
+        ON screl.store_id = store.store_id
+        LEFT JOIN tb_store_exp_axp_rel srel on store.store_id = srel.sto_axp_id
+		LEFT JOIN tb_user_of_potential potential ON potential.store_id = srel.sto_exp_id
+        WHERE TO_DAYS(#{1}) >= TO_DAYS(potential.add_time) AND college.college_id=#{0}
+        GROUP BY college.college_id,potential.phone) aa
+        WHERE aa.phone
+        NOT IN(SELECT DISTINCT phone FROM tb_thirdparty_login WHERE be_deleted=0 AND TO_DAYS(#{1}) >= TO_DAYS(regtime))
+    </select>
+
+    <select id="getNewPhoneByCollege" resultType="com.zhiduan.axp.controller.model.report.ReportThirdPartyPhoneInfo">
+        SELECT college.full_name college_name, potential.phone
+        FROM tb_college college
+        LEFT JOIN tb_store_college_rel screl
+        ON college.college_id = screl.college_id
+        LEFT JOIN tb_store store
+        ON screl.store_id = store.store_id
+        LEFT JOIN tb_store_exp_axp_rel srel on store.store_id = srel.sto_axp_id
+		LEFT JOIN tb_user_of_potential potential ON potential.store_id = srel.sto_exp_id
+        LEFT JOIN (SELECT phone, SUBSTRING_INDEX(GROUP_CONCAT(rDate), ',', 1) regDate
+        FROM (SELECT phone, DATE_FORMAT(regtime, '%Y-%m-%d') rDate
+        FROM tb_thirdparty_login
+        WHERE be_deleted = 0
+        ORDER BY phone) aa
+        GROUP BY aa.phone) thirdparty
+        ON potential.phone = thirdparty.phone
+        WHERE TO_DAYS(#{1}) = TO_DAYS(thirdparty.regDate) AND college.college_id=#{0}
+        GROUP BY college.college_id,thirdparty.phone
+    </select>
+</mapper>

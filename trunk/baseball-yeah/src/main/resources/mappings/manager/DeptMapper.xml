@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.DeptMapper">
+	<resultMap id="deptResultMap" type="com.zhiduan.axp.dao.manager.bean.DeptBean">
+		<constructor>
+			<idArg column="dept_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="dept_code" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="dept_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="be_deleted" jdbcType="TINYINT" javaType="java.lang.Byte" />
+		</constructor>
+	</resultMap>
+	<sql id="Base_Column_List">
+		dept_id, dept_code, dept_name, be_deleted
+	</sql>
+	<select id="selectAllDept" resultMap="deptResultMap">
+		select * from tb_dept where
+		be_deleted=0
+		
+	</select>
+	<select id="selectTotalCount" resultType="int">
+		select count(1) from tb_dept where be_deleted=0
+	</select>
+
+	<select id="selectByPrimaryKey" resultMap="deptResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from tb_dept
+		where be_deleted=0 and dept_id = #{deptId,jdbcType=BIGINT}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		update tb_dept set
+		be_deleted=1
+		where be_deleted=0 and dept_id = #{deptId,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.DeptBean">
+		insert into tb_dept
+		(dept_code, dept_name,
+		be_deleted)
+		values (#{deptCode,jdbcType=VARCHAR},
+		#{deptName,jdbcType=VARCHAR},0)
+	</insert>
+	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.DeptBean">
+		insert into tb_dept
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+
+			<if test="deptCode != null">
+				dept_code,
+			</if>
+			<if test="deptName != null">
+				dept_name,
+			</if>
+			<if test="beDeleted != null">
+				be_deleted,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+
+			<if test="deptCode != null">
+				#{deptCode,jdbcType=VARCHAR},
+			</if>
+			<if test="deptName != null">
+				#{deptName,jdbcType=VARCHAR},
+			</if>
+			<if test="beDeleted != null">
+				0
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.DeptBean">
+		update tb_dept
+		<set>
+			<if test="deptCode != null">
+				dept_code = #{deptCode,jdbcType=VARCHAR},
+			</if>
+			<if test="deptName != null">
+				dept_name = #{deptName,jdbcType=VARCHAR},
+			</if>
+			be_deleted = 0
+		</set>
+		where be_deleted=0 and dept_id = #{deptId,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.DeptBean">
+		update tb_dept
+		set
+		dept_code = #{deptCode,jdbcType=VARCHAR},
+		dept_name =
+		#{deptName,jdbcType=VARCHAR},
+		be_deleted = 0
+		where be_deleted=0 and
+		dept_id= #{deptId,jdbcType=BIGINT}
+	</update>
+	<select id="isDeptExist" resultType="int"
+		parameterType="com.zhiduan.axp.dao.manager.bean.DeptBean">
+		select count(1) from tb_dept t
+		where (t.dept_name =
+		#{deptName,jdbcType=VARCHAR} or t.dept_code =
+		#{deptCode,jdbcType=BIGINT})
+		<if test="deptId != null">
+			AND t.dept_id != #{deptId,jdbcType=BIGINT}
+		</if>
+		and t.be_deleted=0
+	</select>
+	
+	  <select id="getAllDept" resultMap="deptResultMap" parameterType="java.lang.Long">
+  	select * from tb_dept where be_deleted=0
+  </select>
+</mapper>

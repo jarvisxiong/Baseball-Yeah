@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.CountyMapper">
+	<resultMap id="CountyResultMap"
+		type="com.zhiduan.axp.dao.manager.bean.CountyBean">
+		<constructor>
+			<idArg column="county_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="county_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="city_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="post_code" jdbcType="CHAR" javaType="java.lang.String" />
+			<arg column="sort_no" jdbcType="SMALLINT" javaType="java.lang.Short" />
+		</constructor>
+	</resultMap>
+	<resultMap type="com.zhiduan.axp.dao.manager.bean.CountyBean"
+		id="BaseCityResultMap">
+		<result column="county_id" property="countyId" />
+		<result column="county_name" property="countyName" />
+		<result column="city_name" property="cityName" />
+		<result column="post_code" property="postCode" />
+		<result column="sort_no" property="sortNo" />
+
+	</resultMap>
+	<sql id="Base_Column_List">
+		county_id, county_name, city_id, post_code, sort_no
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="CountyResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from tb_county
+		where county_id = #{countyId,jdbcType=BIGINT}
+	</select>
+	<select id="selectCountiesByCityId" resultType="com.zhiduan.axp.dao.manager.bean.CountyBean"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from tb_county
+
+		where city_id = #{cityId,jdbcType=BIGINT}
+	</select>
+	<select id="getCountyTotal" resultType="int"
+		parameterType="java.lang.Long">
+		select
+		count(1)
+		from tb_county
+
+		where city_id = #{cityId,jdbcType=BIGINT}
+	</select>
+	<!-- 查询全部 -->
+	<select id="selectAll" resultMap="BaseCityResultMap"
+        parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List" />
+        from tb_county
+    </select>
+
+	<!-- 检查名字是否唯一 -->
+	<select id="isExistSameCountyName" resultType="int"
+		parameterType="map">
+		select count(1) from tb_county
+		<where>
+			<if test=" cityId != null">
+				city_id = #{cityId,jdbcType=BIGINT}
+			</if>
+			<if test=" countyName != null">
+				and county_name = #{countyName,jdbcType=VARCHAR}
+			</if>
+
+			<if test="countyId != null">
+				and county_id != #{countyId,jdbcType=BIGINT}
+			</if>
+
+		</where>
+	</select>
+<!-- 检查是否是自己一 -->
+	<select id="isExistSameCountyNameItSelf" resultType="int"
+		parameterType="map">
+		select count(1) from tb_county
+		<where>
+			<if test=" cityId != null">
+				city_id = #{cityId,jdbcType=BIGINT}
+			</if>
+			<if test=" countyName != null">
+				and county_name = #{countyName,jdbcType=VARCHAR}
+			</if>
+
+			<if test="countyId != null">
+				and county_id = #{countyId,jdbcType=BIGINT}
+			</if>
+
+		</where>
+	</select>
+
+	<!-- 检查名字是否唯一 -->
+	<select id="isExistSameCountyNameInsert" resultType="int"
+		parameterType="map">
+		select count(1) from tb_county
+		<where>
+			<if test=" cityId != null">
+				city_id = #{cityId,jdbcType=BIGINT}
+			</if>
+			<if test="countyName != null">
+				and county_name = #{countyName,jdbcType=VARCHAR}
+			</if>
+
+		</where>
+	</select>
+	<delete id="batchDelete" parameterType="java.util.List">
+   	 DELETE FROM tb_county WHERE city_id IN
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")"> 
+	        #{item} 
+	    </foreach>
+	</delete>
+	<delete id="deleteByCityId" parameterType="java.lang.Long">
+		delete from
+		tb_county
+		where city_id = #{cityId,jdbcType=BIGINT}
+	</delete>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from
+		tb_county
+		where county_id = #{countyId,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.CountyBean">
+		insert into tb_county (
+		county_name, city_id,
+		post_code, sort_no)
+		values (
+		#{countyName,jdbcType=VARCHAR}, #{cityId,jdbcType=BIGINT},
+		#{postCode,jdbcType=CHAR}, #{sortNo,jdbcType=SMALLINT})
+	</insert>
+	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.CountyBean">
+		insert into tb_county
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="countyId != null">
+				county_id,
+			</if>
+			<if test="countyName != null">
+				county_name,
+			</if>
+			<if test="cityId != null">
+				city_id,
+			</if>
+			<if test="postCode != null">
+				post_code,
+			</if>
+			<if test="sortNo != null">
+				sort_no,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="countyId != null">
+				#{countyId,jdbcType=BIGINT},
+			</if>
+			<if test="countyName != null">
+				#{countyName,jdbcType=VARCHAR},
+			</if>
+			<if test="cityId != null">
+				#{cityId,jdbcType=BIGINT},
+			</if>
+			<if test="postCode != null">
+				#{postCode,jdbcType=CHAR},
+			</if>
+			<if test="sortNo != null">
+				#{sortNo,jdbcType=SMALLINT},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.CountyBean">
+		update tb_county
+		<set>
+			<if test="countyName != null">
+				county_name = #{countyName,jdbcType=VARCHAR},
+			</if>
+			<if test="cityId != null">
+				city_id = #{cityId,jdbcType=BIGINT},
+			</if>
+			<if test="postCode != null">
+				post_code = #{postCode,jdbcType=CHAR},
+			</if>
+			<if test="sortNo != null">
+				sort_no = #{sortNo,jdbcType=SMALLINT},
+			</if>
+		</set>
+		where county_id = #{countyId,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.CountyBean">
+		update tb_county
+		set county_name = #{countyName,jdbcType=VARCHAR},
+		city_id =
+		#{cityId,jdbcType=BIGINT},
+		post_code = #{postCode,jdbcType=CHAR},
+		sort_no = #{sortNo,jdbcType=SMALLINT}
+		where county_id =
+		#{countyId,jdbcType=BIGINT}
+	</update>
+</mapper>

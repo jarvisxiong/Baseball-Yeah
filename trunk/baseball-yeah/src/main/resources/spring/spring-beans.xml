@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd">
+
+    <context:component-scan base-package="com.zhiduan.axp"/>
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="local/message" />
+	</bean>
+    <!-- axp服务常量信息 -->
+    <bean class="com.zhiduan.axp.common.Constant">
+        <property name="appkey" value="${axp.web}"/>
+        <property name="appid" value="axp.web"/>
+		<property name="format" value="json"/>
+	 	<property name="version" value="1.0"/>
+ 		<property name="axpurl">
+			<map>
+  				<entry key="user_login_serv" value="http://114.55.79.162/axp-acl/user/loginin.htm" />
+                <entry key="wallet_draw_serv" value="${slb.url}/axp-acl/acct/pay/dolinenotify.htm" />
+				<entry key="packet_audit_serv"  value="${slb.url}/axp-acl/user/packet/auditUserInfoToRedis.htm"/>
+				<entry key="suppy_audit_serv"  value="${slb.url}/axp-acl/user/auditUserInfoToRedis.htm"/>
+				<entry key="appmsg_push_serv"  value="${slb.url}/axp-acl/msg/push/2app.htm"/>
+
+
+				<!-- 活动启用刷新缓存url -->
+				<entry key="add_vouchers_cache_serv"  value="${slb.url}/axp-acl/activity/vouchers/addVouchersToCache.htm"/>
+				<!-- 活动删除、冻结刷新缓存url -->
+				<entry key="del_vouchers_cache_serv"  value="${slb.url}/axp-acl/activity/vouchers/delVouchersCache.htm"/>
+				<!-- 退款url -->
+				<entry key="refund_url"  value="${slb.url}/axp-acl/acct/refund/dorefund.htm"/>
+				<entry key="city_remove_serv"  value="${slb.url}/axp-acl/manage/city/delCache.htm"/>
+				<entry key="college_remove_serv"  value="${slb.url}/axp-acl/manage/college/delCache.htm"/>
+				<!--附件-->
+				<entry key="resource_upload_serv"  value="${slb.url}/axp-acl/resource/pic/upload.htm"/>
+				<entry key="resource_del_serv"  value="${slb.url}/axp-acl/resource/pic/del.htm"/>
+				<entry key="resource_updattachbizinfo_serv"  value="${slb.url}/axp-acl/resource/pic/updattachbizinfo.htm"/>
+				<entry key="resource_getNailAttachList_serv"  value="${slb.url}/axp-acl/resource/pic/getnailattachlist.htm"/>
+				<entry key="resource_getOriginAttachList_serv"  value="${slb.url}/axp-acl/resource/pic/getoriginattachlist.htm"/>
+				<!--金额结算-->
+				<entry key="do_task_settle"  value="${slb.url}/axp-acl/acct/pay/dotasksettle.htm"/>
+			</map>
+		</property>
+	</bean>
+	
+</beans>

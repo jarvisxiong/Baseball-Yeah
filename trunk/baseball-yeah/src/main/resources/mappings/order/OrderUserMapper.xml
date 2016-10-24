@@ -1,0 +1,917 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.order.mapper.OrderUserMapper">
+    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.order.bean.Order">
+        <id column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="source" property="source" jdbcType="VARCHAR"/>
+        <result column="channel" property="channel" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="total_money" property="totalMoney" jdbcType="BIGINT"/>
+        <result column="rebate_money" property="rebateMoney" jdbcType="BIGINT"/>
+        <result column="final_money" property="finalMoney" jdbcType="BIGINT"/>
+        <result column="state" property="state" jdbcType="INTEGER"/>
+        <result column="pay_money" property="payMoney" jdbcType="BIGINT"/>
+        <result column="pay_state" property="payState" jdbcType="INTEGER"/>
+        <result column="pay_type" property="payType" jdbcType="INTEGER"/>
+        <result column="pay_id" property="payId" jdbcType="BIGINT"/>
+        <result column="cancel_type" property="cancelType" jdbcType="INTEGER"/>
+        <result column="consignee" property="consignee" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="delivery_start_date" property="deliveryStartDate"
+                jdbcType="TIMESTAMP"/>
+        <result column="delivery_end_date" property="deliveryEndDate"
+                jdbcType="TIMESTAMP"/>
+        <result column="create_user" property="createUser" jdbcType="BIGINT"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="unnormal_desc" property="unnormalDesc"
+                jdbcType="VARCHAR"/>
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="BIGINT"/>
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP"/>
+        <result column="sex" property="sex" jdbcType="VARCHAR"/>
+        <result column="college_id" property="collgeId" jdbcType="VARCHAR"/>
+        <result column="full_name" property="collegeName" jdbcType="VARCHAR"/>
+        <result column="packet_mode" property="packetMode" jdbcType="INTEGER"/>
+
+    </resultMap>
+    <sql id="Base_Column_List">
+		order_id, source, channel, type, total_money, rebate_money,
+		final_money, state,
+		pay_money,
+		pay_state, pay_type, pay_id, cancel_type,
+		consignee, address,
+		delivery_start_date,
+		delivery_end_date, create_user,
+		mobile, remark, unnormal_desc, create_date, update_user,
+		update_date,
+		sex
+	</sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap"
+            parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_order
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </select>
+    <select id="queryOrderCountByWayBillNo" resultType="int"
+            parameterType="java.lang.String">
+		SELECT
+		count(1)
+		FROM
+		p_order a,
+		tb_order b
+		WHERE
+		a.order_id =
+		b.order_id
+		AND b.state &lt;&gt; 6
+		AND a.waybill_no =
+		#{wayBillNo,jdbcType=VARCHAR}
+	</select>
+    <select id="queryCollgeListByWatBillNo" resultMap="BaseResultMap"
+            parameterType="java.lang.String">
+		SELECT
+		c.college_id,
+		c.full_name,
+		c.packet_mode
+		FROM
+		`tb_waybill` a,
+		tb_store_college_rel b,
+		tb_college c
+		WHERE
+		a.disp_exp_id =
+		b.store_id
+		AND b.college_id = c.college_id
+		AND a.`waybill_no` =
+		#{wayBillNo,jdbcType=VARCHAR}
+	</select>
+    <select id="queryOrderInfoByPhone" resultMap="BaseResultMap"
+            parameterType="java.lang.String">
+		SELECT
+		a.address,
+		a.consignee,
+		a.mobile,
+		a.sex,
+		a.remark,
+		a.order_id,
+		c.college_id,
+		c.full_name
+		FROM
+		tb_order a,
+		p_order b,
+		tb_college c
+		WHERE
+		a.order_id = b.order_id
+		AND b.college_id =
+		c.college_id and a.mobile=#{orderId,jdbcType=VARCHAR}
+		ORDER BY
+		a.create_date DESC
+
+	</select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from
+		tb_order
+		where order_id = #{orderId,jdbcType=BIGINT}
+	</delete>
+    <insert id="insert" parameterType="com.zhiduan.axp.dao.order.bean.Order">
+		insert into tb_order
+		(order_id, source, channel,
+		type, total_money, rebate_money,
+		final_money, state, pay_money,
+		pay_state, pay_type, pay_id,
+		cancel_type, consignee, address,
+		delivery_start_date,
+		delivery_end_date,
+		create_user, mobile, remark,
+		unnormal_desc,
+		create_date, update_user,
+		update_date, sex)
+		values
+		(#{orderId,jdbcType=BIGINT}, #{source,jdbcType=VARCHAR},
+		#{channel,jdbcType=VARCHAR},
+		#{type,jdbcType=VARCHAR},
+		#{totalMoney,jdbcType=BIGINT}, #{rebateMoney,jdbcType=BIGINT},
+		#{finalMoney,jdbcType=BIGINT}, #{state,jdbcType=INTEGER},
+		#{payMoney,jdbcType=BIGINT},
+		#{payState,jdbcType=INTEGER},
+		#{payType,jdbcType=INTEGER}, #{payId,jdbcType=BIGINT},
+		#{cancelType,jdbcType=INTEGER}, #{consignee,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR},
+		#{deliveryStartDate,jdbcType=TIMESTAMP},
+		#{deliveryEndDate,jdbcType=TIMESTAMP},
+		#{createUser,jdbcType=BIGINT},
+		#{mobile,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},
+		#{unnormalDesc,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=BIGINT},
+		#{updateDate,jdbcType=TIMESTAMP},
+		#{sex,jdbcType=VARCHAR})
+	</insert>
+    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.order.bean.Order">
+        insert into tb_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="source != null">
+                source,
+            </if>
+            <if test="channel != null">
+                channel,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="totalMoney != null">
+                total_money,
+            </if>
+            <if test="rebateMoney != null">
+                rebate_money,
+            </if>
+            <if test="finalMoney != null">
+                final_money,
+            </if>
+            <if test="state != null">
+                state,
+            </if>
+            <if test="payMoney != null">
+                pay_money,
+            </if>
+            <if test="payState != null">
+                pay_state,
+            </if>
+            <if test="payType != null">
+                pay_type,
+            </if>
+            <if test="payId != null">
+                pay_id,
+            </if>
+            <if test="cancelType != null">
+                cancel_type,
+            </if>
+            <if test="consignee != null">
+                consignee,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="deliveryStartDate != null">
+                delivery_start_date,
+            </if>
+            <if test="deliveryEndDate != null">
+                delivery_end_date,
+            </if>
+            <if test="createUser != null">
+                create_user,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="unnormalDesc != null">
+                unnormal_desc,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="updateUser != null">
+                update_user,
+            </if>
+            <if test="updateDate != null">
+                update_date,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="source != null">
+                #{source,jdbcType=VARCHAR},
+            </if>
+            <if test="channel != null">
+                #{channel,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="totalMoney != null">
+                #{totalMoney,jdbcType=BIGINT},
+            </if>
+            <if test="rebateMoney != null">
+                #{rebateMoney,jdbcType=BIGINT},
+            </if>
+            <if test="finalMoney != null">
+                #{finalMoney,jdbcType=BIGINT},
+            </if>
+            <if test="state != null">
+                #{state,jdbcType=INTEGER},
+            </if>
+            <if test="payMoney != null">
+                #{payMoney,jdbcType=BIGINT},
+            </if>
+            <if test="payState != null">
+                #{payState,jdbcType=INTEGER},
+            </if>
+            <if test="payType != null">
+                #{payType,jdbcType=INTEGER},
+            </if>
+            <if test="payId != null">
+                #{payId,jdbcType=BIGINT},
+            </if>
+            <if test="cancelType != null">
+                #{cancelType,jdbcType=INTEGER},
+            </if>
+            <if test="consignee != null">
+                #{consignee,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryStartDate != null">
+                #{deliveryStartDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deliveryEndDate != null">
+                #{deliveryEndDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUser != null">
+                #{createUser,jdbcType=BIGINT},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="unnormalDesc != null">
+                #{unnormalDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null">
+                #{updateUser,jdbcType=BIGINT},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.order.bean.Order">
+        update tb_order
+        <set>
+            <if test="source != null">
+                source = #{source,jdbcType=VARCHAR},
+            </if>
+            <if test="channel != null">
+                channel = #{channel,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="totalMoney != null">
+                total_money = #{totalMoney,jdbcType=BIGINT},
+            </if>
+            <if test="rebateMoney != null">
+                rebate_money = #{rebateMoney,jdbcType=BIGINT},
+            </if>
+            <if test="finalMoney != null">
+                final_money = #{finalMoney,jdbcType=BIGINT},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=INTEGER},
+            </if>
+            <if test="payMoney != null">
+                pay_money = #{payMoney,jdbcType=BIGINT},
+            </if>
+            <if test="payState != null">
+                pay_state = #{payState,jdbcType=INTEGER},
+            </if>
+            <if test="payType != null">
+                pay_type = #{payType,jdbcType=INTEGER},
+            </if>
+            <if test="payId != null">
+                pay_id = #{payId,jdbcType=BIGINT},
+            </if>
+            <if test="cancelType != null">
+                cancel_type = #{cancelType,jdbcType=INTEGER},
+            </if>
+            <if test="consignee != null">
+                consignee = #{consignee,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryStartDate != null">
+                delivery_start_date =
+                #{deliveryStartDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deliveryEndDate != null">
+                delivery_end_date =
+                #{deliveryEndDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUser != null">
+                create_user = #{createUser,jdbcType=BIGINT},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="unnormalDesc != null">
+                unnormal_desc = #{unnormalDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser,jdbcType=BIGINT},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.order.bean.Order">
+		update tb_order
+		set source = #{source,jdbcType=VARCHAR},
+		channel =
+		#{channel,jdbcType=VARCHAR},
+		type = #{type,jdbcType=VARCHAR},
+		total_money = #{totalMoney,jdbcType=BIGINT},
+		rebate_money =
+		#{rebateMoney,jdbcType=BIGINT},
+		final_money =
+		#{finalMoney,jdbcType=BIGINT},
+		state = #{state,jdbcType=INTEGER},
+		pay_money = #{payMoney,jdbcType=BIGINT},
+		pay_state =
+		#{payState,jdbcType=INTEGER},
+		pay_type = #{payType,jdbcType=INTEGER},
+		pay_id = #{payId,jdbcType=BIGINT},
+		cancel_type =
+		#{cancelType,jdbcType=INTEGER},
+		consignee =
+		#{consignee,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		delivery_start_date = #{deliveryStartDate,jdbcType=TIMESTAMP},
+		delivery_end_date = #{deliveryEndDate,jdbcType=TIMESTAMP},
+		create_user
+		= #{createUser,jdbcType=BIGINT},
+		mobile = #{mobile,jdbcType=VARCHAR},
+		remark = #{remark,jdbcType=VARCHAR},
+		unnormal_desc =
+		#{unnormalDesc,jdbcType=VARCHAR},
+		create_date =
+		#{createDate,jdbcType=TIMESTAMP},
+		update_user =
+		#{updateUser,jdbcType=BIGINT},
+		update_date =
+		#{updateDate,jdbcType=TIMESTAMP},
+		sex = #{sex,jdbcType=VARCHAR}
+		where
+		order_id = #{orderId,jdbcType=BIGINT}
+	</update>
+
+    <!-- 查询send（寄件）订单列表 -->
+    <select id="getAllOrder" resultType="com.zhiduan.axp.controller.model.order.OrderInfo"
+            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+        SELECT tbo.order_id orderId,tbo.create_date
+        createDate,tbo.delivery_end_date deliveryEndDate,tbo.state
+        state,tbo.pay_type payType,tbo.pay_id payId,tbo.mobile
+        mobile,tbu.phone phone,tbo.final_money/100
+        finalMoney,tbo.pay_money/100 payMoney,tbo.rebate_money/100
+        rebateMoney,tbo.address,tbo.consignee,tbo.delivery_start_date
+        deliveryStartDate,tbcol.full_name fullName,tbu.real_name realName,tboi.commodity_code
+        commodityCode,tboi.type,tboi.rebate_price/100 rebatePrice
+        FROM
+        tb_order tbo LEFT JOIN
+        p_send_order p ON tbo.order_id=p.order_id
+        LEFT
+        JOIN
+        tb_college tbcol ON p.college_id=tbcol.college_id
+        LEFT
+        JOIN tb_user tbu
+        ON
+        tbo.winner=tbu.user_id
+        LEFT JOIN tb_order_item tboi ON tbo.order_id=tboi.order_id AND tboi.type='1008'
+        where 1=1
+        <if test="orderId != null and orderId != '' ">
+            AND tbo.order_id =#{orderId}
+        </if>
+
+        <if test="type != null and type != '' ">
+            AND tbo.type =#{type}
+        </if>
+
+        <if test="state != null and state != ''">
+            AND tbo.state=#{state}
+        </if>
+        <if test="payType != null and payType != ''">
+            AND tbo.pay_type=#{payType}
+        </if>
+        <if test="payId != null and payId != ''">
+            AND tbo.pay_id=#{payId}
+        </if>
+        <if test="phone != null and phone != ''">
+            AND tbu.phone LIKE CONCAT('%',#{phone},'%')
+        </if>
+        <if test="collegeId != null">
+            AND p.college_id =#{collegeId}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
+        </if>
+        <if test="createStartDate != null and createStartDate != ''">
+            AND <![CDATA[tbo.create_date >= #{createStartDate}]]>
+        </if>
+        <if test="createEndDate != null and createEndDate != ''">
+            AND <![CDATA[tbo.create_date <= #{createEndDate}]]>
+        </if>
+        <if test="deliveryStartDate != null and deliveryStartDate != ''">
+            AND <![CDATA[tbo.delivery_end_date >= #{deliveryStartDate}]]>
+        </if>
+        <if test="deliveryEndDate != null and deliveryEndDate != ''">
+            AND <![CDATA[tbo.delivery_end_date <= #{deliv.eryEndDate}]]>
+        </if>
+        <if test="deliverySStartDate != null and deliverySStartDate != ''">
+            AND <![CDATA[tbo.delivery_start_date >= #{deliverySStartDate}]]>
+        </if>
+        <if test="deliverySEndDate != null and deliverySEndDate != ''">
+            AND <![CDATA[tbo.delivery_start_date <= #{deliverySEndDate}]]>
+        </if>
+        GROUP BY tbo.order_id
+        ORDER BY
+        ${sort} ${order}
+        LIMIT #{offset},
+        #{limit}
+    </select>
+    <!-- 查询派件（取件）订单列表 -->
+    <select id="getPacketOrder" resultType="com.zhiduan.axp.controller.model.order.OrderInfo"
+            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+        SELECT tbo.order_id orderId,tbo.create_date
+        createDate,tbo.delivery_end_date deliveryEndDate,tbo.state
+        state,tbo.pay_type payType,tbo.pay_id payId,tbo.mobile
+        mobile,tbu.phone phone,tbo.final_money/100
+        finalMoney,tbo.pay_money/100 payMoney,tbo.rebate_money/100
+        rebateMoney,tbo.address,tbo.consignee,tbo.delivery_start_date
+        deliveryStartDate,tbcol.full_name fullName,tbu.real_name realName,tboi.commodity_code
+        commodityCode,tboi.type,tboi.rebate_price/100 rebatePrice
+        FROM
+        tb_order tbo LEFT JOIN
+        p_order p ON tbo.order_id=p.order_id
+        LEFT
+        JOIN
+        tb_college tbcol ON p.college_id=tbcol.college_id
+        LEFT
+        JOIN tb_user tbu
+        ON
+        tbo.winner=tbu.user_id
+        LEFT JOIN tb_order_item tboi ON tbo.order_id=tboi.order_id AND tboi.type='1008'
+        where 1=1
+        <if test="orderId != null and orderId != '' ">
+            AND tbo.order_id =#{orderId}
+        </if>
+        <if test="type != null and type != '' ">
+            AND tbo.type =#{type}
+        </if>
+        <if test="state != null and state != ''">
+            AND tbo.state=#{state}
+        </if>
+        <if test="payType != null and payType != ''">
+            AND tbo.pay_type=#{payType}
+        </if>
+        <if test="payId != null and payId != ''">
+            AND tbo.pay_id=#{payId}
+        </if>
+        <if test="phone != null and phone != ''">
+            AND tbu.phone LIKE CONCAT('%',#{phone},'%')
+        </if>
+        <if test="collegeId != null">
+            AND p.college_id =#{collegeId}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
+        </if>
+        <if test="createStartDate != null and createStartDate != ''">
+            AND <![CDATA[tbo.create_date >= #{createStartDate}]]>
+        </if>
+        <if test="createEndDate != null and createEndDate != ''">
+            AND <![CDATA[tbo.create_date <= #{createEndDate}]]>
+        </if>
+        <if test="deliveryStartDate != null and deliveryStartDate != ''">
+            AND <![CDATA[tbo.delivery_end_date >= #{deliveryStartDate}]]>
+        </if>
+        <if test="deliveryEndDate != null and deliveryEndDate != ''">
+            AND <![CDATA[tbo.delivery_end_date <= #{deliveryEndDate}]]>
+        </if>
+        <if test="deliverySStartDate != null and deliverySStartDate != ''">
+            AND <![CDATA[tbo.delivery_start_date >= #{deliverySStartDate}]]>
+        </if>
+        <if test="deliverySEndDate != null and deliverySEndDate != ''">
+            AND <![CDATA[tbo.delivery_start_date <= #{deliverySEndDate}]]>
+        </if>
+        GROUP BY tbo.order_id
+        ORDER BY
+        ${sort} ${order}
+        LIMIT #{offset},
+        #{limit}
+    </select>
+
+    <!-- 查询代取件订单列表 -->
+    <select id="getPickupOrder" resultType="com.zhiduan.axp.controller.model.order.OrderInfo"
+            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+        SELECT tbo.order_id orderId,tbo.create_date
+        createDate,tbo.delivery_end_date deliveryEndDate,tbo.state
+        state,tbo.pay_type payType,tbo.pay_id payId,tbo.mobile
+        mobile,tbu.phone phone,tbo.final_money/100
+        finalMoney,tbo.pay_money/100 payMoney,tbo.rebate_money/100
+        rebateMoney,tbo.address,tbo.consignee,tbo.delivery_start_date
+        deliveryStartDate,tbcol.full_name fullName,tbu.real_name realName,tboi.commodity_code
+        commodityCode,tboi.type,tboi.rebate_price/100 rebatePrice
+        FROM
+        tb_order tbo LEFT JOIN p_order p ON tbo.order_id=p.order_id
+        LEFT JOIN tb_college tbcol ON p.college_id=tbcol.college_id
+        LEFT JOIN tb_user tbu ON tbo.winner=tbu.user_id
+        LEFT JOIN tb_order_item tboi ON tbo.order_id=tboi.order_id AND tboi.type='1008'
+        <where>
+            <if test="orderId != null and orderId != '' ">
+                AND tbo.order_id =#{orderId}
+            </if>
+            <if test="type != null and type != '' ">
+                AND tbo.type =#{type}
+            </if>
+            <if test="state != null and state != ''">
+                AND tbo.state=#{state}
+            </if>
+            <if test="payType != null and payType != ''">
+                AND tbo.pay_type=#{payType}
+            </if>
+            <if test="payId != null and payId != ''">
+                AND tbo.pay_id=#{payId}
+            </if>
+            <if test="phone != null and phone != ''">
+                AND tbu.phone LIKE CONCAT('%',#{phone},'%')
+            </if>
+            <if test="collegeId != null">
+                AND p.college_id =#{collegeId}
+            </if>
+            <if test="mobile != null and mobile != ''">
+                AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
+            </if>
+            <if test="createStartDate != null and createStartDate != ''">
+                AND <![CDATA[tbo.create_date >= #{createStartDate}]]>
+            </if>
+            <if test="createEndDate != null and createEndDate != ''">
+                AND <![CDATA[tbo.create_date <= #{createEndDate}]]>
+            </if>
+            <if test="deliveryStartDate != null and deliveryStartDate != ''">
+                AND <![CDATA[tbo.delivery_end_date >= #{deliveryStartDate}]]>
+            </if>
+            <if test="deliveryEndDate != null and deliveryEndDate != ''">
+                AND <![CDATA[tbo.delivery_end_date <= #{deliveryEndDate}]]>
+            </if>
+            <if test="deliverySStartDate != null and deliverySStartDate != ''">
+                AND <![CDATA[tbo.delivery_start_date >= #{deliverySStartDate}]]>
+            </if>
+            <if test="deliverySEndDate != null and deliverySEndDate != ''">
+                AND <![CDATA[tbo.delivery_start_date <= #{deliverySEndDate}]]>
+            </if>
+        </where>
+        GROUP BY tbo.order_id
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset},#{limit}
+    </select>
+
+    <!-- 寄件订单总数量 -->
+    <select id="getOrderTotal" resultType="java.lang.Integer"
+            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+        SELECT count(1)
+        FROM tb_order tbo LEFT JOIN
+        p_send_order p ON
+        tbo.order_id=p.order_id LEFT
+        JOIN tb_user tbu ON
+        tbo.winner=tbu.user_id
+        LEFT JOIN tb_order_item tboi ON tbo.order_id=tboi.order_id AND tboi.type='1008'
+        where 1=1
+        <if test="orderId != null and orderId != '' ">
+            AND tbo.order_id =#{orderId}
+        </if>
+        <if test="type != null and type != '' ">
+            AND tbo.type =#{type}
+        </if>
+        <if test="state != null and state != ''">
+            AND tbo.state=#{state}
+        </if>
+        <if test="payType != null and payType != ''">
+            AND tbo.pay_type=#{payType}
+        </if>
+        <if test="payId != null and payId != ''">
+            AND tbo.pay_id=#{payId}
+        </if>
+        <if test="phone != null and phone != ''">
+            AND tbu.phone LIKE CONCAT('%',#{phone},'%')
+        </if>
+        <if test="mobile != null and mobile != ''">
+            AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
+        </if>
+        <if test="collegeId != null">
+            AND p.college_id =#{collegeId}
+        </if>
+        <if test="createStartDate != null and createStartDate != ''">
+            AND <![CDATA[tbo.create_date >= #{createStartDate}]]>
+        </if>
+        <if test="createEndDate != null and createEndDate != ''">
+            AND <![CDATA[tbo.create_date <= #{createEndDate}]]>
+        </if>
+        <if test="deliveryStartDate != null and deliveryStartDate != ''">
+            AND <![CDATA[tbo.delivery_end_date >= #{deliveryStartDate}]]>
+        </if>
+        <if test="deliveryEndDate != null and deliveryEndDate != ''">
+            AND <![CDATA[tbo.delivery_end_date <= #{deliveryEndDate}]]>
+        </if>
+        <if test="deliverySStartDate != null and deliverySStartDate != ''">
+            AND <![CDATA[tbo.delivery_start_date >= #{deliverySStartDate}]]>
+        </if>
+        <if test="deliverySEndDate != null and deliverySEndDate != ''">
+            AND <![CDATA[tbo.delivery_start_date <= #{deliverySEndDate}]]>
+        </if>
+    </select>
+    <!-- 派件（取件）订单总数量 -->
+    <select id="getPacketOrderTotal" resultType="java.lang.Integer"
+            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+        SELECT count(1)
+        FROM tb_order tbo LEFT JOIN
+        p_order p ON
+        tbo.order_id=p.order_id LEFT
+        JOIN tb_user tbu ON
+        tbo.winner=tbu.user_id
+        LEFT JOIN tb_order_item tboi ON tbo.order_id=tboi.order_id AND tboi.type='1008'
+        where 1=1
+        <if test="orderId != null and orderId != '' ">
+            AND tbo.order_id =#{orderId}
+        </if>
+        <if test="type != null and type != '' ">
+            AND tbo.type =#{type}
+        </if>
+        <if test="state != null and state != ''">
+            AND tbo.state=#{state}
+        </if>
+        <if test="payType != null and payType != ''">
+            AND tbo.pay_type=#{payType}
+        </if>
+        <if test="payId != null and payId != ''">
+            AND tbo.pay_id=#{payId}
+        </if>
+        <if test="phone != null and phone != ''">
+            AND tbu.phone LIKE CONCAT('%',#{phone},'%')
+        </if>
+        <if test="mobile != null and mobile != ''">
+            AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
+        </if>
+        <if test="collegeId != null">
+            AND p.college_id =#{collegeId}
+        </if>
+        <if test="createStartDate != null and createStartDate != ''">
+            AND <![CDATA[tbo.create_date >= #{createStartDate}]]>
+        </if>
+        <if test="createEndDate != null and createEndDate != ''">
+            AND <![CDATA[tbo.create_date <= #{createEndDate}]]>
+        </if>
+        <if test="deliveryStartDate != null and deliveryStartDate != ''">
+            AND <![CDATA[tbo.delivery_end_date >= #{deliveryStartDate}]]>
+        </if>
+        <if test="deliveryEndDate != null and deliveryEndDate != ''">
+            AND <![CDATA[tbo.delivery_end_date <= #{deliveryEndDate}]]>
+        </if>
+        <if test="deliverySStartDate != null and deliverySStartDate != ''">
+            AND <![CDATA[tbo.delivery_start_date >= #{deliverySStartDate}]]>
+        </if>
+        <if test="deliverySEndDate != null and deliverySEndDate != ''">
+            AND <![CDATA[tbo.delivery_start_date <= #{deliverySEndDate}]]>
+        </if>
+    </select>
+
+    <!-- 代取件订单总数量 -->
+    <select id="getPickupOrderTotal" resultType="java.lang.Integer"
+            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+        SELECT count(1)
+        FROM tb_order tbo
+        LEFT JOIN p_order p ON tbo.order_id=p.order_id
+        LEFT JOIN tb_user tbu ON tbo.winner=tbu.user_id
+        LEFT JOIN tb_order_item tboi ON tbo.order_id=tboi.order_id AND tboi.type='1008'
+        <where>
+            <if test="orderId != null and orderId != '' ">
+                AND tbo.order_id =#{orderId}
+            </if>
+            <if test="type != null and type != '' ">
+                AND tbo.type =#{type}
+            </if>
+            <if test="state != null and state != ''">
+                AND tbo.state=#{state}
+            </if>
+            <if test="payType != null and payType != ''">
+                AND tbo.pay_type=#{payType}
+            </if>
+            <if test="payId != null and payId != ''">
+                AND tbo.pay_id=#{payId}
+            </if>
+            <if test="phone != null and phone != ''">
+                AND tbu.phone LIKE CONCAT('%',#{phone},'%')
+            </if>
+            <if test="mobile != null and mobile != ''">
+                AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
+            </if>
+            <if test="collegeId != null">
+                AND p.college_id =#{collegeId}
+            </if>
+            <if test="createStartDate != null and createStartDate != ''">
+                AND <![CDATA[tbo.create_date >= #{createStartDate}]]>
+            </if>
+            <if test="createEndDate != null and createEndDate != ''">
+                AND <![CDATA[tbo.create_date <= #{createEndDate}]]>
+            </if>
+            <if test="deliveryStartDate != null and deliveryStartDate != ''">
+                AND <![CDATA[tbo.delivery_end_date >= #{deliveryStartDate}]]>
+            </if>
+            <if test="deliveryEndDate != null and deliveryEndDate != ''">
+                AND <![CDATA[tbo.delivery_end_date <= #{deliveryEndDate}]]>
+            </if>
+            <if test="deliverySStartDate != null and deliverySStartDate != ''">
+                AND <![CDATA[tbo.delivery_start_date >= #{deliverySStartDate}]]>
+            </if>
+            <if test="deliverySEndDate != null and deliverySEndDate != ''">
+                AND <![CDATA[tbo.delivery_start_date <= #{deliverySEndDate}]]>
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询订单明细 -->
+
+
+    <select id="getOrderDetail" resultType="com.zhiduan.axp.dao.order.bean.OrderDetailBean"
+            parameterType="java.lang.Long">
+		SELECT
+		tbo.order_id
+		orderId,tbo.mobile,tbo.final_money/100 finalMoney,tbo.pay_money/100
+		payMoney,tbo.total_money/100 totalMoney,tbo.rebate_money/100
+		rebateMoney,po.waybill_no
+		waybillNo,tbo.consignee,tbo.sex,tbo.state,
+		CASE tbo.state
+		WHEN 1 THEN
+		'创建'
+		WHEN 2 THEN
+		'已接单'
+		WHEN 3 THEN
+		'配送中'
+		WHEN 4
+		THEN
+		'处理中'
+		WHEN 5 THEN
+		'完成'
+		WHEN 6 THEN
+		CASE tbo.cancel_type WHEN 1 then '接单人取消' WHEN 2 then '下单人取消' WHEN 3 then '系统取消' when 4 then '退件取消' end
+        /*取消类型: 1 接单人取消,2 下单人取消,3 系统取消4 退件取消*/
+		WHEN 7 THEN
+		'异常'
+		ELSE '' END
+		stateStr,tbo.address,tbs.location,tbs.store_name
+		storeName,tbc.city_name cityName, tbcoll.full_name fullName
+		FROM
+		tb_order tbo LEFT JOIN p_order po
+		ON tbo.order_id=po.order_id
+		LEFT JOIN
+		tb_college tbcoll ON
+		po.college_id=tbcoll.college_id LEFT
+		JOIN tb_user
+		tbu ON
+		tbo.winner=tbu.user_id LEFT JOIN tb_user_store_exp
+		tbuse ON
+		tbu.user_id=tbuse.user_id LEFT JOIN tb_store tbs ON
+		tbuse.store_id=tbs.store_id LEFT JOIN tb_city tbc ON
+		tbcoll.city_id=tbc.city_id WHERE tbo.order_id=#{orderId};
+	</select>
+
+    <!-- 查询订单状态集合 -->
+    <select id="getOrderStateDetail" resultType="com.zhiduan.axp.dao.order.bean.OrderStateDetailBean"
+            parameterType="java.lang.Long">
+            SELECT
+      ss.createUser,
+      ss.winnerName,
+      ss.create_date
+               createDate,
+      CASE
+      ss.state
+      WHEN 1
+        THEN
+          CASE WHEN ss.createUser
+                    IS NULL
+            THEN
+              '创建订单'
+          ELSE
+            concat(ss.createUser, '创建订单') END
+      WHEN 2
+        THEN
+          CASE WHEN
+            ss.winnerName
+            IS
+            NULL
+            THEN '已被接单'
+          ELSE concat(ss.winnerName, '已接单') END
+      WHEN 3
+        THEN
+          CASE
+          WHEN ss.winnerName
+               IS NULL
+            THEN '配送中'
+          ELSE
+            concat(ss.winnerName, '配送中')
+          END
+      WHEN 4
+        THEN '处理中'
+      WHEN 5
+        THEN '完成'
+      WHEN 6
+        THEN CASE ss.cancel_type WHEN 1 then '接单人取消' WHEN 2 then '下单人取消' WHEN 3 then '系统取消' when 4 then '退件取消' end
+        /*取消类型: 1 接单人取消,2 下单人取消,3 系统取消4 退件取消*/
+      WHEN 7
+        THEN '异常'
+      ELSE
+        '' END content
+    FROM
+      (SELECT
+         tbof.create_date,
+         tbof.state,
+         tbo.cancel_type,
+         createuser.real_name createUser,
+         w.real_name  winnerName
+       FROM
+         tb_order_flow tbof LEFT JOIN
+         tb_order tbo ON tbo.order_id =
+                         tbof.order_id
+         /*LEFT JOIN p_order po ON
+                                tbo.order_id = po.order_id*/
+         LEFT JOIN tb_user createUser on createUser.user_id
+                = tbo.create_user
+         LEFT JOIN tb_user w on w.user_id
+                = tbo.winner
+       WHERE tbof.order_id =#{orderId}) ss;
+	</select>
+
+    <!-- 获取今日订单数量 -->
+    <select id="getTodayNewOrderTotal" resultType="java.lang.Integer">
+		SELECT count(1)
+		FROM tb_order WHERE create_date>=date_format(NOW(),'%Y-%m-%d');
+	</select>
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.wallet.mapper.AcctExchangeCashMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zhiduan.axp.controller.model.wallet.AcctExchangeCashInfo">
+		<result property="exchangeId" column="exchange_id" jdbcType="BIGINT"
+			javaType="java.lang.Long" />
+		<result property="userId" column="user_id" jdbcType="BIGINT"
+			javaType="java.lang.Long" />
+		<result property="flowId" column="flow_id" jdbcType="BIGINT"
+			javaType="java.lang.Long" />
+		<result property="balance" column="balance" jdbcType="INTEGER"
+			javaType="java.lang.Integer" />
+		<result property="type" column="type" jdbcType="TINYINT"
+			javaType="java.lang.Integer" />
+		<result property="state" column="state" jdbcType="TINYINT"
+			javaType="java.lang.Integer" />
+		<result property="isDel" column="is_del" jdbcType="TINYINT"
+			javaType="java.lang.Integer" />
+		<result property="createTime" column="create_time" jdbcType="TIMESTAMP"
+			javaType="java.lang.String" />
+		<result property="comment" column="comme" jdbcType="VARCHAR"
+			javaType="java.lang.String" />
+		<result property="modifyTime" column="modify_time" jdbcType="VARCHAR"
+			javaType="java.lang.String" />
+		<result property="thdId" column="thd_id" jdbcType="VARCHAR"
+			javaType="java.lang.String" />
+		<result property="ipAddress" column="ip_address" jdbcType="VARCHAR"
+			javaType="java.lang.String" />
+		<result property="devId" column="dev_id" jdbcType="VARCHAR"
+			javaType="java.lang.String" />
+	</resultMap>
+
+	<insert id="addExchangeBalance" useGeneratedKeys="true"
+		keyProperty="exchangeId" parameterType="com.zhiduan.axp.dao.wallet.bean.AcctExchangeCashBean">
+		insert into
+		tb_acct_exchange_cash
+		(user_id,acct_id,balance,type,state,is_del,create_time,
+		thd_id,ip_address,dev_id)
+		values
+		(#{userId},#{acctId},#{balance},#{type},#{state},#{isDel},#{createTime},#{thdId},#{ipAddress},#{devId})
+	</insert>
+
+	<!-- 查询今日提现流水信息 -->
+	<select id="getExchangeCash" parameterType="java.lang.Long"
+		resultType="com.zhiduan.axp.controller.model.wallet.AcctExchangeCashInfo">
+		SELECT count(1) times,sum(balance) drawBalance FROM tb_acct_exchange_cash
+		where user_id=#{userId} AND is_del=0 AND create_time >=
+		date_format(NOW(),'%Y-%m-%d') AND state IN (0,1,2)
+	</select>
+
+	<update id="updateExchangeBalanceFlowId" parameterType="map">
+		update tb_acct_exchange_cash set flow_id = #{flowId} where exchange_id
+		= #{exchangeId}
+	</update>
+
+	<update id="updateExchangeBalanceDel" parameterType="java.lang.Long">
+		update tb_acct_exchange_cash set is_del = 1 where exchange_id =
+		#{exchangeId}
+	</update>
+	
+	<!-- 根据交易Id查询用户Id -->
+	<select id="selectByExchangeId" parameterType="java.lang.Long" resultType="java.lang.Long">
+		SELECT user_id
+		FROM tb_acct_exchange_cash WHERE exchange_id=#{exchangeId};
+	</select>
+</mapper>

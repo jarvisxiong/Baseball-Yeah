@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.user.mapper.UserManagerLoginMapper">
+    <!-- 根据主键查询 -->
+    <select id="getInfoByLoginName" parameterType="java.lang.String"
+            resultType="com.zhiduan.axp.dao.user.bean.UserManagerLoginBean">
+		select t1.user_manager_id,
+		t1.login_name, t1.password,
+		t1.user_name,
+		t1.user_code,
+		t1.dept_id,
+		t1.duty_id,
+		t1.gender,
+		t1.contact_tel,t1.address,t1.be_enabled,t1.be_deleted,t2.dept_code
+		AS
+		deptCode,t2.`dept_name` AS deptName,t3.duty_name AS dutyName
+		t1 LEFT
+		JOIN tb_dept t2 ON
+		t1.dept_id=t2.dept_id and
+		t2.be_deleted=0
+		LEFT
+		JOIN
+		tb_duty t3 ON
+		t1.duty_id=t3.duty_id and
+		t3.be_deleted=0 where
+		t1.be_deleted=0
+		and t1.login_name = #{loginName}
+	</select>
+
+    <select id="loginSelect" parameterType="java.lang.String"
+            resultType="com.zhiduan.axp.dao.user.bean.UserManagerLoginBean">
+		select t1.user_manager_id  'userManagerId',t1.password,t1.be_deleted 'beDeleted',
+		t2.dept_name deptName, t1.user_name showName from
+		tb_user_manager t1 LEFT  join  tb_dept t2 on t1.dept_id=t2.dept_id
+		  where t1.login_name=#{loginName} and t1.be_deleted=0 and t1.be_enabled=1
+	</select>
+</mapper>

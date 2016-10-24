@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiduan.axp.dao.report.mapper.ReportOfflineStoreMapper">
+
+	<select id="getOfflineStoreList" resultType="com.zhiduan.axp.controller.model.report.ReportOfflinePartyInfo">
+		SELECT 
+		  e.cityName as cityName,
+		  DATE(a.add_time) AS date,
+		  COUNT(CASE WHEN a.be_signed=0 THEN a.waybill_id END) AS arrivTotal,
+		  COUNT(CASE WHEN a.be_signed=1 THEN a.waybill_id END) AS collectTotal,
+		  e.storeName AS storeName,
+		  e.xx AS expressName,
+		  e.store_id AS storeId
+		FROM
+		  tb_waybill a,
+		  (SELECT 
+		    city.city_name AS cityName,
+		    city.city_id AS city_id,
+		    b.store_name AS storeName,
+		    b.store_id,
+		    GROUP_CONCAT(DISTINCT d.full_name) xx 
+		  FROM
+		    tb_store b,
+		    tb_store_ec_rel c,
+		    tb_express_company d,
+		    tb_city city,
+		    tb_college college,
+		    tb_store_college_rel tscl
+		  WHERE b.store_id = c.store_id 
+		    AND c.express_company_id = d.express_company_id
+		    AND city.city_id = college.city_id
+		    AND college.college_id = tscl.college_id
+		    AND tscl.store_id = b.store_id
+		    <if test="storeName != null and storeName != ''">
+				AND b.store_id = #{storeName} 
+			</if>
+			<if test="expressName != null and expressName != ''">
+				AND d.express_company_id = #{expressName}
+			</if>
+			<if test="cityName != null and cityName != ''">
+				AND city.city_id = TRIM(#{cityName})
+			</if>
+		  GROUP BY b.store_id) e 
+		WHERE a.disp_exp_id = e.store_id 
+		AND a.be_virtual=0
+		<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+			AND (date(a.add_time) between #{startDate} and #{endDate})
+		</if>
+		GROUP BY date(a.add_time),e.store_id
+		ORDER BY ${sort} ${order}
+		limit #{offset},#{limit}
+	</select>
+
+	<select id="getOfflineStoreCount" resultType="int" parameterType="com.zhiduan.axp.controller.model.report.ReportOfflinePartyInfo">
+		SELECT COUNT(*) FROM 
+	
+			(
+				SELECT 
+				  e.cityName as cityName,
+				  DATE(a.add_time) AS date,
+				  COUNT(CASE WHEN a.be_signed=0 THEN a.waybill_id END) AS arrivTotal,
+				  COUNT(CASE WHEN a.be_signed=1 THEN a.waybill_id END) AS collectTotal,
+				  e.storeName AS storeName,
+				  e.xx AS expressName
+				FROM
+				  tb_waybill a,
+				  (SELECT 
+				    city.city_name AS cityName,
+				    city.city_id AS city_id,
+				    b.store_name AS storeName,
+				    b.store_id,
+				    GROUP_CONCAT(DISTINCT d.full_name) xx 
+				  FROM
+				    tb_store b,
+				    tb_store_ec_rel c,
+				    tb_express_company d,
+				    tb_city city,
+				    tb_college college,
+				    tb_store_college_rel tscl
+				  WHERE b.store_id = c.store_id 
+				    AND c.express_company_id = d.express_company_id
+				    AND city.city_id = college.city_id
+				    AND college.college_id = tscl.college_id
+				    AND tscl.store_id = b.store_id
+				    <if test="storeName != null and storeName != ''">
+						AND b.store_id = #{storeName}
+					</if>
+					<if test="expressName != null and expressName != ''">
+						AND d.express_company_id = #{expressName}
+					</if>
+					<if test="cityName != null and cityName != ''">
+						AND city.city_id = TRIM(#{cityName})
+					</if>
+				  GROUP BY b.store_id) e 
+				WHERE a.disp_exp_id = e.store_id 
+				AND a.be_virtual=0
+				<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+					AND (date(a.add_time) between #{startDate} and #{endDate})
+				</if>
+				GROUP BY date(a.add_time),e.store_id
+			) b
+	
+	</select>
+	
+	<select id="getDetailList" parameterType="com.zhiduan.axp.controller.model.report.ReportWaybillInfo"
+		resultType="com.zhiduan.axp.controller.model.report.ReportWaybillInfo">
+		SELECT
+			waybill_no  AS waybillNo,
+			add_time AS arriveDate,
+			sign_time AS signDate
+		FROM
+			tb_waybill
+		WHERE
+			be_virtual=0
+			AND	disp_exp_id = #{storeId}
+		<if test="waybillNo != null and waybillNo != ''">
+			AND waybill_no like TRIM(CONCAT('%', #{waybillNo}, '%'))
+		</if>
+		<if test="arriveStartDate != null and arriveEndDate != null and arriveStartDate != '' and arriveEndDate != ''">
+			AND (add_time between #{arriveStartDate} and #{arriveEndDate})
+		</if>
+		<if test="signStartDate != null and signEndDate != null and signStartDate != '' and signEndDate != ''">
+			AND (sign_time between #{signStartDate} and #{signEndDate})
+		</if>
+		ORDER BY ${sort} ${order}
+		limit #{offset},#{limit}
+	</select>
+	
+	<select id="getDetailCount" parameterType="com.zhiduan.axp.controller.model.report.ReportWaybillInfo"
+		resultType="int">
+		SELECT
+			COUNT(waybill_id)
+		FROM
+			tb_waybill
+		WHERE 
+			be_virtual=0
+			AND	disp_exp_id = #{storeId}
+		<if test="waybillNo != null and waybillNo != ''">
+			AND waybill_no like TRIM(CONCAT('%', #{waybillNo}, '%'))
+		</if>
+		<if test="arriveStartDate != null and arriveEndDate != null and arriveStartDate != '' and arriveEndDate != ''">
+			AND (date(add_time) between #{arriveStartDate} and #{arriveEndDate})
+		</if>
+		<if test="signStartDate != null and signEndDate != null and signStartDate != '' and signEndDate != ''">
+			AND (date(sign_time) between #{signStartDate} and #{signEndDate})
+		</if>
+	</select>
+
+</mapper>

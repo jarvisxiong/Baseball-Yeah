@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiduan.axp.dao.waybill.mapper.WaybillScanMapper">
+
+	<select id="getScanInfoById"  parameterType="java.lang.Long" resultType="com.zhiduan.axp.dao.waybill.bean.ScanBean">
+
+		select
+		scan_id as scanId,(case when t2.be_virtual=1 then '' else waybill_number end) as waybillNumber, t1.express_company_id as expressCompanyId, scan_side as scanSide,
+		 scan_type as scanType, scan_time as scanTime, scan_user_id as scanUserId, t1.add_time as addTime,
+		 t3.simple_name as expressCompanyText
+		from tb_scan t1
+		left join tb_waybill t2  on t1.waybill_number=t2.waybill_no and t1.express_company_id=t2.express_company_id
+		left join tb_express_company t3  on t1.express_company_id=t3.express_company_id
+		where t1.scan_id=#{scanId}
+		limit 1
+
+	</select>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhiduan.axp.dao.wallet.mapper.AcctPolicyVoucherMapper">
+<select id="selectPolicyVoucherInfo" parameterType="com.zhiduan.axp.controller.model.wallet.AcctPolicyVoucherInfo" resultType="com.zhiduan.axp.controller.model.wallet.AcctPolicyVoucherInfo">
+	select t1.policy_id policyId,date_format(t1.effect_time,'%Y-%m-%d %h:%i:%s') effectTime,
+	date_format(t1.expire_time,'%Y-%m-%d %h:%i:%s') expireTime,t1.face_value faceValue,
+	date_format(t1.receive_time,'%Y-%m-%d %h:%i:%s') receiveTime,
+	CASE t1.state WHEN 0 THEN '已失效' WHEN 1 THEN '已领取' WHEN 2
+	THEN '已使用' WHEN 3 THEN '已生成' ELSE '其他' END stateName,
+	t1.state,date_format(t1.use_time,'%Y-%m-%d %h:%i:%s') useTime,t1.user_id userId,t1.voucher_id
+	voucherId,t2.policy_name policyName,t3.activity_name
+	activityName,t4.nickname nickName,t4.user_name userName,t2.activity_id
+	activityId from tb_acct_policy_voucher t1
+	INNER JOIN tb_acct_activity_policy t2 ON t1.policy_id=t2.policy_id
+	INNER JOIN tb_acct_activity t3 ON t3.activity_id=t2.activity_id
+	LEFT JOIN tb_user t4 ON t4.user_id=t1.user_id
+	<where>
+		1=1
+		<if test="activityName!=null and activityName!=''">
+			and t3.activity_name like '${activityName}%'
+		</if>
+		<if test="policyName!=null and policyName!=''">
+			and t2.policy_name like '${policyName}%'
+		</if>
+		<if test="useStartTime!=null and useStartTime!=''">
+			and   <![CDATA[t1.use_time>#{useStartTime}]]>
+		</if>
+		<if test="useEndTime!=null and useEndTime!=''">
+			and <![CDATA[t1.use_time<#{useEndTime}]]>
+		</if>
+		<if test="receiveStartTime!=null and receiveStartTime!=''">
+			and   <![CDATA[t1.receive_time>#{receiveStartTime}]]>
+		</if>
+		<if test="receiveEndTime!=null and receiveEndTime!=''">
+			and <![CDATA[t1.receive_time<#{receiveEndTime}]]>
+		</if>
+		<if test="state!=null">
+			and t1.state=#{state}
+		</if>
+	</where>
+    
+</select>
+</mapper>

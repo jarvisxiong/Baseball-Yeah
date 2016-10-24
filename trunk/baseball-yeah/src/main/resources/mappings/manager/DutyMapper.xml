@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhiduan.axp.dao.manager.mapper.DutyBeanMapper">
+	<resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.DutyBean">
+		<constructor>
+			<idArg column="duty_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="duty_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="rank_no" jdbcType="TINYINT" javaType="java.lang.Byte" />
+			<arg column="be_deleted" jdbcType="TINYINT" javaType="java.lang.Byte" />
+		</constructor>
+	</resultMap>
+	<sql id="Base_Column_List">
+		duty_id, duty_name, rank_no, be_deleted
+	</sql>
+	<select id="selectAllDupt" resultMap="BaseResultMap">
+		select * from tb_duty where
+		be_deleted=0
+		
+	</select>
+	<select id="selectTotalCount" resultType="int">
+		select count(1) from
+		tb_duty where be_deleted=0
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from tb_duty
+		where duty_id = #{dutyId,jdbcType=BIGINT} and be_deleted=0
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		update tb_duty set
+		be_deleted=1
+		where be_deleted=0 and duty_id = #{dutyId,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.DutyBean">
+		insert into tb_duty
+		(duty_name, rank_no,
+		be_deleted)
+		values (#{dutyName,jdbcType=VARCHAR},
+		#{rankNo,jdbcType=TINYINT},0)
+	</insert>
+	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.DutyBean">
+		insert into tb_duty
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+
+			<if test="dutyName != null">
+				duty_name,
+			</if>
+			<if test="rankNo != null">
+				rank_no,
+			</if>
+			be_deleted,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+
+			<if test="dutyName != null">
+				#{dutyName,jdbcType=VARCHAR},
+			</if>
+			<if test="rankNo != null">
+				#{rankNo,jdbcType=TINYINT},
+			</if>
+			0
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.DutyBean">
+		update tb_duty
+		<set>
+			<if test="dutyName != null">
+				duty_name = #{dutyName,jdbcType=VARCHAR},
+			</if>
+			<if test="rankNo != null">
+				rank_no = #{rankNo,jdbcType=TINYINT}
+			</if>
+		</set>
+		where be_deleted=0 and duty_id = #{dutyId,jdbcType=BIGINT}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.DutyBean">
+		update tb_duty
+		set
+		duty_name = #{dutyName,jdbcType=VARCHAR},
+		rank_no =
+		#{rankNo,jdbcType=TINYINT}
+		where be_deleted=0 and duty_id =
+		#{dutyId,jdbcType=BIGINT}
+	</update>
+	<!-- 判断编辑职务是否唯一 -->
+	<select id="isDutyExist" resultType="int" parameterType="map">
+		select count(1) from tb_duty t
+		where t.duty_name =
+		#{dutyName,jdbcType=VARCHAR}
+		<if test="dutyId != null">
+			AND t.duty_id != #{dutyId,jdbcType=BIGINT}
+		</if>
+		and t.be_deleted=0
+	</select>
+
+	<select id="getAllDupt" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select * from tb_duty where be_deleted=0
+	</select>
+</mapper> 
