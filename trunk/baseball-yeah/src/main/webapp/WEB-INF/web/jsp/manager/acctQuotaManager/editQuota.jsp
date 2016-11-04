@@ -14,8 +14,8 @@
 					<div class="form-group">
 						<label class="col-lg-3 control-label label-operation">指标ID</label>
 						<div class="col-lg-7 div-operation ">
-							<input type="text" class="form-control" name="edit_quotaid"
-								id="edit_quotaid" placeholder="指标ID" />
+							<input type="text" class="form-control" name="edit_quotaid" id="edit_quotaid" placeholder="指标ID" />
+							<input type="hidden" id="edit_OldQuotaid"/>
 						</div>
 					</div>
 					<div class="form-group">

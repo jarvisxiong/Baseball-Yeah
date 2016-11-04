@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.UserManagerLogMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.UserManagerLogMapper">
 
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.UserManagerLogBean" useGeneratedKeys="true" keyProperty="userManagerLogId">
+    <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.UserManagerLogBean" useGeneratedKeys="true" keyProperty="userManagerLogId">
       INSERT INTO tb_user_manager_log (
             user_manager_id,
             user_name,
@@ -20,7 +20,7 @@
           )
     </insert>
 
-    <insert id="insertRemark" parameterType="com.zhiduan.axp.dao.manager.bean.UserManagerLogBean">
+    <insert id="insertRemark" parameterType="com.rofour.baseball.dao.manager.bean.UserManagerLogBean">
         INSERT INTO tb_user_manager_log_remark (
         user_manager_log_id,
         new_value,
@@ -34,8 +34,8 @@
         )
     </insert>
 
-    <select id="getLogs" parameterType="com.zhiduan.axp.controller.model.UserManagerLogModel"
-            resultType="com.zhiduan.axp.dao.manager.bean.UserManagerLogBean">
+    <select id="getLogs" parameterType="com.rofour.baseball.controller.model.UserManagerLogModel"
+            resultType="com.rofour.baseball.dao.manager.bean.UserManagerLogBean">
         SELECT
         a.user_manager_log_id userManagerLogId,
         a.user_manager_id userManagerId,
@@ -51,14 +51,20 @@
         tb_user_manager_log a,tb_menu b,tb_user_manager_log_remark c
         WHERE a.user_manager_log_id=c.user_manager_log_id
         AND a.menu_id=b.menu_id
-        AND a.operation_time between #{startDate} AND #{endDate}
-        <if test="userName != ''and userName!=null">
+<!--         AND a.operation_time between #{startDate} AND #{endDate} -->
+		<if test=" startDate != null and startDate != '' ">
+			AND a.operation_time &gt;= #{startDate}  
+		</if>
+		<if test=" endDate != null and endDate != '' ">
+			AND a.operation_time &lt;= #{endDate}
+		</if>
+        <if test="userName != '' and userName!=null">
             and a.user_name like CONCAT('%',TRIM(#{userName}),'%')
         </if>
-        <if test="menuId != ''and menuId!=null">
+        <if test="menuId != '' and menuId!=null">
             and a.menu_id like CONCAT('%',TRIM(#{menuId}),'%')
         </if>
-        <if test="operationType != ''and operationType!=null">
+        <if test="operationType != '' and operationType!=null">
             and a.operation_type like CONCAT('%',TRIM(#{operationType}),'%')
         </if>
         ORDER BY ${sort} ${order}
@@ -67,7 +73,7 @@
     </select>
 
 
-    <select id="getLogsCount" parameterType="com.zhiduan.axp.controller.model.UserManagerLogModel"
+    <select id="getLogsCount" parameterType="com.rofour.baseball.controller.model.UserManagerLogModel"
             resultType="int">
 
         SELECT COUNT(*) FROM (
@@ -84,7 +90,13 @@
         tb_user_manager_log a,tb_menu b,tb_user_manager_log_remark c
         WHERE a.user_manager_log_id=c.user_manager_log_id
         AND a.menu_id=b.menu_id
-        AND a.operation_time between #{startDate} AND #{endDate}
+<!--         AND a.operation_time between #{startDate} AND #{endDate} -->
+		<if test=" startDate != null and startDate != '' ">
+			AND a.operation_time &gt;= #{startDate}  
+		</if>
+		<if test=" endDate != null and endDate != '' ">
+			AND a.operation_time &lt;= #{endDate}
+		</if>
         <if test="userName != ''and userName!=null">
             and a.user_name like CONCAT('%',TRIM(#{userName}),'%')
         </if>

@@ -4,26 +4,27 @@
     <Properties>
         <Property name="logdir">${sys:catalina.base}/logs</Property>
         <Property name="layout">[%t] %d{yyyy-MM-dd HH:mm:ss z} %-5level %class{36} [%L] %M - %msg%xEx%n</Property>
-        <Property name="logfilename">axp-operation</Property>
+        <Property name="logfilename">baseball-yeah</Property>
     </Properties>
+
     <appenders>
-         
         <Console name="Console" target="SYSTEM_OUT">
-            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY" />
-            <PatternLayout pattern="${layout}" />
+            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${layout}"/>
         </Console>
 
-        <RollingFile name="RollingFile" fileName="${logdir}/${logfilename}.log" filePattern="${logdir}/${logfilename}-%d{yyyyMMdd}-%i.log.gz">
-            <PatternLayout  pattern="${layout}" />
-            <SizeBasedTriggeringPolicy size="200MB" />
+        <RollingFile name="RollingFile" fileName="${logdir}/${logfilename}.log"
+                     filePattern="${logdir}/${logfilename}-%d{yyyyMMdd}-%i.log.gz">
+            <PatternLayout pattern="${layout}"/>
+            <SizeBasedTriggeringPolicy size="200MB"/>
         </RollingFile>
-        
     </appenders>
+
     <loggers>
         <root level="info">
-            <appender-ref ref="RollingFile" />
-            <appender-ref ref="Console" />
+            <appender-ref ref="RollingFile"/>
+            <appender-ref ref="Console"/>
         </root>
     </loggers>
-    
+
 </configuration>

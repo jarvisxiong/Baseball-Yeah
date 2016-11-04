@@ -95,16 +95,16 @@
 				<div class="col-lg-12">
 					<div class="main-box clearfix">
 						<header class="main-box-header clearfix">
-							<div class="row">
-								<div class="col-lg-12">
-									<ol class="breadcrumb">
-										<li><a
-											href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>
-										<li class="active"><span>钱包</span></li>
-									</ol>
-									<h1>钱包帐号审核</h1>
-								</div>
-							</div>
+							<%--<div class="row">--%>
+								<%--<div class="col-lg-12">--%>
+									<%--<ol class="breadcrumb">--%>
+										<%--<li><a--%>
+											<%--href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>--%>
+										<%--<li class="active"><span>钱包</span></li>--%>
+									<%--</ol>--%>
+									<%--<h1>钱包帐号审核</h1>--%>
+								<%--</div>--%>
+							<%--</div>--%>
 							<div class="panel-group" style="margin-bottom: 0px;"
 								id="accordion">
 								<div class="panel panel-default">

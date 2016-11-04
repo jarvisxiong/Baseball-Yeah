@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.PropertyDictMapper">
-    <resultMap id="PropertyDictResultMap" type="com.zhiduan.axp.dao.manager.bean.PropertyDictBean">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.PropertyDictMapper">
+    <resultMap id="PropertyDictResultMap" type="com.rofour.baseball.dao.manager.bean.PropertyDictBean">
         <constructor>
             <idArg column="property_id" jdbcType="VARCHAR" javaType="java.lang.String"/>
             <arg column="property_shortcode" jdbcType="VARCHAR" javaType="java.lang.String"/>
@@ -15,15 +15,15 @@
     <select id="getPropertyDictList" resultMap="PropertyDictResultMap">
 		select t.property_id,t.property_shortcode,t.call_alias,t.description,t.property_value,t.sort_no from tb_property_dict t
 	</select>
-    <select id="getDictListbyCallAlias"  parameterType="java.lang.String" resultMap="PropertyDictResultMap">
+    <select id="getDictListbyCallAlias" parameterType="java.lang.String" resultMap="PropertyDictResultMap">
         select t.property_id,t.property_shortcode,t.call_alias,t.description,t.property_value,t.sort_no from tb_property_dict t
         where t.call_alias=#{callAlias}
     </select>
-	 <select id="getPropertyDictListByPropertyId" parameterType="java.lang.String" resultMap="PropertyDictResultMap">
+    <select id="getPropertyDictListByPropertyId" parameterType="java.lang.String" resultMap="PropertyDictResultMap">
 		select t.property_id,t.property_shortcode,t.call_alias,t.description,t.property_value,t.sort_no from tb_property_dict t
 		where t.property_id=#{propertyId}
 	</select>
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.PropertyDictBean">
+    <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.PropertyDictBean">
 		insert into tb_property_dict
 		(property_id,property_shortcode,call_alias,
 		description,property_value,sort_no) values (
@@ -35,7 +35,7 @@
 		#{sortNo,jdbcType=SMALLINT}
 		)
 	</insert>
-    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.PropertyDictBean">
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.PropertyDictBean">
         update tb_property_dict
         <set>
             <if test="propertyShortcode != null">
@@ -61,7 +61,7 @@
       delete from tb_property_dict where property_id = #{propertyId,jdbcType=VARCHAR}
     </delete>
 
-    <select id="checkPropertyDict" parameterType="map" resultType="int">
+    <!-- <select id="checkPropertyDict" parameterType="map" resultType="int">
         select count(1) from tb_property_dict
         <where>
 
@@ -78,6 +78,58 @@
             <if test="update==1">
                 or property_shortcode = #{propertyShortcode,jdbcType=VARCHAR}) and property_id !=
                 #{propertyId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select> -->
+	
+	<select id="checkPropertyDictPropertyId" parameterType="map" resultType="int">
+        select count(1) from tb_property_dict where property_id=#{propertyId,jdbcType=VARCHAR}
+    </select>
+    
+    <select id="checkPropertyDictPropertyValue" parameterType="map" resultType="int">
+        select count(1) from tb_property_dict 
+        <where>
+        	<if test="update==1">
+        		property_id != #{propertyId,jdbcType=VARCHAR}
+        	</if>
+        	and call_alias=#{callAlias,jdbcType=VARCHAR} and property_value=#{propertyValue,jdbcType=SMALLINT}
+        </where>
+    </select>
+    
+    <select id="checkPropertyDictPropertyShortcode" parameterType="map" resultType="int">
+        select count(1) from tb_property_dict
+        <where>
+        	<if test="update==1">
+        		property_id != #{propertyId,jdbcType=VARCHAR}
+        	</if>
+        	and call_alias=#{callAlias,jdbcType=VARCHAR} and property_shortcode=#{propertyShortcode,jdbcType=VARCHAR}
+        </where>
+    </select>
+    
+    <!-- <select id="checkPropertyDict" parameterType="map" resultType="int">
+        select count(1) from tb_property_dict
+        <where>
+            <if test="add==0">
+                property_id=#{propertyId,jdbcType=VARCHAR} or 
+            </if>
+            (call_alias=#{callAlias,jdbcType=VARCHAR} and property_value=#{propertyValue,jdbcType=SMALLINT})
+			or (call_alias=#{callAlias,jdbcType=VARCHAR} and property_shortcode=#{propertyShortcode,jdbcType=VARCHAR})
+        </where>
+    </select> -->
+    
+    
+
+    <select id="checkPropertyDictNew" parameterType="map" resultType="int">
+        select count(1) from tb_property_dict
+        <where>
+            <if test="callAlias != null and propertyValue != null">
+                (call_alias=#{callAlias,jdbcType=VARCHAR} and property_value = #{propertyValue,jdbcType=SMALLINT})
+            </if>
+            <if test="propertyShortcode != null">
+                and property_shortcode = #{propertyShortcode,jdbcType=VARCHAR}
+            </if>
+            <if test="propertyId != null">
+                and property_id != #{propertyId,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.SysParameterMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.SysParameterMapper">
 	<resultMap id="BaseResultMap"
-		type="com.zhiduan.axp.dao.manager.bean.SysParameterBean">
+		type="com.rofour.baseball.dao.manager.bean.SysParameterBean">
 		<constructor>
 			<idArg column="sys_parameter_id" jdbcType="BIGINT" javaType="java.lang.Long" />
 			<arg column="parameter_name" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -59,7 +59,7 @@
 
 	<!-- 新增 -->
 	<insert id="insert"
-		parameterType="com.zhiduan.axp.dao.manager.bean.SysParameterBean">
+		parameterType="com.rofour.baseball.dao.manager.bean.SysParameterBean">
 		insert into tb_sys_parameter
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<!-- <if test="sysParameterId != null"> sys_parameter_id, </if> -->
@@ -96,7 +96,7 @@
 
 	<!-- 更新 -->
 	<update id="updateByPrimaryKey"
-		parameterType="com.zhiduan.axp.dao.manager.bean.SysParameterBean">
+		parameterType="com.rofour.baseball.dao.manager.bean.SysParameterBean">
 		update tb_sys_parameter
 		<set>
 			<if test="parameterName != null">

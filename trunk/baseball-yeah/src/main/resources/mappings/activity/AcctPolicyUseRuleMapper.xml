@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper
-	namespace="com.zhiduan.axp.dao.activity.mapper.AcctPolicyUseRuleMapper">
+	namespace="com.rofour.baseball.dao.activity.mapper.AcctPolicyUseRuleMapper">
 	<resultMap id="BaseResultMap"
-		type="com.zhiduan.axp.dao.activity.bean.AcctPolicyUseRuleBean">
+		type="com.rofour.baseball.dao.activity.bean.AcctPolicyUseRuleBean">
 		<constructor>
 			<idArg column="rule_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
 			<arg column="policy_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
@@ -35,7 +35,7 @@
 		where policy_id = #{policyId,jdbcType=INTEGER}
 	</delete>
 	<insert id="insert"
-		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyUseRuleBean">
+		parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyUseRuleBean">
 		insert into tb_acct_policy_use_rule (rule_id, policy_id, quota_id,
 		quota_filed, operator, quota_value
 		)
@@ -45,7 +45,7 @@
 		)
 	</insert>
 	<insert id="insertSelective"
-		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyUseRuleBean">
+		parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyUseRuleBean">
 		insert into tb_acct_policy_use_rule
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="ruleId != null">
@@ -89,7 +89,7 @@
 		</trim>
 	</insert>
 	<update id="updateByPrimaryKeySelective"
-		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyUseRuleBean">
+		parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyUseRuleBean">
 		update tb_acct_policy_use_rule
 		<set>
 			<if test="policyId != null">
@@ -111,7 +111,7 @@
 		where rule_id = #{ruleId,jdbcType=INTEGER}
 	</update>
 	<update id="updateByPrimaryKey"
-		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyUseRuleBean">
+		parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyUseRuleBean">
 		update tb_acct_policy_use_rule
 		set policy_id = #{policyId,jdbcType=INTEGER},
 		quota_id = #{quotaId,jdbcType=INTEGER},
@@ -122,7 +122,7 @@
 	</update>
 
 	<!-- 根据代金券Id获取代金券使用规则 -->
-	<select id="getUseRulesByVoucheId" parameterType="java.lang.Long" resultType="com.zhiduan.axp.dao.activity.bean.AcctPolicyUseRuleBean">
+	<select id="getUseRulesByVoucheId" parameterType="java.lang.Long" resultType="com.rofour.baseball.dao.activity.bean.AcctPolicyUseRuleBean">
 		SELECT pur.quota_filed quotaFiled,pur.operator operator,pur.quota_value
 		quotaValue
 		FROM tb_acct_policy_use_rule pur LEFT JOIN tb_acct_policy_voucher pv ON

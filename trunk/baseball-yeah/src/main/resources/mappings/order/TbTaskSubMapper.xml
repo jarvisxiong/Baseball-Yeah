@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.order.mapper.TbTaskSubMapper">
-    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+<mapper namespace="com.rofour.baseball.dao.order.mapper.TbTaskSubMapper">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.order.bean.TbTaskSub">
         <constructor>
             <idArg column="task_sub_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
             <arg column="task_no" jdbcType="BIGINT" javaType="java.lang.Long"/>
@@ -24,7 +24,7 @@
     college_id, effective_start_date, effective_end_date, deadline, publish_user_id, 
     publish_time, state
   </sql>
-    <select id="selectByTask" resultType="com.zhiduan.axp.dao.order.bean.TbTaskSub" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+    <select id="selectByTask" resultType="com.rofour.baseball.dao.order.bean.TbTaskSub" parameterType="com.rofour.baseball.dao.order.bean.TbTaskSub">
     select 
     a.task_sub_id taskSubId, a.task_no taskNo, a.task_id taskId, a.task_unit_price taskUnitPrice, a.unit_total unitTotal, a.upper_limit upperLimit,
     a.task_unit_num taskUnitNum, b.full_name collegeName,
@@ -35,7 +35,7 @@
     where task_id = #{taskId,jdbcType=BIGINT}
   </select>
 
-    <select id="selectByTaskAndCollege" resultType="com.zhiduan.axp.dao.order.bean.TbTaskSub" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+    <select id="selectByTaskAndCollege" resultType="com.rofour.baseball.dao.order.bean.TbTaskSub" parameterType="com.rofour.baseball.dao.order.bean.TbTaskSub">
     select
     a.task_sub_id taskSubId, a.task_no taskNo, a.task_id taskId, a.task_unit_price taskUnitPrice, a.unit_total unitTotal, a.upper_limit upperLimit,
     a.task_unit_num taskUnitNum, b.full_name collegeName,
@@ -56,7 +56,11 @@
     delete from tb_task_sub
     where task_sub_id = #{taskSubId,jdbcType=BIGINT}
   </delete>
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+
+    <delete id="stopByPrimaryKey" parameterType="java.lang.Long">
+      DELETE from tb_order_grab_pool WHERE order_id= #{taskSubId,jdbcType=BIGINT} AND TYPE='agent_system'
+    </delete>
+    <insert id="insert" parameterType="com.rofour.baseball.dao.order.bean.TbTaskSub">
     insert into tb_task_sub (task_sub_id, task_no, task_id, 
       task_unit_price, unit_total, upper_limit, 
       task_unit_num, college_id, effective_start_date, 
@@ -68,7 +72,7 @@
       #{effectiveEndDate,jdbcType=TIMESTAMP}, #{deadline,jdbcType=TIMESTAMP}, #{publishUserId,jdbcType=BIGINT}, 
       #{publishTime,jdbcType=TIMESTAMP}, #{state,jdbcType=TINYINT})
   </insert>
-    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+    <insert id="insertSelective" parameterType="com.rofour.baseball.dao.order.bean.TbTaskSub">
         insert into tb_task_sub
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="taskSubId != null">
@@ -159,7 +163,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+    <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.order.bean.TbTaskSub">
         update tb_task_sub
         <set>
             <if test="taskNo != null">
@@ -204,7 +208,7 @@
         </set>
         where task_sub_id = #{taskSubId,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.order.bean.TbTaskSub">
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.order.bean.TbTaskSub">
         update tb_task_sub
         set task_no = #{taskNo,jdbcType=BIGINT},
         task_id = #{taskId,jdbcType=BIGINT},

@@ -1,15 +1,21 @@
-<%@page import="java.text.SimpleDateFormat" %>
-<%@page import="java.util.Date" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="/common/comm.jsp" %>
-<script type="text/javascript"
-        src="<%=request.getContextPath()%>/js/axp/index.js"></script>
-<script type="text/javascript"
-        src="<%=request.getContextPath()%>/plugs/echart/echarts.min.js"></script>
-<script type="text/javascript"
-        src="<%=request.getContextPath()%>/plugs/echart/theme/macarons.js"></script>
+
+<%--<script type="text/javascript"--%>
+<%--src="<%=request.getContextPath()%>/js/axp/index.js"></script>--%>
+
+<%--<script type="text/javascript"--%>
+        <%--src="<%=request.getContextPath()%>/plugs/echart/theme/macarons.js"></script>--%>
 <script type="text/javascript">
     $(function () {
+    	$.post("/getIndexData",{},function(data){
+			if(null != data && '' != data){
+				$("#userNumbers").html(data.userTotal);
+				$("#todayUsers").html(data.todayNewOrderTotal);
+				$("#todaySMS").html(data.todaySMS);
+				$("#todayNewPhoneTotal").html(data.todayNewPhoneTotal);
+			}
+		},"json");
+    	
         //setInterval("getTimerInfo()", 60000);
         $.get('/user/tenDayUsers', function (DATA, status) {
             if (status == 'success') {
@@ -115,7 +121,7 @@
             },
             toolbox: {
                 feature: {
-                    dataView: {show: true, readOnly: false},
+//                    dataView: {show: true, readOnly: false},
                     magicType: {show: true, type: ['line', 'bar']},
                     restore: {show: true},
                     saveAsImage: {show: true}
@@ -155,11 +161,11 @@
         $.get('/user/getOderStatiscs', function (data) {
             orderChart.hideLoading();
             var datacategories = [], series1 = [], series2 = [];
-            var ii=5;
-            for(var i=0;i<6;i++){
+            var ii = 5;
+            for (var i = 0; i < 6; i++) {
                 datacategories.push(data.data[ii].dateTimeString.substring(11) + ":00");
                 series1.push(data.data[ii].orderCout || 0);
-                series2.push((data.data[ii].finalMoney || 0)/100);//有null值给默认值0
+                series2.push((data.data[ii].finalMoney || 0) / 100);//有null值给默认值0
                 ii--;
             }
             orderChart.setOption({
@@ -212,7 +218,7 @@
 
     });
 
-    // graph real time
+    //     graph real time
     if ($('#graph-flot-realtime').length) {
 
         var data = [], totalPoints = 300;
@@ -310,7 +316,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <ol class="breadcrumb">
-                    <li><a href="#">首页</a></li>
+                    <li><a href="#"></a></li>
                 </ol>
             </div>
         </div>
@@ -318,27 +324,27 @@
             <div class="col-lg-3 col-sm-6 col-xs-12">
                 <div class="main-box infographic-box">
                     <i class="fa fa-user purple-bg"></i> <span class="headline">用户</span>
-                    <span id="userNumbers" class="value">${userTotal}</span>
+                    <span id="userNumbers" class="value">0</span>
                 </div>
             </div>
             <div class="col-lg-3 col-sm-6 col-xs-12">
                 <div class="main-box infographic-box">
                     <%--                 <a href="<%=request.getContextPath()%>/user/storeUserList?startDate=<%= new SimpleDateFormat("yyyy-MM-dd").format(new Date()) %>" style="text-decoration: none;">--%>
                     <i class="fa fa-shopping-cart emerald-bg"></i> <span
-                        class="headline">今日订单数量</span> <span id="todayUsers" class="value">${todayNewOrderTotal}</span>
+                        class="headline">今日订单数量</span> <span id="todayUsers" class="value">0</span>
                     <!-- </a> -->
                 </div>
             </div>
             <div class="col-lg-3 col-sm-6 col-xs-12">
                 <div class="main-box infographic-box">
                     <i class="fa fa-money green-bg"></i> <span class="headline">今日发送短信数量</span>
-                    <span id="todaySMS" class="value">${todaySMS}</span>
+                    <span id="todaySMS" class="value">0</span>
                 </div>
             </div>
             <div class="col-lg-3 col-sm-6 col-xs-12">
                 <div class="main-box infographic-box">
                     <i class="fa fa-eye yellow-bg"></i> <span class="headline">今日新增手机数量</span>
-                    <span id="todayNewPhoneTotal" class="value">${todayNewPhoneTotal}</span>
+                    <span id="todayNewPhoneTotal" class="value">0</span>
                 </div>
             </div>
         </div>

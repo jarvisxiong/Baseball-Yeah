@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.order.mapper.OrderAppraiserMapper">
+	<select id="getOrderAppraise" resultType="com.rofour.baseball.controller.model.order.OrderAppraiseIn"
+            parameterType="com.rofour.baseball.controller.model.order.RequestOrderAppraiseInfo">
+		SELECT appraise_id appraiseId,a.order_id orderId,a.appraiser_mobile appraiserMobile,a.appraiser_other appraiserOther,
+		a.create_date createDate,a.overall_score overallScore,b.phone phone ,c.type orderType
+		FROM tb_order_appraise a,tb_user  b,tb_order c
+        WHERE a.appraiser_other =b.user_id AND a.appraiser_mobile != '' AND a.order_id=c.order_id
+			<if test="orderId != null and orderId != '' ">
+                AND a.order_id like CONCAT('%',#{orderId},'%')
+            </if>
+            <if test="appraiserMobile != null and appraiserMobile != '' ">
+                AND a.appraiser_mobile like CONCAT('%',#{appraiserMobile},'%')
+            </if>
+            <if test="phone != null and phone != '' ">
+                AND b.phone  like CONCAT('%',#{phone},'%')
+            </if>
+            <if test="overallScore != null and overallScore != '' ">
+                AND a.overall_score =#{overallScore}
+            </if>
+             <if test="createStartDate != null and createStartDate != ''">
+                AND <![CDATA[a.create_date >= #{createStartDate}]]>
+            </if>
+            <if test="createEndDate != null and createEndDate != ''">
+                AND <![CDATA[a.create_date <= #{createEndDate}]]>
+            </if>
+             ORDER BY ${sort} ${order}
+             LIMIT #{offset},#{limit}
+	</select>
+	
+	<select id="getOrderAppraiseTotal"   resultType="java.lang.Integer"
+            parameterType="com.rofour.baseball.controller.model.order.RequestOrderAppraiseInfo">
+            SELECT count(1) FROM tb_order_appraise a,tb_user  b,tb_order c
+			WHERE a.appraiser_other =b.user_id AND a.appraiser_mobile != ''AND a.order_id=c.order_id
+			<if test="orderId != null and orderId != '' ">
+                AND a.order_id like CONCAT('%',#{orderId},'%')
+            </if>
+            <if test="appraiserMobile != null and appraiserMobile != '' ">
+                AND a.appraiser_mobile like CONCAT('%',#{appraiserMobile},'%')
+            </if>
+            <if test="phone != null and phone != '' ">
+                AND b.phone like CONCAT('%',#{phone},'%')
+            </if>
+            <if test="overallScore != null and overallScore != '' ">
+                AND a.overall_score =#{overallScore}
+            </if>
+             <if test="createStartDate != null and createStartDate != ''">
+                AND <![CDATA[a.create_date >= #{createStartDate}]]>
+            </if>
+            <if test="createEndDate != null and createEndDate != ''">
+                AND <![CDATA[a.create_date <= #{createEndDate}]]>
+            </if>
+    </select>
+    
+    <select id="getOrderAppraiseDetail" resultType="com.rofour.baseball.controller.model.order.OrderAppraiseIn"
+            parameterType="java.lang.Integer">
+    	SELECT a.appraise_id appraiseId,a.order_id orderId,a.overall_desc overallDesc,a.appraiser_other,a.overall_score overallScore
+		FROM tb_order_appraise a where appraise_id = #{appraiseId}
+    </select>
+    
+   <select id="getCollegeByCEO" resultType="java.lang.Long"
+            parameterType="java.lang.String">
+ 		SELECT college_id FROM p_user pu LEFT JOIN tb_user tu ON pu.ceo_id =tu.user_id WHERE tu.real_name = #{realName}
+ 	</select>
+ 	
+ 	<select id="getCollegeCEO" resultType="com.rofour.baseball.dao.order.bean.CollegeCEOBean">
+ 		SELECT b.user_id AS userId ,b.college_id AS collegeId,a.real_name AS realName FROM tb_user a JOIN p_user b ON a.user_id=b.user_id  WHERE 
+				a.be_deleted=0 
+				AND b.state=2
+				AND b.office_role_type=3
+ 	</select>
+</mapper>

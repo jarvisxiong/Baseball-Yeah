@@ -372,6 +372,15 @@
               function(cell, row, col) {
                 if (cell != null) {
                   var tdstyle = '';
+                  var tdcss = $(cell).data("tableexport-msonumberformat");
+                  if(typeof tbcss == 'undefined' && typeof defaults.onMsoNumberFormat === 'function')
+                	 tdcss = defaults.onMsoNumberFormat(cell, row, col);
+                  else tdcss = "\\@";
+                  if(typeof tdcss != 'undefined' && tdcss != ''){
+                	  if(tdstyle == '')
+                		  tdstyle = 'style="';
+                	  	  tdstyle +='mso-number-format:\''+ tdcss + '\'\"';
+                  }
                   trData += '<td';
                   for (var styles in defaults.excelstyles) {
                     if (defaults.excelstyles.hasOwnProperty(styles)) {

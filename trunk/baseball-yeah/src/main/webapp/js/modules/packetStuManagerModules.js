@@ -3,30 +3,29 @@ define(['base'], function (base) {
      * 私有成员定义区域
      */
     var datatable;
-
     return {
-        init: function (args) {
+        init: function (panel) {
+        	panel = panel || $('#indextab').tabs('getSelected');
             // / <summary>
             // / 模块初始化方法
             // / </summary>
             // / <param name="args">初始化时传入的参数</param>
             var self = this;
-
             datatable = base.datagrid({
                 url: '/order/verify/getManageUsers',
                 queryParams: function (params) {
                     return $.extend(params,
                         {
-                            userName: $("#userName").val(),//登录账号
-                            realName: $("#realName").val(),//姓名
-                            gender: $("#gender").val(),//性别
-                            phone: $("#phone").val(),
-                            grabOrderMode: $("#grabOrderMode").val(),
-                            collegeId: $("#selcollage").val() == "请选择" ? "" : $("#selcollage").val(),//校区
-                            cityId: $("#selcity").val() == "请选择" ? "" : $("#selcity").val(),//城市
-                            verifyStatus: $("#verifyStatus").val(),
-                            startDate: $("#startDate").val(),
-                            endDate: $('#endDate').val() == "" ? "" : $('#endDate').val() + " 23:59:59"
+                            userName: $("#userName",panel).val(),//登录账号
+                            realName: $("#realName",panel).val(),//姓名
+                            gender: $("#gender",panel).val(),//性别
+                            phone: $("#phone",panel).val(),
+                            grabOrderMode: $("#grabOrderMode",panel).val(),
+                            collegeId: $("#selcollage",panel).val() == "请选择" ? "" : $("#selcollage",panel).val(),//校区
+                            cityId: $("#selcity",panel).val() == "请选择" ? "" : $("#selcity",panel).val(),//城市
+                            verifyStatus: $("#verifyStatus",panel).val(),
+                            startDate: $("#startDate",panel).val(),
+                            endDate: $('#endDate',panel).val() == "" ? "" : $('#endDate',panel).val() + " 23:59:59"
 
                         });
                 },
@@ -116,24 +115,24 @@ define(['base'], function (base) {
                         title: 'userId',
                         visible: false
                     }]
-            }, '#userTable');
+            }, '#userTable',panel);
 
             $.ajax({
                 type: "POST",
                 url: "/manage/province/getcity",
                 dataType: "json",
                 success: function (data) {
-                    $("#selcity").select2({
+                    $("#selcity",panel).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#selcity').select2("val", null);
+                    $('#selcity',panel).select2("val", null);
                 }
             });
 
             //开始时间
-            $('#starttimePicker').datetimepicker({
+            $('#starttimePicker',panel).datetimepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 pickTime: false,
@@ -141,7 +140,7 @@ define(['base'], function (base) {
             })
 
             //结束时间
-            $('#endtimePicker').datetimepicker(
+            $('#endtimePicker',panel).datetimepicker(
                 {
                     format: 'yyyy-mm-dd',
                     autoclose: true,
@@ -149,7 +148,7 @@ define(['base'], function (base) {
                     minView: 2
                 });
 
-            $('#auditcollage').bootstrapTable({
+            $('#auditcollage',panel).bootstrapTable({
                 data: [],
                 height: 200
             });
@@ -160,35 +159,44 @@ define(['base'], function (base) {
                 dataType: "json",
                 success: function (data) {
 
-                    $("#selcollage").select2({
+                    $("#selcollage",panel).select2({
                         data: data.data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#selcollage').select2("val", null);
+                    $('#selcollage',panel).select2("val", null);
                 }
             });
 
-            $("#btn_query").click(function () {
-                $("#userTable").bootstrapTable('refresh');
+            $("#btn_query",panel).click(function () {
+                //$("#userTable",panel).bootstrapTable('refresh',{"query": {"offset": 0}});
+            	if ((new Date(Date.parse($('#endDate',panel).val().replace(/-/g, "/"))).getTime() - new Date(Date.parse($('#startDate',panel).val().replace(/-/g, "/"))).getTime()) < 0) {
+                    sweetAlert("", "结束时间不能小于开始时间!", "info");
+                    return;
+                }
+                $("#userTable", panel).bootstrapTable('selectPage', 1);
             })
-            $("#btn_sealed").click(function () {
-                self.grabMode(0);
+            $("#btn_sealed",panel).click(function () {
+                self.grabMode(0,panel);
             });
-            $("#btn_activation").click(function () {
-                self.grab();
+            $("#btn_activation",panel).click(function () {
+                self.grab(panel);
             });
-            $("#btn_delete").click(function () {
-                self.remove();
+            $("#btn_delete",panel).click(function () {
+                self.remove(panel);
             });
-            $("#clearSearch").click(function () {
-                base.reset(".main-box-header");
-                $('#selcollage').select2("val", null);
-                $('#selcity').select2("val", null);
+            $("#clearSearch",panel).click(function () {
+                base.reset($(".main-box-header",panel));
+                $('#selcollage',panel).select2("val", null);
+                $('#selcity',panel).select2("val", null);
+            });
+
+            $(".btn-primary",panel).click(function () {
+                self.grabUpdate(panel);
             });
         },
-        remove: function () {
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+        remove: function (panel) {
+            var arrselections = $("#userTable",panel).bootstrapTable('getSelections');
 
             if (arrselections.length <= 0) {
                 base.error("请选择有效数据!");
@@ -204,7 +212,7 @@ define(['base'], function (base) {
                     , function (data, status) {
                         if (status == "success") {
                             if (data.success == 0) {
-                                $("#userTable").bootstrapTable('refresh');
+                                $("#userTable",panel).bootstrapTable('refresh');
                                 base.success("注销成功！")
                             } else {
                                 base.error(data.message);
@@ -215,8 +223,8 @@ define(['base'], function (base) {
                     });
             });
         },
-        grabMode: function (mode) {
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+        grabMode: function (mode,panel) {
+            var arrselections = $("#userTable",panel).bootstrapTable('getSelections');
             if (arrselections.length > 1) {
                 base.error("只能选择一行进行编辑!");
                 return;
@@ -251,7 +259,7 @@ define(['base'], function (base) {
                 }, function (data, status) {
                     if (status == "success") {
                         if (data.success == 0) {
-                            $("#userTable").bootstrapTable('refresh');
+                            $("#userTable",panel).bootstrapTable('refresh');
                             base.success("操作成功！")
                         } else {
                             base.error(data.message);
@@ -262,9 +270,9 @@ define(['base'], function (base) {
                 });
             });
         },
-        grab: function () {
+        grab: function (panel) {
             var self = this;
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+            var arrselections = $("#userTable",panel).bootstrapTable('getSelections');
             if (arrselections.length > 1) {
                 base.error("只能选择一行进行操作!");
                 return;
@@ -273,32 +281,30 @@ define(['base'], function (base) {
                 base.error("请选择有效数据!");
                 return;
             }
-            $("#grab_phone").val(arrselections[0].phone);
-            $("#grab_realName").val(arrselections[0].realName);
-            $("#grab_cityName").val(arrselections[0].cityName);
-            $("#userId").val(arrselections[0].userId);
+            $("#grab_phone",panel).val(arrselections[0].phone);
+            $("#grab_realName",panel).val(arrselections[0].realName);
+            $("#grab_cityName",panel).val(arrselections[0].cityName);
+            $("#userId",panel).val(arrselections[0].userId);
 
             if (arrselections[0].grabOrderMode) {
-                $("#grabY").prop("checked", arrselections[0].grabOrderMode == "1" ? true : false);
-                $("#grabN").prop("checked", arrselections[0].grabOrderMode == "1" ? false : true);
+                $("#grabY_packetStuManager",panel).prop("checked", arrselections[0].grabOrderMode == "1" ? true : false);
+                $("#grabN_packetStuManager",panel).prop("checked", arrselections[0].grabOrderMode == "1" ? false : true);
             }
-            $('#grabModal').modal({
+            $('#grabModal',panel).modal({
                 keyboard: false,
                 backdrop: 'static'
             });
-            $(".btn-primary").click(function () {
-                self.grabUpdate();
-            });
+
         },
-        grabUpdate: function () {
+        grabUpdate: function (panel) {
             $.post("/order/verify/activation", {
-                "userId": $("#userId").val(),
-                "grabOrderMode": $("#grabY").prop('checked') ? "1" : "0"
+                "userId": $("#userId",panel).val(),
+                "grabOrderMode": $("#grabY_packetStuManager",panel).prop('checked') ? "1" : "0"
             }, function (data, status) {
                 if (status == "success") {
                     if (data.success == 0) {
-                        $("#userTable").bootstrapTable('refresh');
-                        $('#grabModal').modal('hide');
+                        $("#userTable",panel).bootstrapTable('refresh');
+                        $('#grabModal',panel).modal('hide');
                         base.success("操作成功！")
                     } else {
                         base.error(data.message);

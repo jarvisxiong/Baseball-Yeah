@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.officemanage.mapper.OfficeManageAssistMapper">
+
+	<!-- 职务详情 -->
+  <select id="getPartInfo" parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean"
+            resultType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+         SELECT pu.user_id AS userId, tu.phone, tu.real_name AS realName,
+			pu.office_role_type AS officeRoleType, tu.gender, tau.state
+		 FROM
+			p_user pu, tb_acct_user tau, tb_user tu
+		WHERE pu.user_id = tau.user_id
+		AND tu.user_id = pu.user_id
+		AND tu.user_id = #{userId,jdbcType=BIGINT}
+    </select>
+    
+    <!-- 取小派的身份 -->
+		<select id="getOfficeRoleType" parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean"
+            resultType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+			SELECT 
+				pu.office_role_type AS officeRoleType
+			FROM 
+				p_user pu
+			WHERE 
+				pu.user_id = #{userId,jdbcType=BIGINT}
+		</select>
+    
+    <!-- COO所辖小派 -->
+     <select id="getSmallPieList" parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean"
+            resultType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+ 		SELECT 
+	 		tu.phone, tu.real_name AS realName,
+	 		date_format(tu.signup_time,'%Y-%m-%d %H:%i:%s') AS pulicTime,
+			tu.gender, pu.office_role_type AS officeRoleType, 
+			tc.full_name AS collegeName, pu.dormitory_address AS dormitoryAddress, 			
+			tbc.city_name AS cityName, tau.state, pu.user_id as userId
+		FROM 
+		 	p_user pu, tb_college tc, tb_user tu, tb_acct_user tau, tb_city tbc
+		WHERE 
+			pu.college_id = tc.college_id
+		AND pu.user_id = tu.user_id
+		AND tc.city_id = tbc.city_id
+		AND tau.user_id = tu.user_id
+		AND tu.be_deleted = 0
+		AND
+			(
+				pu.coo_id = #{userId,jdbcType=BIGINT}
+				OR
+				pu.ceo_id = #{userId,jdbcType=BIGINT}
+			)
+    </select>
+    <!-- CEO所辖的COO和所在校区未指定的所有小派 -->
+     <select id="getCeoSmallPieList" parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean"
+            resultType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+    	SELECT 
+	 		tu.phone, tu.real_name AS realName,
+	 		DATE_FORMAT(tu.signup_time,'%Y-%m-%d %H:%i:%s') AS pulicTime,
+			tu.gender, pu.office_role_type AS officeRoleType, 
+			tc.full_name AS collegeName, pu.dormitory_address AS dormitoryAddress, 			
+			tbc.city_name AS cityName, tau.state, pu.user_id AS userId
+		FROM 
+		 	p_user pu, tb_college tc, tb_user tu, tb_acct_user tau, tb_city tbc
+		WHERE 
+			pu.college_id = tc.college_id
+		AND pu.user_id = tu.user_id
+		AND tc.city_id = tbc.city_id
+		AND tau.user_id = tu.user_id
+		AND tu.be_deleted = 0
+		AND pu.coo_id IS NULL
+		AND pu.office_role_type = 1
+		AND pu.college_id IN (
+			SELECT p1.college_id FROM p_user p1 WHERE p1.user_id = #{userId,jdbcType=BIGINT}
+		)
+			UNION ALL
+		SELECT 
+	 		tu.phone, tu.real_name AS realName,
+	 		DATE_FORMAT(tu.signup_time,'%Y-%m-%d %H:%i:%s') AS pulicTime,
+			tu.gender, pu.office_role_type AS officeRoleType, 
+			tc.full_name AS collegeName, pu.dormitory_address AS dormitoryAddress, 			
+			tbc.city_name AS cityName, tau.state, pu.user_id AS userId
+		FROM 
+		 	p_user pu, tb_college tc, tb_user tu, tb_acct_user tau, tb_city tbc
+		WHERE 
+			pu.college_id = tc.college_id
+		AND pu.user_id = tu.user_id
+		AND tc.city_id = tbc.city_id
+		AND tau.user_id = tu.user_id
+		AND tu.be_deleted = 0	
+		AND pu.office_role_type = 2
+		AND pu.college_id IN (
+			SELECT p1.college_id FROM p_user p1 WHERE p1.user_id = #{userId,jdbcType=BIGINT}
+		)
+		
+    </select>
+    
+    
+    <!-- 所辖商户 -->
+     <select id="getStoreList" parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean"
+            resultType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+		SELECT 
+				ts.store_name AS storeName, tse.phone,
+				ts.location AS dormitoryAddress,
+<!-- 				 tc.full_name AS collegeName,   -->
+				date_format(tse.add_time, '%Y-%m-%d %H:%i:%s') AS pulicTime 
+				FROM tb_store ts, tb_store_exp tse 
+<!-- 				,tb_store_college_rel tsc -->
+<!-- 				, tb_college tc -->
+				WHERE
+				ts.store_id = tse.sto_exp_id
+<!-- 				AND tsc.store_id = ts.store_id -->
+<!-- 				AND tsc.college_id = tc.college_id -->
+				AND ts.be_deleted = 0
+				AND 
+				(	tse.ceo_id = #{userId,jdbcType=BIGINT}
+				OR
+					tse.coo_id = #{userId,jdbcType=BIGINT}
+				)
+    </select>    
+    
+    <!-- 插入审核记录 -->
+    <insert id="insertOfficeManageAudit" parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+	    INSERT INTO 
+	    	tb_office_manage_audit 
+	    	(opt_type, packet_user_id, audit_state, apply_user_id, apply_time)
+		VALUES
+			(#{optType}, #{userId,jdbcType=BIGINT}, 0, #{userId,jdbcType=BIGINT}, NOW())
+    </insert>
+     <!-- 更新审核记录 -->
+    <update id="updateOfficeManageAudit" parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+		 UPDATE tb_office_manage_audit SET 
+		 opt_type = #{optType}, apply_user_id = #{userId,jdbcType=BIGINT}, audit_state = 0, apply_time = NOW(), 
+		 audit_user_id = NULL, audit_time=NULL
+		 WHERE audit_id = #{auditId,jdbcType=BIGINT}
+    </update>
+    
+     <!-- 获取审核记录 -->
+    <select id="getOfficeManageAuditByUserId"  parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean"
+    		resultType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+    	SELECT toma.audit_id AS auditId
+    	FROM tb_office_manage_audit toma
+ 		WHERE toma.packet_user_id = #{userId,jdbcType=BIGINT} 
+    </select>
+    
+    
+    <!-- 选择账号列表 -->
+   <select id="getAcctList" parameterType="com.rofour.baseball.controller.model.office.OfficeAcctQueryInfo"
+		resultType="com.rofour.baseball.controller.model.office.OfficeAcctQueryInfo">
+    		SELECT 
+	    	tu.user_name AS phone, tu.real_name AS realName, tu.user_id AS userId,
+	    	DATE_FORMAT(tu.signup_time,'%Y-%m-%d %H:%i:%s') AS pulicTime,
+			tu.gender, tbc.city_name AS cityName, tc.college_id AS collegeId,
+			tc.full_name AS collegeName, pu.dormitory_address AS dormitoryAddress, 
+			tut.be_enabled AS state, TRUNCATE((tau.balance / 100),2) AS balance,
+			pus.exclude_task_packet_num AS packetNum, 
+<!-- 			TRUNCATE(((pus.overall_score_4  + pus.overall_score_5) / pus.packet_num ) * 100 , 0) -->
+<!-- 			TRUNCATE(((pus.overall_score_4 *4 + pus.overall_score_5*5 )/  -->
+<!-- 			((pus.overall_score_1 + pus.overall_score_2 + pus.overall_score_3+ pus.overall_score_4 + pus.overall_score_5) * 5))*100,2)  -->
+			TRUNCATE((pus.overall_score_4 + pus.overall_score_5) / (pus.overall_score_1 + pus.overall_score_2 + pus.overall_score_3 + pus.overall_score_4 + pus.overall_score_5)  * 100, 2 )
+			AS favorableRate
+<!-- 		FROM  -->
+<!-- 			p_user pu, tb_college tc, tb_user tu,  -->
+<!-- 			tb_acct_user tau, tb_city tbc, p_user_statistics pus, -->
+<!-- 			tb_user_type tut -->
+<!-- 		WHERE  -->
+<!-- 			pu.college_id = tc.college_id -->
+<!-- 		AND pu.user_id = tu.user_id -->
+<!-- 		AND tc.city_id = tbc.city_id -->
+<!-- 		AND tau.user_id = tu.user_id -->
+<!-- 		AND pus.user_id = tu.user_id -->
+<!-- 		AND tu.be_deleted = 0 -->
+<!-- 		AND tut.user_id = tu.user_id -->
+<!-- 		AND tut.be_enabled = 1 -->
+<!-- 		AND tut.user_type = 3 -->
+		FROM p_user pu
+		LEFT JOIN tb_user tu ON pu.user_id = tu.user_id
+		LEFT JOIN tb_acct_user tau ON tau.user_id = pu.user_id
+		LEFT JOIN p_user_statistics pus ON pus.user_id = pu.user_id
+		LEFT JOIN tb_user_type tut ON tut.user_id = pu.user_id  
+		LEFT JOIN tb_college tc ON tc.college_id = pu.college_id
+		LEFT JOIN tb_city tbc ON tbc.city_id = tc.city_id
+		WHERE 
+			tu.be_deleted = 0
+		AND tut.be_enabled = 1
+		AND pu.state = 2
+		AND tut.user_type = 3 
+<!-- 		<if test="flag == 1">      -->
+<!-- 			AND pu.office_role_type IN (1, 2) -->
+<!-- 		</if> -->
+<!-- 		<if test="flag == 0">      -->
+			AND pu.office_role_type = 1
+<!-- 		</if> -->
+		<if test="startDate != null and startDate != ''">  
+			AND 
+			 <![CDATA[tu.signup_time >= #{startDate}]]>
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND  
+			 <![CDATA[tu.signup_time <=  #{endDate}]]>
+		</if>
+		<if test="collegeId != null and collegeId != ''">
+			AND  
+			 tc.college_id = #{collegeId}
+		</if>		
+		<if test="phone != null and phone != ''">
+			AND  
+			 tu.user_name LIKE '%${phone}%' 
+<!-- 			 TRIM(CONCAT('%', #{phone}, '%')) -->
+		</if>		
+		<if test="realName != null and realName != ''">
+			AND  
+			 tu.real_name LIKE TRIM(CONCAT('%', #{realName}, '%'))
+		</if>
+		<if test="gender != null and gender != ''">
+			AND  
+			 tu.gender = #{gender}
+		</if> 
+		
+		ORDER BY ${sort} ${order}
+		limit #{offset},#{limit}
+    </select>
+    
+    <!-- 选择账号统计 -->
+    <select id="getAcctCount" parameterType="com.rofour.baseball.controller.model.office.OfficeAcctQueryInfo"
+		resultType="int">
+		SELECT
+			COUNT(1)
+		FROM p_user pu
+		LEFT JOIN tb_user tu ON pu.user_id = tu.user_id
+		LEFT JOIN tb_acct_user tau ON tau.user_id = pu.user_id
+		LEFT JOIN p_user_statistics pus ON pus.user_id = pu.user_id
+		LEFT JOIN tb_user_type tut ON tut.user_id = pu.user_id  
+		LEFT JOIN tb_college tc ON tc.college_id = pu.college_id
+		LEFT JOIN tb_city tbc ON tbc.city_id = tc.city_id
+		WHERE 
+			tu.be_deleted = 0
+		AND tut.be_enabled = 1
+		AND tut.user_type = 3 
+		AND pu.state = 2
+<!-- 		<if test="flag == 0">      -->
+<!-- 			AND pu.office_role_type IN (1, 2) -->
+<!-- 		</if> -->
+<!-- 		<if test="flag == 1">      -->
+			AND pu.office_role_type = 1
+<!-- 		</if> -->
+		<if test="startDate != null and startDate != ''">  
+			AND 
+			 <![CDATA[tu.signup_time >= #{startDate}]]>
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND  
+			 <![CDATA[tu.signup_time <=  #{endDate}]]>
+		</if>
+		<if test="collegeId != null and collegeId != ''">
+			AND  
+			 tc.college_id = #{collegeId}
+		</if>		
+		<if test="phone != null and phone != ''">
+			AND  
+			 tu.phone LIKE TRIM(CONCAT('%', #{phone}, '%'))
+		</if>		
+		<if test="realName != null and realName != ''">
+			AND  
+			 tu.real_name LIKE TRIM(CONCAT('%', #{realName}, '%'))
+		</if>
+		<if test="gender != null and gender != ''">
+			AND  
+			 tu.gender = #{gender}
+		</if>	 
+	</select>
+	
+	 <!-- 选择商户列表 -->
+   <select id="getAllStoreList" parameterType="com.rofour.baseball.controller.model.office.OfficeStoreQueryInfo"
+		resultType="com.rofour.baseball.controller.model.office.OfficeStoreQueryInfo">
+		SELECT  
+			ts.store_name AS storeName, 
+			DATE_FORMAT( tse.add_time,'%Y-%m-%d %H:%i:%s') AS pulicTime, 
+			tse.phone, ts.location, tse.sto_exp_id AS stoExpId
+		FROM 
+			tb_store ts, tb_store_exp tse,
+			tb_store_college_rel tscr, tb_college tc
+		WHERE ts.store_id = tse.sto_exp_id
+		AND tscr.store_id = ts.store_id
+		AND tc.college_id = tscr.college_id
+		AND tse.coo_id IS NULL
+		AND ts.be_deleted = 0
+		AND tc.college_id IN 
+		(
+			SELECT pu.college_id FROM p_user pu
+			WHERE pu.user_id = #{userId,jdbcType=BIGINT}
+		)
+		<if test="phone != null and phone != ''">
+			AND  
+			 tse.phone LIKE TRIM(CONCAT('%', #{phone}, '%'))
+		</if>		
+		<if test="storeName != null and storeName != ''">
+			AND  
+			 ts.store_name LIKE TRIM(CONCAT('%', #{storeName}, '%'))
+		</if>	
+		ORDER BY ${sort} ${order}
+		limit #{offset},#{limit}
+    </select>
+<!--      选择商户统计 -->
+    <select id="getAllStoreCount" parameterType="com.rofour.baseball.controller.model.office.OfficeStoreQueryInfo"
+		resultType="int">
+		SELECT
+			COUNT(1)
+		FROM 
+			tb_store ts, tb_store_exp tse,
+			tb_store_college_rel tscr, tb_college tc
+		WHERE ts.store_id = tse.sto_exp_id
+		AND tscr.store_id = ts.store_id
+		AND tc.college_id = tscr.college_id
+		AND tse.coo_id IS NULL
+		AND ts.be_deleted = 0
+		AND tc.college_id IN 
+		(
+			SELECT pu.college_id FROM p_user pu
+			WHERE pu.user_id = #{userId,jdbcType=BIGINT}
+		)
+		<if test="phone != null and phone != ''">
+			AND  
+			 tse.phone LIKE TRIM(CONCAT('%', #{phone}, '%'))
+		</if>		
+		<if test="storeName != null and storeName != ''">
+			AND  
+			 ts.store_name LIKE TRIM(CONCAT('%', #{storeName}, '%'))
+		</if>	
+	</select>
+	
+	 <!--  COO下属的商户列表 -->
+   <select id="getCooStoreList" parameterType="com.rofour.baseball.controller.model.office.OfficeStoreQueryInfo"
+		resultType="com.rofour.baseball.controller.model.office.OfficeStoreQueryInfo">
+			SELECT 
+		ts.store_name AS storeName, tse.phone, tse.sto_exp_id AS stoExpId,
+		ts.location AS location, 
+<!-- 		tc.full_name AS collegeName,  -->
+		tse.add_time AS pulicTime
+		FROM 
+		tb_store ts, tb_store_exp tse
+<!-- 		, tb_store_college_rel tsc -->
+<!-- 		, tb_college tc -->
+		WHERE
+		ts.store_id = tse.sto_exp_id
+<!-- 		AND tsc.store_id = ts.store_id -->
+<!-- 		AND tsc.college_id = tc.college_id -->
+		AND tse.coo_id =  #{userId,jdbcType=BIGINT}
+		AND ts.be_deleted = 0
+		ORDER BY ${sort} ${order}
+		limit #{offset},#{limit}
+    </select>
+    <!-- COO所辖商户统计 -->
+    <select id="getCooStoreCount" parameterType="com.rofour.baseball.controller.model.office.OfficeStoreQueryInfo"
+		resultType="int">
+			SELECT 
+		COUNT(1)
+		FROM 
+		tb_store ts, tb_store_exp tse
+<!-- 		, tb_store_college_rel tsc, tb_college tc -->
+		WHERE
+		ts.store_id = tse.sto_exp_id
+<!-- 		AND tsc.store_id = ts.store_id -->
+<!-- 		AND tsc.college_id = tc.college_id -->
+		AND tse.coo_id =  #{userId,jdbcType=BIGINT}
+		AND ts.be_deleted = 0
+    </select>
+    
+   
+	<!-- COO新增所辖商户 -->
+   <update id="chooseStore" parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+	    UPDATE 
+	    	tb_store_exp 
+	    SET 
+	    	coo_id = #{userId,jdbcType=BIGINT}
+		WHERE 
+			sto_exp_id IN  
+			<foreach collection="stoIdList" close=")" open="(" item="item" separator=",">
+		        #{item}
+		     </foreach>
+   </update>
+   <!-- COO删除所辖商户 -->
+   <update id="delStore" parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+	    UPDATE 
+	    	tb_store_exp 
+	    SET 
+	    	coo_id = NULL
+		WHERE 
+			sto_exp_id IN
+			<foreach collection="stoIdList" close=")" open="(" item="item" separator=",">
+		        #{item}
+		     </foreach>
+   </update>
+  
+   <!-- 验证校区下的CEO -->
+     <select id="validateCollegeCeo" parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean"
+		resultType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+		SELECT pu.user_id AS userId
+		FROM tb_user tu,p_user pu  
+		WHERE 
+			tu.user_id = pu.user_id
+		AND tu.be_deleted = 0
+		AND pu.office_role_type = 3
+		AND 
+			pu.college_id IN (
+			SELECT pu3.college_id FROM p_user pu3 WHERE pu3.user_id = #{userId}
+			)
+			
+		 UNION ALL
+		 
+		SELECT 
+			pu1.user_id AS userId 
+		FROM p_user pu1, tb_user tu1,tb_office_manage_audit toma
+		WHERE 
+			pu1.user_id = tu1.user_id
+		AND pu1.user_id = toma.packet_user_id
+		AND tu1.be_deleted =0
+		AND
+		toma.opt_type = 1
+		AND toma.audit_state = 0  
+		AND 
+			pu1.college_id IN (
+			SELECT pu4.college_id FROM p_user pu4 WHERE pu4.user_id = #{userId}
+			) 
+		</select>
+		
+		<!-- 验证CEO/COO申请 -->
+		<select id="validateOfficeManageAudit" parameterType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean"
+			resultType="com.rofour.baseball.dao.officemanage.bean.UserAcctBean">
+			SELECT toma.packet_user_id 
+			FROM tb_office_manage_audit toma
+			WHERE toma.audit_state = 0
+			AND toma.packet_user_id = #{userId}
+		</select>
+		
+		
+</mapper>

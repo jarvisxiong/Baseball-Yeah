@@ -42,7 +42,7 @@
                                 id="lableVerifyStatus"></label></h4>
                 </div>
                 <div class="modal-body">
-                    <div class="ban" id="demo1">
+                    <div class="ban" id="demo2">
                         <div class="ban2" id="ban_pic1">
                             <div class="prev1" id="prev1"><img src="/js/slide/js/images/index_tab_l.png" width="28" height="51"  alt=""/></div>
                             <div class="next1" id="next1"><img src="/js/slide/js/images/index_tab_r.png" width="28" height="51"  alt=""/></div>
@@ -69,5 +69,4 @@
             </div>
         </div>
     </div>
-<script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
-<script src="<%=request.getContextPath()%>/js/slide/js/pic.js"></script>
+

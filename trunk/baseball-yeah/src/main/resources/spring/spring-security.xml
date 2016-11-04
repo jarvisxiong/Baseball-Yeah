@@ -31,7 +31,7 @@
 
 
 	<!-- 項目自定义的Realm -->
-	<bean id="shiroRealm" class="com.zhiduan.axp.interceptor.ShiroRealm">
+	<bean id="shiroRealm" class="com.rofour.baseball.interceptor.ShiroRealm">
 		<property name="authorizationCachingEnabled" value="false"/>
 	</bean>
 	<!-- 项目自定义短地址拦截器 -->
@@ -55,10 +55,13 @@
 				/user/isLoginOut = anon
 				/user/** = authc
 				/manager/** = authc
+				/manage/** = authc
 				/report/** = authc
 				/sys/** = authc
 				/wallet/** = authc
 				/order/** = authc
+				/message/** = authc
+				/store/** = authc
 			</value>
 		</property>
 	</bean>

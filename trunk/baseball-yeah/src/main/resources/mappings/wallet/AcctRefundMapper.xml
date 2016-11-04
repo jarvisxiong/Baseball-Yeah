@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.wallet.mapper.AcctRefundMapper">
+<mapper namespace="com.rofour.baseball.dao.wallet.mapper.AcctRefundMapper">
 	<sql id="baseSql">
 		refund_id refundId,order_id orderId,flow_id flowId,thd_type thdType,thd_refund_id thdRefundId,pay_amount payAmount,refund_amount refundAmount,
 		create_time createTime,refund_state refundState,refund_reason refundReason,state state,ip_address ipAddress,operation_id operationId,
 		operation_name operationName,modify_time modifyTime,batch_no batchNo
 	</sql>
 
-<resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.wallet.bean.AcctRefundBean" >
+<resultMap id="BaseResultMap" type="com.rofour.baseball.dao.wallet.bean.AcctRefundBean" >
       <result property="refundId" column="refund_id" jdbcType="BIGINT" javaType="java.lang.Long" />
       <result property="orderId" column="order_id" jdbcType="VARCHAR" javaType="java.lang.String" />
       <result property="flowId" column="flow_id" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -27,7 +27,7 @@
       <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP" javaType="java.util.Date"  />
       <result property="batchNo" column="batch_no" jdbcType="BIGINT" javaType="java.lang.Long" />
   </resultMap>
-<select id="queryAll" resultMap="BaseResultMap" parameterType="com.zhiduan.axp.controller.model.wallet.AcctRefundInfo">
+<select id="queryAll" resultMap="BaseResultMap" parameterType="com.rofour.baseball.controller.model.wallet.AcctRefundInfo">
     SELECT 
     tr.refund_id refundId,CONCAT("'",tr.order_id) orderId,CONCAT("'",tr.flow_id) flowId,tr.thd_type thdType,tr.thd_refund_id thdRefundId,tr.pay_amount payAmount,
     tr.refund_amount refundAmount,tr.create_time createTime,tr.refund_state refundState,tr.refund_reason refundReason,tr.state state,
@@ -63,7 +63,7 @@
   </select>
   
    <!-- 查询数量 -->
-  <select id="getTotal" resultType="int" parameterType="com.zhiduan.axp.controller.model.wallet.AcctRefundInfo">
+  <select id="getTotal" resultType="int" parameterType="com.rofour.baseball.controller.model.wallet.AcctRefundInfo">
     select count(1) 
     from tb_acct_refund tr
     left join tb_payflow tp on tp.flow_id = tr.flow_id

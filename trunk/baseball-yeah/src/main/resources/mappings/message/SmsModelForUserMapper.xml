@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.message.mapper.SmsModelForUserMapper">
-    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.message.bean.SmsModelForUserBean">
+<mapper namespace="com.rofour.baseball.dao.message.mapper.SmsModelForUserMapper">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.message.bean.SmsModelForUserBean">
         <constructor>
             <idArg column="sms_model_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
             <arg column="user_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
@@ -19,12 +19,16 @@
         where sms_model_id = #{smsModelId,jdbcType=BIGINT}
     </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from tb_sms_model_for_user
-    where sms_model_id = #{smsModelId,jdbcType=BIGINT}
-  </delete>
+    <update id="delUpdate" parameterType="com.rofour.baseball.dao.message.bean.SmsModelForUserBean">
+        UPDATE tb_sms_model_for_user A SET A.state = 0 ,update_time = SYSDATE(),update_user_id = #{userId}
+        where sms_model_id IN
+        <foreach item="item" index="index" collection="smsModelIdArr" open="(" separator="," close=")">
+            #{item,jdbcType=BIGINT}
+        </foreach>
+        <![CDATA[ and state <> 2 ]]>
+    </update>
 
-    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.message.bean.SmsModelForUserBean">
+    <insert id="insertSelective" parameterType="com.rofour.baseball.dao.message.bean.SmsModelForUserBean">
         insert into tb_sms_model_for_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="smsModelId != null">
@@ -55,7 +59,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.message.bean.SmsModelForUserBean">
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.message.bean.SmsModelForUserBean">
         update tb_sms_model_for_user
         <set>
             <if test="userId != null">
@@ -70,5 +74,229 @@
         </set>
         where sms_model_id = #{smsModelId,jdbcType=BIGINT}
     </update>
+
+    <!--审核短信模板(修改审核状态)-->
+    <update id="auditSms" parameterType="com.rofour.baseball.dao.message.bean.SmsModelForUserBean">
+        update tb_sms_model_for_user
+        <set>
+            audit_time = sysdate(),
+            <if test="auditUserManagerId != null">
+                audit_user_manager_id = #{auditUserManagerId,jdbcType=BIGINT},
+            </if>
+            <if test="stateNum != null">
+                state = #{stateNum,jdbcType=VARCHAR},
+            </if>
+            <if test="optReason != null">
+                opt_reason = #{optReason,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where sms_model_id = #{smsModelId,jdbcType=BIGINT} and state = 2
+    </update>
+
+    <!--审核短信模板(修改审核状态)-->
+    <update id="batchAudit" parameterType="com.rofour.baseball.dao.message.bean.SmsModelForUserBean">
+        update tb_sms_model_for_user
+        <set>
+            audit_time = sysdate(),
+            <if test="auditUserManagerId != null">
+                audit_user_manager_id = #{auditUserManagerId,jdbcType=BIGINT},
+            </if>
+            <if test="stateNum != null">
+                state = #{stateNum,jdbcType=VARCHAR},
+            </if>
+            <if test="optReason != null">
+                opt_reason = #{optReason,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where sms_model_id IN
+        <foreach item="item" index="index" collection="smsModelIdArr" open="(" separator="," close=")">
+            #{item,jdbcType=BIGINT}
+        </foreach>
+          and state = 2
+    </update>
+
+    <!--查询短信模板列表(按条件查询)-->
+    <select id="getSmsAuditList" parameterType="com.rofour.baseball.dao.message.bean.SmsModelForUserBean"
+            resultType="com.rofour.baseball.dao.message.bean.SmsModelForUserBean">
+        SELECT DISTINCT
+        a.sms_model_id AS smsModelId,
+        a.user_id AS userId,
+        a.template_name AS templateName,
+        a.model_content AS modelContent,
+        a.state AS stateNum,
+        a.user_id AS userId,
+        tu.real_name AS createUserName,
+        tu.phone AS createUserPhone,
+        a.create_time as createTime,
+        a.audit_time AS auditTime,
+        a.opt_reason AS optReason,
+        b.be_supervisor AS beSupervisor,
+        b.store_id AS storeId
+        FROM
+        tb_sms_model_for_user a
+        LEFT JOIN tb_user_store_exp b ON a.user_id = b.user_id
+        LEFT JOIN tb_user tu ON a.user_id = tu.user_id
+        LEFT JOIN tb_store_college_rel tscr ON b.store_id = tscr.store_id
+        WHERE 1 = 1
+        <![CDATA[ AND a.state <> 0 ]]>
+        AND (
+        a.user_id = 0
+        OR EXISTS (
+        SELECT
+        d.user_id
+        FROM
+        tb_user_store_exp c
+        INNER JOIN tb_user d ON (
+        c.user_id = d.user_id
+        AND d.be_deleted = 0
+        )
+        WHERE 1 = 1
+        <if test="createUserName != null and createUserName != '' ">
+            and d.user_name = #{createUserName}
+        </if>
+        AND c.store_id = b.store_id
+        )
+        )
+        <if test="collegeId!=null and collegeId!=''">
+            AND tscr.college_id = #{collegeId}
+        </if>
+        <if test="createStartTime != null and createStartTime != '' ">
+            <![CDATA[ and a.create_time  >= #{createStartTime}]]>
+        </if>
+        <if test="createEndTime != null and createEndTime != '' ">
+            <![CDATA[ and a.create_time  <= #{createEndTime}]]>
+        </if>
+
+        <if test="auditStartTime != null and auditStartTime != '' ">
+            <![CDATA[ and a.audit_time  >= #{auditStartTime}]]>
+        </if>
+        <if test="auditEndTime != null and auditEndTime != '' ">
+            <![CDATA[ and a.audit_time  <= #{auditEndTime}]]>
+        </if>
+
+        <if test="stateNum != null and stateNum != '' ">
+            and a.state = #{stateNum}
+        </if>
+        <if test="modelContent != null and modelContent != '' ">
+            and a.model_content like CONCAT('%',TRIM(#{modelContent}),'%')
+        </if>
+        <if test="createUserPhone != null and createUserPhone != '' ">
+            and tu.phone like CONCAT('%',TRIM(#{createUserPhone}),'%')
+        </if>
+
+        <if test="stateNum != null and stateNum != '' and (sort == null || sort == '') ">
+            ORDER BY a.create_time DESC
+        </if>
+        <if test="sort != null and sort != '' ">
+            ORDER BY ${sort} ${order}
+        </if>
+        <if test="(stateNum == null or stateNum == '') and (sort == null || sort == '') ">
+            ORDER BY sms_model_id ${order}
+        </if>
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!--查询模板短信列表总数(按条件)-->
+    <select id="getSmsAuditListTotal" parameterType="com.rofour.baseball.dao.message.bean.SmsModelForUserBean"
+            resultType="int">
+        SELECT
+        COUNT(*)
+        FROM (SELECT
+              DISTINCT a.*
+            FROM
+            tb_sms_model_for_user a
+            LEFT JOIN tb_user_store_exp b ON a.user_id = b.user_id
+            LEFT JOIN tb_user tu ON a.user_id = tu.user_id
+            LEFT JOIN tb_store_college_rel tscr ON b.store_id = tscr.store_id
+            WHERE 1 = 1
+            <![CDATA[ AND a.state <> 0 ]]>
+            AND (
+            a.user_id = 0
+            OR EXISTS (
+            SELECT
+            d.user_id
+            FROM
+            tb_user_store_exp c
+            INNER JOIN tb_user d ON (
+            c.user_id = d.user_id
+            AND d.be_deleted = 0
+            )
+        WHERE 1 = 1
+        <if test="createUserName != null and createUserName != '' ">
+            and d.user_name = #{createUserName}
+        </if>
+        AND c.store_id = b.store_id
+        )
+        )
+        <if test="collegeId!=null and collegeId!=''">
+            AND tscr.college_id = #{collegeId}
+        </if>
+        <if test="createStartTime != null and createStartTime != '' ">
+            <![CDATA[ and a.create_time  >= #{createStartTime}]]>
+        </if>
+        <if test="createEndTime != null and createEndTime != '' ">
+            <![CDATA[ and a.create_time  <= #{createEndTime}]]>
+        </if>
+
+        <if test="auditStartTime != null and auditStartTime != '' ">
+            <![CDATA[ and a.audit_time  >= #{auditStartTime}]]>
+        </if>
+        <if test="auditEndTime != null and auditEndTime != '' ">
+            <![CDATA[ and a.audit_time  <= #{auditEndTime}]]>
+        </if>
+
+        <if test="stateNum != null and stateNum != '' ">
+            and a.state = #{stateNum}
+        </if>
+        <if test="modelContent != null and modelContent != '' ">
+            and a.model_content like CONCAT('%',TRIM(#{modelContent}),'%')
+        </if>
+        <if test="createUserPhone != null and createUserPhone != '' ">
+            and tu.phone like CONCAT('%',TRIM(#{createUserPhone}),'%')
+        </if>
+        ) tab
+    </select>
+
+    <resultMap id="ChargeResultMap" type="com.rofour.baseball.dao.message.bean.SmsModelForUserBean">
+        <result property="headUserId" column="headUserId" />
+        <result property="headUserName" column="headUserName"/>
+        <result  property="headUserPhone" column="headUserPhone"/>
+    </resultMap>
+
+    <!--查询负责人信息(根据stdreId)-->
+    <select id="queryHeadUser" parameterType="com.rofour.baseball.dao.message.bean.SmsModelForUserBean"
+            resultMap="ChargeResultMap">
+        SELECT
+            a.sto_exp_id headUserId,
+            a.phone headUserPhone,
+            a.supervisor_name headUserName
+        FROM
+            tb_store_exp a
+        WHERE
+            a.sto_exp_id IN
+            <foreach collection="storeIdMap" index="key" item="value" separator="," open="(" close=")">
+                #{value , jdbcType=VARCHAR}
+            </foreach>
+    </select>
+
+    <!--根据短信模板主键查询记录详情-->
+    <select id="getSmsAuditView" parameterType="com.rofour.baseball.dao.message.bean.SmsModelForUserBean"
+            resultType="com.rofour.baseball.dao.message.bean.SmsModelForUserBean">
+        SELECT
+          a.sms_model_id AS smsModelId,
+          a.user_id AS userId,
+          b.phone AS createUserPhone,
+          a.template_name AS templateName,
+          a.model_content AS modelContent,
+          a.state AS stateNum,
+          a.create_time AS createTime,
+          a.audit_time AS auditTime,
+          a.opt_reason AS optReason
+        FROM tb_sms_model_for_user a
+          INNER JOIN tb_user b
+            ON a.user_id = b.user_id AND b.be_deleted = 0
+        WHERE a.sms_model_id = #{smsModelId};
+
+    </select>
 
 </mapper>

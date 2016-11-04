@@ -51,16 +51,16 @@
                         <div class="main-box clearfix">
                             <div class="main-box-body clearfix">
                                 <header class="main-box-header clearfix">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <ol class="breadcrumb">
-                                                <li><a
-                                                        href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>
-                                                <li class="active"><span>系统管理</span></li>
-                                            </ol>
-                                            <h1>用户消息模板管理</h1>
-                                        </div>
-                                    </div>
+                                    <%--<div class="row">--%>
+                                        <%--<div class="col-lg-12">--%>
+                                            <%--<ol class="breadcrumb">--%>
+                                                <%--<li><a--%>
+                                                        <%--href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>--%>
+                                                <%--<li class="active"><span>系统管理</span></li>--%>
+                                            <%--</ol>--%>
+                                            <%--<h1>用户消息模板管理</h1>--%>
+                                        <%--</div>--%>
+                                    <%--</div>--%>
                                 </header>
                                 <div class="table-responsive">
                                     <div class="panel-body" style="padding-bottom: 0px;">

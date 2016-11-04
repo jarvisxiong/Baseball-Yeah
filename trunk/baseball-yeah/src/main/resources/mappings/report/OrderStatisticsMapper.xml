@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.report.mapper.OrderStatisticsMapper">
+	<select id="getStatisticsOrder" resultType="com.rofour.baseball.controller.model.order.OrderStatisticsInfo"
+            parameterType="com.rofour.baseball.controller.model.order.RequestOrderStatisticsInfo">
+            
+            SELECT a.college_id collegeId,a.college_name collegeName,a.day,a.region_id regionId,a.region_name regionName,a.total_order_num totalOrderNum,
+			a.total_final_money  totalOrderMoney,CAST((a.total_final_money/100)/a.total_order_num AS DECIMAL(18, 2)) avgMoney,
+			a.order_status_puser orderStatusCreating,a.order_status_waittaking orderStatusWaittaking,a.order_status_token orderStatusToken,
+			a.order_status_shipping orderStatusShipping,a.order_status_done orderStatusDone,
+			a.order_status_cancel orderStatusCancel,a.order_status_abnormal orderStatusAbnormal,
+			CASE WHEN a.total_order_num IS NULL THEN  '0%'  WHEN a.total_order_num = 0 THEN '0%' WHEN a.order_status_puser IS NULL THEN  '0%' ELSE 
+			CONCAT(CAST(a.order_status_puser*100/a.total_order_num AS DECIMAL(10, 2)),'%') END AS tokenPercent  ,
+			CASE WHEN a.total_order_num IS NULL THEN  '0%'  WHEN a.total_order_num = 0 THEN '0%' WHEN a.order_status_done IS NULL THEN  '0%' ELSE 
+			CONCAT(CAST(a.order_status_done*100/a.total_order_num AS DECIMAL(10, 2)),'%')  END AS donePercent,
+			CASE WHEN a.total_order_num IS NULL THEN  '0%'  WHEN a.total_order_num = 0 THEN '0%' WHEN a.order_status_cancel IS NULL THEN  '0%' ELSE 
+			CONCAT(CAST(a.order_status_cancel*100/a.total_order_num AS DECIMAL(10, 2)),'%')  END AS cancelPercent,
+			CASE WHEN a.total_order_num IS NULL THEN  '0%'  WHEN a.total_order_num = 0 THEN '0%' WHEN a.order_status_abnormal IS NULL THEN  '0%' ELSE 
+			CONCAT(CAST(a.order_status_abnormal*100/a.total_order_num AS DECIMAL(10, 2)),'%')  END AS abnormalPercent,
+			a.take_order_mins takeOrderMins,
+			b.active_puser_num_day activePuserNumDay,CAST(b.shipping_index/10 AS DECIMAL(10, 2)) as shippingIndex,b.shipping_ability  shippingAbility,
+			CASE WHEN a.total_order_num IS NULL THEN  '0%'  WHEN a.total_order_num = 0 THEN '0%' WHEN a.order_type_co_take IS NULL THEN  '0%' ELSE 
+			CONCAT(CAST(a.order_type_co_take*100/a.total_order_num AS DECIMAL(10, 2)),'%')  END AS orderTypeCoTake,
+			CASE WHEN a.total_order_num IS NULL THEN  '0%'  WHEN a.total_order_num = 0 THEN '0%' WHEN a.order_type_nonco_take IS NULL THEN  '0%' ELSE 
+			CONCAT(CAST(a.order_type_nonco_take*100/a.total_order_num AS DECIMAL(10, 2)),'%')  END AS orderTypeNoncoTake,
+			CASE WHEN a.total_order_num IS NULL THEN  '0%'  WHEN a.total_order_num = 0 THEN '0%' WHEN a.order_type_send IS NULL THEN  '0%' ELSE 
+			CONCAT(CAST(a.order_type_send*100/a.total_order_num AS DECIMAL(10, 2)),'%')  END AS orderTypeSend,
+			a.comment_order_num commentOrderNum,a.comment_order_goodnum commentOrderGoodnum,a.comment_order_getscore commentOrderGetscore,
+			CASE WHEN a.comment_order_num IS NULL THEN  '0%'  WHEN a.comment_order_num = 0 THEN '0%' WHEN a.comment_order_goodnum IS NULL THEN  '0%' ELSE
+			CONCAT(CAST(a.comment_order_goodnum*100/a.comment_order_num AS DECIMAL(10, 2)),'%') END AS  avgGoogAppraise,
+			CAST(a.comment_order_getscore*2/a.comment_order_num AS DECIMAL(18, 2)) avgScore,
+			a.voucher_order_num voucherOrderNum,a.voucher_order_money voucherOrderMoney,a.voucher_order_actualpay voucherOrderActualpay,
+			a.order_source_service orderSourceService,a.order_source_sms orderSourceSms,a.order_source_colink orderSourceColink
+			
+			 FROM rpt_order_statistics a LEFT JOIN rpt_puser_num b
+			 ON a.college_id=b.college_id AND a.day=b.day where 1=1
+             <if test="createStartDate != null and createStartDate != ''">
+                AND <![CDATA[a.day >= #{createStartDate}]]>
+            </if>
+            <if test="createEndDate != null and createEndDate != ''">
+                AND <![CDATA[a.day <= #{createEndDate}]]>
+            </if>
+            <if test="createDate != null and createDate != ''">
+                AND <![CDATA[a.day = #{createDate}]]>
+            </if>
+            <if test="colleges != null and colleges != ''">
+                 AND <![CDATA[a.college_id in ${colleges}]]>
+            </if>
+            <if test="collegeCEO != null and collegeCEO != ''">
+                 AND <![CDATA[a.college_id = #{collegeCEO}]]>
+            </if>
+             ORDER BY ${sort} ${order}
+             LIMIT #{offset},#{limit}
+		
+	</select>
+	
+	<select id="getStatisticsOrderTotal"  resultType="java.lang.Integer"
+            parameterType="com.rofour.baseball.controller.model.order.RequestOrderStatisticsInfo">
+		SELECT count(1) FROM rpt_order_statistics a LEFT JOIN rpt_puser_num b
+			 ON  a.college_id=b.college_id AND a.day=b.day  where 1=1
+			  <if test="createStartDate != null and createStartDate != ''">
+                AND <![CDATA[a.day >= #{createStartDate}]]>
+            </if>
+              <if test="createEndDate != null and createEndDate != ''">
+                AND <![CDATA[a.day <= #{createEndDate}]]>
+            </if>
+            <if test="createDate != null and createDate != ''">
+                AND <![CDATA[a.day = #{createDate}]]>
+            </if>
+            <if test="colleges != null and colleges != ''">
+                 AND <![CDATA[a.college_id in ${colleges}]]>
+            </if>
+            <if test="collegeCEO != null and collegeCEO != ''">
+                 AND <![CDATA[a.college_id = #{collegeCEO}]]>
+            </if>
+	</select>
+	
+	<select id="getMaxDay" resultType="java.lang.String">
+		SELECT MAX(DAY) AS maxday FROM rpt_order_statistics
+	</select>
+</mapper>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zhiduan.axp.dao.report.mapper.ReportThirdPartyMapper">
-    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.report.bean.ReportThirdPartyBean">
+<mapper namespace="com.rofour.baseball.dao.report.mapper.ReportThirdPartyMapper">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.report.bean.ReportThirdPartyBean">
         <constructor>
             <idArg column="report_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
 
@@ -28,7 +28,7 @@
       SELECT count(phone) FROM (SELECT DISTINCT phone FROM tb_thirdparty_login) aa
     </select>
 
-    <select id="getReportByParam" resultType="com.zhiduan.axp.dao.report.bean.ReportThirdPartyBean">
+    <select id="getReportByParam" resultType="com.rofour.baseball.dao.report.bean.ReportThirdPartyBean">
         SELECT
         <include refid="Base_Column_List"/>
         FROM tb_report_third_party trtp
@@ -46,7 +46,7 @@
             </foreach>
         </if>
     </select>
-    <select id="getPhoneByCollege" resultType="com.zhiduan.axp.controller.model.report.ReportThirdPartyPhoneInfo">
+    <select id="getPhoneByCollege" resultType="com.rofour.baseball.controller.model.report.ReportThirdPartyPhoneInfo">
         SELECT potential.phone, college.full_name college_name
         FROM tb_college college
         LEFT JOIN tb_store_college_rel screl
@@ -58,7 +58,7 @@
         WHERE TO_DAYS(#{1}) >= TO_DAYS(potential.add_time) AND college.college_id=#{0}
           GROUP BY college.college_id,potential.phone
     </select>
-    <select id="getRegPhoneByCollege" resultType="com.zhiduan.axp.controller.model.report.ReportThirdPartyPhoneInfo">
+    <select id="getRegPhoneByCollege" resultType="com.rofour.baseball.controller.model.report.ReportThirdPartyPhoneInfo">
         SELECT college.full_name college_name, thirdparty.phone
         FROM tb_college college
         LEFT JOIN tb_store_college_rel screl
@@ -73,7 +73,7 @@
           GROUP BY college.college_id,thirdparty.phone
     </select>
 
-    <select id="getUnregPhoneByCollege" resultType="com.zhiduan.axp.controller.model.report.ReportThirdPartyPhoneInfo">
+    <select id="getUnregPhoneByCollege" resultType="com.rofour.baseball.controller.model.report.ReportThirdPartyPhoneInfo">
         SELECT college_name,phone FROM (
         SELECT college.college_id, college.full_name college_name, potential.phone
         FROM tb_college college
@@ -89,7 +89,7 @@
         NOT IN(SELECT DISTINCT phone FROM tb_thirdparty_login WHERE be_deleted=0 AND TO_DAYS(#{1}) >= TO_DAYS(regtime))
     </select>
 
-    <select id="getNewPhoneByCollege" resultType="com.zhiduan.axp.controller.model.report.ReportThirdPartyPhoneInfo">
+    <select id="getNewPhoneByCollege" resultType="com.rofour.baseball.controller.model.report.ReportThirdPartyPhoneInfo">
         SELECT college.full_name college_name, potential.phone
         FROM tb_college college
         LEFT JOIN tb_store_college_rel screl

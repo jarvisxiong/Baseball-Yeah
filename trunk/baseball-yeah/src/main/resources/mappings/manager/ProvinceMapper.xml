@@ -1,137 +1,161 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.ProvinceMapper" >
-  <resultMap id="ProvinceResultMap" type="com.zhiduan.axp.dao.manager.bean.ProvinceBean" >
-    <constructor >
-      <idArg column="province_id" jdbcType="BIGINT" javaType="java.lang.Long" />
-      <arg column="province_name" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="sort_no" jdbcType="SMALLINT" javaType="java.lang.Short" />
-      <arg column="area_id" jdbcType="BIGINT" javaType="java.lang.Long" />
-    </constructor>
-  </resultMap>
-  
-  <resultMap id="BaseProvinceResultMap" type="com.zhiduan.axp.dao.manager.bean.ProvinceBean" >
-   
-      <result column="province_id" property="provinceId" />
-      <result column="province_name" property="provinceName"/>
-      <result column="sort_no" property="sortNo"/>
- 	  <result column="area_id" property="areaId"/>
-  </resultMap>
-  <sql id="Base_Column_List" >
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.ProvinceMapper">
+    <resultMap id="ProvinceResultMap" type="com.rofour.baseball.dao.manager.bean.ProvinceBean">
+        <constructor>
+            <idArg column="province_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="province_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="sort_no" jdbcType="SMALLINT" javaType="java.lang.Short"/>
+            <arg column="area_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="BaseProvinceResultMap" type="com.rofour.baseball.dao.manager.bean.ProvinceBean">
+
+        <result column="province_id" property="provinceId"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="sort_no" property="sortNo"/>
+        <result column="area_id" property="areaId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     province_id, province_name, sort_no,area_id
   </sql>
-  <select id="selectByPrimaryKey" resultMap="ProvinceResultMap" parameterType="java.lang.Long" >
-    select 
-    <include refid="Base_Column_List" />
-    from tb_province
-    where province_id = #{provinceId,jdbcType=BIGINT}
-  </select>
-  
-   <select id="selectAllProvince" resultType="com.zhiduan.axp.dao.manager.bean.ProvinceBean"  >
-    select 
-    <include refid="Base_Column_List" />
-    from tb_province
-    
-  </select>
-     <select id="getProvinceTotal" resultType="int"  >
-    select 
-    count(1)
-    from tb_province
-    
-  </select>
- <!-- 检查名字是否唯一 -->
-  <select id="isExistSameProvinceName" resultType="int" parameterType="map">
-  	select count(1) from tb_province
-  	<where>
-  		<if test=" provinceName != null">
-  			province_name = #{provinceName,jdbcType=VARCHAR}
-  		</if>
-  		<if test=" provinceId!= null">
-  		and 	province_id != #{provinceId,jdbcType=BIGINT}
-  		</if>
-  		
-  		
-  		
-  </where>
-  </select>
-   <!-- 检查名字是否唯一 -->
-  <select id="isExistSameProvinceNameItSelf" resultType="int" parameterType="map">
-  	select count(1) from tb_province
-  	<where>
-  		<if test=" provinceName != null">
-  			province_name = #{provinceName,jdbcType=VARCHAR}
-  		</if>
-  		<if test=" provinceId != null">
-  		and 	province_id = #{provinceId,jdbcType=BIGINT}
-  		</if>	
-  </where>
-  </select>
-  <delete id="batchDelete" parameterType="java.util.List">
-   	 	DELETE FROM tb_province WHERE province_id IN
-	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")"> 
-	        #{item} 
-	    </foreach>
-	</delete>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    <select id="selectByPrimaryKey" resultMap="BaseProvinceResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_province
+        where province_id = #{provinceId,jdbcType=BIGINT}
+    </select>
+
+
+    <select id="selectAllProvince" resultType="com.rofour.baseball.dao.manager.bean.ProvinceBean">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_province
+    </select>
+
+    <!--查询全国的明日运力-->
+    <select id="selectAllWorkSignin" parameterType="Date" resultType="Long">
+        SELECT COUNT(*) FROM `p_work_signin` WHERE work_date=#{date}
+    </select>
+
+    <!--查询所有省和运力-->
+    <select id="selectAllProvinceAndWorkSignin" parameterType="Date" resultType="com.rofour.baseball.dao.manager.bean.ProvinceBean">
+        SELECT  a.* ,COUNT(b.province_id) AS work_signin
+        FROM tb_province  a
+            LEFT JOIN  p_work_signin b ON (a.province_id = b.province_id AND b.work_date = #{date})
+        GROUP BY a.province_id
+    </select>
+
+    <!--查询所有省和运力 分页-->
+    <select id="selectAllProvinceAndWorkSigninPage" parameterType="com.rofour.baseball.controller.model.RequestWorkSigninInfo" resultType="com.rofour.baseball.dao.manager.bean.ProvinceBean">
+        SELECT  a.* ,COUNT(b.province_id) AS work_signin
+        FROM tb_province  a
+            LEFT JOIN  p_work_signin b ON (a.province_id = b.province_id AND b.work_date = #{workDate})
+        GROUP BY a.province_id
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset},#{limit}
+    </select>
+
+    <select id="getProvinceTotal" resultType="int">
+        SELECT count(1)
+        FROM tb_province
+
+    </select>
+    <!-- 检查名字是否唯一 -->
+    <select id="isExistSameProvinceName" resultType="int" parameterType="map">
+        select count(1) from tb_province
+        <where>
+            <if test=" provinceName != null">
+                province_name = #{provinceName,jdbcType=VARCHAR}
+            </if>
+            <if test=" provinceId!= null">
+                and province_id != #{provinceId,jdbcType=BIGINT}
+            </if>
+
+
+        </where>
+    </select>
+    <!-- 检查名字是否唯一 -->
+    <select id="isExistSameProvinceNameItSelf" resultType="int" parameterType="map">
+        select count(1) from tb_province
+        <where>
+            <if test=" provinceName != null">
+                province_name = #{provinceName,jdbcType=VARCHAR}
+            </if>
+            <if test=" provinceId != null">
+                and province_id = #{provinceId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+    <delete id="batchDelete" parameterType="java.util.List">
+        DELETE FROM tb_province WHERE province_id IN
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from tb_province
     where province_id = #{provinceId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.ProvinceBean" >
-    insert into tb_province ( province_name, sort_no,area_id
-      )
-    values ( #{provinceName,jdbcType=VARCHAR}, #{sortNo,jdbcType=SMALLINT}, #{areaId,jdbcType=BIGINT}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.ProvinceBean" >
-    insert into tb_province
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="provinceId != null" >
-        province_id,
-      </if>
-      <if test="provinceName != null" >
-        province_name,
-      </if>
-      <if test="sortNo != null" >
-        sort_no,
-      </if>
-      <if test="areaId != null" >
-        area_id,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="provinceId != null" >
-        #{provinceId,jdbcType=BIGINT},
-      </if>
-      <if test="provinceName != null" >
-        #{provinceName,jdbcType=VARCHAR},
-      </if>
-      <if test="sortNo != null" >
-        #{sortNo,jdbcType=SMALLINT},
-      </if>
-      <if test="areaId != null" >
-        #{areaId,jdbcType=BIGINT},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.ProvinceBean" >
-    update tb_province
-    <set >
-      <if test="provinceName != null" >
-        province_name = #{provinceName,jdbcType=VARCHAR},
-      </if>
-      <if test="sortNo != null" >
-        sort_no = #{sortNo,jdbcType=SMALLINT},
-      </if>
-      <if test="areaId != null" >
-        area_id = #{areaId,jdbcType=BIGINT},
-      </if>
-    </set>
-    where province_id = #{provinceId,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.ProvinceBean" >
+    <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.ProvinceBean">
+        INSERT INTO tb_province (province_name, sort_no, area_id
+        )
+        VALUES (#{provinceName,jdbcType=VARCHAR}, #{sortNo,jdbcType=SMALLINT}, #{areaId,jdbcType=BIGINT}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.ProvinceBean">
+        insert into tb_province
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="provinceId != null">
+                province_id,
+            </if>
+            <if test="provinceName != null">
+                province_name,
+            </if>
+            <if test="sortNo != null">
+                sort_no,
+            </if>
+            <if test="areaId != null">
+                area_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="provinceId != null">
+                #{provinceId,jdbcType=BIGINT},
+            </if>
+            <if test="provinceName != null">
+                #{provinceName,jdbcType=VARCHAR},
+            </if>
+            <if test="sortNo != null">
+                #{sortNo,jdbcType=SMALLINT},
+            </if>
+            <if test="areaId != null">
+                #{areaId,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.ProvinceBean">
+        update tb_province
+        <set>
+            <if test="provinceName != null">
+                province_name = #{provinceName,jdbcType=VARCHAR},
+            </if>
+            <if test="sortNo != null">
+                sort_no = #{sortNo,jdbcType=SMALLINT},
+            </if>
+            <if test="areaId != null">
+                area_id = #{areaId,jdbcType=BIGINT},
+            </if>
+        </set>
+        where province_id = #{provinceId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.ProvinceBean">
     update tb_province
     set province_name = #{provinceName,jdbcType=VARCHAR},
       sort_no = #{sortNo,jdbcType=SMALLINT},area_id = #{areaId,jdbcType=BIGINT}
     where province_id = #{provinceId,jdbcType=BIGINT}
   </update>
+
+
 </mapper>

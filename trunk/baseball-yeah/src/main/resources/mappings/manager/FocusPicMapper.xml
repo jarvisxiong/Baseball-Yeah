@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.FocusPicMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.FocusPicMapper">
 
 
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.FocusPicBean"
+    <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.FocusPicBean"
             useGeneratedKeys="true" keyProperty="userId">
         insert into ts_ad_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -53,7 +53,7 @@
         delete from ts_ad_info where  ad_id = #{adId,jdbcType=BIGINT}
     </delete>
 
-    <select id="selectAll" resultType="com.zhiduan.axp.dao.manager.bean.FocusPicBean" parameterType="com.zhiduan.axp.dao.manager.bean.FocusPicBean">
+    <select id="selectAll" resultType="com.rofour.baseball.dao.manager.bean.FocusPicBean" parameterType="com.rofour.baseball.dao.manager.bean.FocusPicBean">
         SELECT ad_id adId,ad_title adTitle,
         ad_img adImg,ad_type adType,user_type userType,
         url,create_time createTime
@@ -72,7 +72,7 @@
         LIMIT #{offset}, #{limit}
     </select>
 
-    <select id="selectAllCount" resultType="integer" parameterType="com.zhiduan.axp.dao.manager.bean.FocusPicBean" >
+    <select id="selectAllCount" resultType="integer" parameterType="com.rofour.baseball.dao.manager.bean.FocusPicBean" >
 
         select count(1) from (
         SELECT ad_id adId,ad_title adTitle,

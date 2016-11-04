@@ -63,13 +63,13 @@ define(
 	                            }
 	                        }
 	                    },
-	                    add_channelCode: {
-	                        validators: {
-	                        	notEmpty: {
-	                                message: '通道号不能为空'
-	                            }
-	                        }
-	                    },
+	                    // add_channelCode: {
+	                    //     validators: {
+	                    //     	notEmpty: {
+	                    //             message: '通道号不能为空'
+	                    //         }
+	                    //     }
+	                    // },
 	                    add_interfaceAddress: {
 	                        validators: {
 	                        	notEmpty: {
@@ -131,13 +131,13 @@ define(
 	                            }
 	                        }
 	                    },
-	                    edit_channelCode: {
-	                        validators: {
-	                        	notEmpty: {
-	                                message: '通道号不能为空'
-	                            }
-	                        }
-	                    },
+	                    // edit_channelCode: {
+	                    //     validators: {
+	                    //     	notEmpty: {
+	                    //             message: '通道号不能为空'
+	                    //         }
+	                    //     }
+	                    // },
 	                    edit_interfaceAddress: {
 	                        validators: {
 	                        	notEmpty: {
@@ -148,7 +148,7 @@ define(
 	                }
 	            };
 			return {
-				init : function(args) {
+				init : function(panel) {
 					var self = this;
 
 					base.datagrid({
@@ -158,9 +158,9 @@ define(
 		                    return $.extend(params,
 		                        {
 		                    	smsVendorId: $(
-		                                "#smsVendorId").val(),
+		                                "#smsVendorId",panel).val(),
                                 smsVendorName: $(
-		                                "#smsVendorName").val()
+		                                "#smsVendorName",panel).val()
 		                        });
 		                },
 						columns : [ {
@@ -214,54 +214,64 @@ define(
 							},
 							sortable : true 
 						}]
-					}, '#vendorTable');
+					}, '#vendorTable',panel);
 					
 					
-					$("#btn_add").click(function() {
-						self.add();
+					$("#btn_add",panel).click(function() {
+						self.add(panel);
 					});
-					$("#btn_edit").click(function() {
-						self.edit();
+					$("#btn_edit",panel).click(function() {
+						self.edit(panel);
 					});
-					$("#btn_delete").click(function() {
-						self.remove();
+					$("#btn_delete",panel).click(function() {
+						self.remove(panel);
 					});
-					$("#btn_query").click(function() {
-						$("#vendorTable").bootstrapTable('refresh');
+					$("#btn_query",panel).click(function() {
+						$("#vendorTable", panel).bootstrapTable('selectPage', 1);
 					});
-					$('#addModal').on('shown.bs.modal', function () {
-		                $('#addForm').data('bootstrapValidator').resetForm(true);
+					$('#addModal',panel).on('shown.bs.modal', function () {
+		                $('#addForm',panel).data('bootstrapValidator').resetForm(true);
+		            });
+					$("#btnClose", panel).click(function () {
+						$("#editForm", panel).data("bootstrapValidator").resetForm(true);
+					});
+					$("#clearSearch", panel).click(function () {
+		                base.reset(".main-box-header");
+		            });
+					$("#editModal", panel).on('hidden.bs.modal', function() {
+		                $("#editForm", panel).data('bootstrapValidator').destroy();
+		                $("#editForm", panel).data('bootstrapValidator', null);
 		            });
 				},
-				add : function() {
+				add : function(panel) {
 					var self = this;
-	                $('#addModal').modal({
+	                $('#addModal',panel).modal({
 	    			    keyboard: false,
 	    			    backdrop:'static'
 	    			});
-					base.validator(add_validate, "#addForm", self.create)
+					base.validator(add_validate, "#addForm", self.create,panel)
 				},
-				create : function() {
-					$.post("add",
+				create : function(panel) {
+					$.post("/manage/smsvendor/add",
 							{
-								"smsVendorId" : $("#add_smsVendorId").val(),
-								"smsVendorCode" : $("#add_smsVendorCode").val(),
-								"smsVendorName" : $("#add_smsVendorName").val(),
-								"loginName" : $("#add_loginName").val(),
-								"password" : $("#add_password").val(),
-								"level" : $("#add_level").val(),
-								"weight" : $("#add_weight").val(),
-								"threshold" : $("#add_threshold").val(),
-								"channelCode" : $("#add_channelCode").val(),
-								"interfaceAddress" : $("#add_interfaceAddress").val(),
-								"status" : $("#add_status").prop('checked') ? "1" : "0",
+								"smsVendorId" : $("#add_smsVendorId",panel).val(),
+								"smsVendorCode" : $("#add_smsVendorCode",panel).val(),
+								"smsVendorName" : $("#add_smsVendorName",panel).val(),
+								"loginName" : $("#add_loginName",panel).val(),
+								"password" : $("#add_password",panel).val(),
+								"level" : $("#add_level",panel).val(),
+								"weight" : $("#add_weight",panel).val(),
+								"threshold" : $("#add_threshold",panel).val(),
+								"channelCode" : $("#add_channelCode",panel).val(),
+								"interfaceAddress" : $("#add_interfaceAddress",panel).val(),
+								"status" : $("#add_status",panel).prop('checked') ? "1" : "0",
 							}, function(data, status) {
 								if (status == "success") {
 									var obj = data;
 									if (obj.success == 0) {
 										base.success("添加成功");
-										$("#vendorTable").bootstrapTable('refresh');
-										$('#addModal').modal('hide');
+										$("#vendorTable",panel).bootstrapTable('refresh');
+										$('#addModal',panel).modal('hide');
 									} else {
 										base.error(obj.message);
 									}
@@ -272,9 +282,9 @@ define(
 				},
 				
 				//更新
-				edit : function() {
+				edit : function(panel) {
 					var self = this;
-					var arrselections = $("#vendorTable").bootstrapTable(
+					var arrselections = $("#vendorTable",panel).bootstrapTable(
 							'getSelections');
 					if (arrselections.length > 1) {
 						sweetAlert("Oops...", "只能选择一行进行编辑!", "error");
@@ -284,46 +294,46 @@ define(
 						sweetAlert("Oops...", "请选择有效数据!", "error");
 						return;
 					}
-					$("#edit_smsVendorCode").val(arrselections[0].smsVendorCode);
-					$("#edit_smsVendorName").val(arrselections[0].smsVendorName);
-					$("#edit_loginName").val(arrselections[0].loginName);
-					$("#edit_password").val(arrselections[0].password);
-					$("#edit_weight").val(arrselections[0].weight);
-					$("#edit_threshold").val(arrselections[0].threshold);
-					$("#edit_channelCode").val(arrselections[0].channelCode);
-					$("#edit_level").val(arrselections[0].level).trigger("change");
-					$("#edit_interfaceAddress").val(arrselections[0].interfaceAddress);
-					$("#edit_status").prop("checked",arrselections[0].status =="1" ? true : false);
-					$("#edit_status_no").prop("checked",arrselections[0].status =="0" ? true : false);
-					$("#vendorId").val(arrselections[0].smsVendorId);
-					$('#editModal').modal({
+					$("#edit_smsVendorCode",panel).val(arrselections[0].smsVendorCode);
+					$("#edit_smsVendorName",panel).val(arrselections[0].smsVendorName);
+					$("#edit_loginName",panel).val(arrselections[0].loginName);
+					$("#edit_password",panel).val(arrselections[0].password);
+					$("#edit_weight",panel).val(arrselections[0].weight);
+					$("#edit_threshold",panel).val(arrselections[0].threshold);
+					$("#edit_channelCode",panel).val(arrselections[0].channelCode);
+					$("#edit_level",panel).val(arrselections[0].level).trigger("change");
+					$("#edit_interfaceAddress",panel).val(arrselections[0].interfaceAddress);
+					$("#edit_status",panel).prop("checked",arrselections[0].status =="1" ? true : false);
+					$("#edit_status_no",panel).prop("checked",arrselections[0].status =="0" ? true : false);
+					$("#vendorId",panel).val(arrselections[0].smsVendorId);
+					$('#editModal',panel).modal({
 	    			    keyboard: false,
 	    			    backdrop:'static'
 	    			});
-					base.validator(edit_validate, '#editForm', self.update)
+					base.validator(edit_validate, '#editForm', self.update,panel)
 				},
-				update : function() {
-					$.post("update",
+				update : function(panel) {
+					$.post("/manage/smsvendor/update",
 							{
-								"smsVendorCode" : $("#edit_smsVendorCode").val(),
-								"smsVendorName" : $("#edit_smsVendorName").val(),
-								"loginName" : $("#edit_loginName").val(),
-								"password" : $("#edit_password").val(),
-								"weight" : $("#edit_weight").val(),
-								"threshold" : $("#edit_threshold").val(),
-								"channelCode" : $("#edit_channelCode").val(),
-								"level" : $("#edit_level").val(),
-								"interfaceAddress" : $("#edit_interfaceAddress").val(),
-								"status" : $("#edit_status").prop('checked') ? "1" : "0",
-								"smsVendorId" : $("#vendorId").val()
+								"smsVendorCode" : $("#edit_smsVendorCode",panel).val(),
+								"smsVendorName" : $("#edit_smsVendorName",panel).val(),
+								"loginName" : $("#edit_loginName",panel).val(),
+								"password" : $("#edit_password",panel).val(),
+								"weight" : $("#edit_weight",panel).val(),
+								"threshold" : $("#edit_threshold",panel).val(),
+								"channelCode" : $("#edit_channelCode",panel).val(),
+								"level" : $("#edit_level",panel).val(),
+								"interfaceAddress" : $("#edit_interfaceAddress",panel).val(),
+								"status" : $("#edit_status",panel).prop('checked') ? "1" : "0",
+								"smsVendorId" : $("#vendorId",panel).val()
 							}, function(data, status) {
 								if (status == "success") {
 									var obj = data;
 									if (obj.success == 0) {
 										base.success("更新成功");
-										$("#vendorTable").bootstrapTable('refresh');
-										$('#editModal').modal('hide');
-										$('#editForm').data('bootstrapValidator').resetForm(true);
+										$("#vendorTable",panel).bootstrapTable('refresh');
+										$('#editModal',panel).modal('hide');
+										$('#editForm',panel).data('bootstrapValidator').resetForm(true);
 									} else {
 										base.error(obj.message);
 									}
@@ -333,8 +343,8 @@ define(
 							});
 				},
 				//删除
-				remove : function() {
-					var arrselections = $("#vendorTable").bootstrapTable(
+				remove : function(panel) {
+					var arrselections = $("#vendorTable",panel).bootstrapTable(
 							'getSelections');
 					if (arrselections.length > 1) {
 						base.error("只能选择一行进行编辑!");
@@ -350,14 +360,14 @@ define(
 						title : "删除",
 						text : "您确定要删除此服务商信息吗？"
 					}, function() {
-						$.post("delete", {
+						$.post("/manage/smsvendor/delete", {
 							"smsVendorId" : smsVendorId
 						}, function(data, status) {
 							if (status == "success") {
 								var obj = data;
 								if (obj.success == 0) {
 									base.success("删除成功");
-									$("#vendorTable").bootstrapTable('refresh');
+									$("#vendorTable",panel).bootstrapTable('refresh');
 								} else {
 									base.error(obj.message);
 								}

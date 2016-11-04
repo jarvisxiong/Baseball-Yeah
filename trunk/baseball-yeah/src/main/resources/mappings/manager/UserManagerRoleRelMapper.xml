@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.UserManagerRoleRelMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.UserManagerRoleRelMapper">
 	<resultMap
-		type="com.zhiduan.axp.dao.manager.bean.UserManagerRoleRelBean" id="BaseResultMap">
+		type="com.rofour.baseball.dao.manager.bean.UserManagerRoleRelBean" id="BaseResultMap">
 		<id column="user_manager_role_rel_id" property="userManagerRoleRelId" />
 		<result column="user_manager_id" property="userManagerId" />
 		<result column="role_id" property="roleId" />
 	</resultMap>
 	
 	<!-- 添加管理用户_角色信息 -->
-	<insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.RoleBean">
+	<insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.RoleBean">
 		insert into
 		tb_user_manager_role_rel (
 		user_manager_id,role_id

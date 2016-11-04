@@ -74,9 +74,10 @@
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">是否启用</label>
                         <div class="radio">
-                            <input type="radio" name="copyEnabled" id="copyYEnabled" value="option1"
-                                   checked=""> <label for="copyYEnabled">启用</label> <input
-                                type="radio" name="copyEnabled" id="copyNEnabled" value="option2">
+                            <input type="radio" name="copyEnabled" id="copyYEnabled" value="option1" checked="">
+                            <label for="copyYEnabled">启用</label>
+                            
+                            <input type="radio" name="copyEnabled" id="copyNEnabled" value="option2">
                             <label for="copyNEnabled"> 不启用</label>
                         </div>
                     </div>

@@ -17,9 +17,9 @@ define(['base'], function (base) {
                 queryParams: function (params) {
                     return $.extend(params,
                         {
-                            offerName: $("#offerName").val(),
-                            sendAreaId: $("#selSendArea").val(),
-                            dispAreaId: $("#selDespArea").val()
+                            offerName: $("#offerName", args).val(),
+                            sendAreaId: $("#selSendArea", args).val(),
+                            dispAreaId: $("#selDespArea", args).val()
                         });
                 },
                 columns: [
@@ -35,7 +35,7 @@ define(['base'], function (base) {
                         title: '首重费用',
                         sortable: true,
                         formatter: function (value, row, index) {
-                            return value + "¥"
+                            return "¥" + value;
                         }
                     },
                     {
@@ -43,7 +43,7 @@ define(['base'], function (base) {
                         title: '续重费用',
                         sortable: true,
                         formatter: function (value, row, index) {
-                            return value + "¥"
+                            return "¥" + value;
                         }
                     },
                     {
@@ -98,30 +98,30 @@ define(['base'], function (base) {
                         title: 'offerId',
                         visible: false
                     }]
-            }, '#offerTable');
+            }, '#offerTable', args);
             $.ajax({
                 type: "POST",
                 url: "/manage/college/getcollageforsel",
                 dataType: "json",
                 success: function (data) {
-                    $("#add_Collage").select2({
+                    $("#add_Collage", args).select2({
                         data: data.data,
                         placeholder: '选择学校',
                         allowClear: true
                     });
-                    $("#edit_Collage").select2({
+                    $("#edit_Collage", args).select2({
                         data: data.data,
                         placeholder: '选择学校',
                         allowClear: true
                     });
-                    $("#copy_Collage").select2({
+                    $("#copy_Collage", args).select2({
                         data: data.data,
                         placeholder: '选择学校',
                         allowClear: true
                     });
-                    $('#add_Collage').select2("val", null);
-                    $('#edit_Collage').select2("val", null);
-                    $('#copy_Collage').select2("val", null);
+                    $('#add_Collage', args).select2("val", null);
+                    $('#edit_Collage', args).select2("val", null);
+                    $('#copy_Collage', args).select2("val", null);
                 }
             });
             $.ajax({
@@ -130,54 +130,54 @@ define(['base'], function (base) {
                 dataType: "json",
                 success: function (data) {
 
-                    $("#selSendArea").select2({
+                    $("#selSendArea", args).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $("#selDespArea").select2({
+                    $("#selDespArea", args).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $("#add_sendAreaId").select2({
+                    $("#add_sendAreaId", args).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $("#add_dispAreaId").select2({
+                    $("#add_dispAreaId", args).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $("#edit_sendAreaId").select2({
+                    $("#edit_sendAreaId", args).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $("#edit_dispAreaId").select2({
+                    $("#edit_dispAreaId", args).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $("#copy_sendAreaId").select2({
+                    $("#copy_sendAreaId", args).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $("#copy_dispAreaId").select2({
+                    $("#copy_dispAreaId", args).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#copy_sendAreaId').select2("val", null);
-                    $('#copy_dispAreaId').select2("val", null);
-                    $('#selSendArea').select2("val", null);
-                    $('#selDespArea').select2("val", null);
-                    $('#add_sendAreaId').select2("val", null);
-                    $('#add_dispAreaId').select2("val", null);
-                    $('#edit_sendAreaId').select2("val", null);
-                    $('#edit_dispAreaId').select2("val", null);
+                    $('#copy_sendAreaId', args).select2("val", null);
+                    $('#copy_dispAreaId', args).select2("val", null);
+                    $('#selSendArea', args).select2("val", null);
+                    $('#selDespArea', args).select2("val", null);
+                    $('#add_sendAreaId', args).select2("val", null);
+                    $('#add_dispAreaId', args).select2("val", null);
+                    $('#edit_sendAreaId', args).select2("val", null);
+                    $('#edit_dispAreaId', args).select2("val", null);
                 }
             });
             $.ajax({
@@ -185,59 +185,60 @@ define(['base'], function (base) {
                 dataType: 'json',
                 type: 'post',
                 success: function (data) {
-                    $("#add_EcList").select2({
+                    $("#add_EcList", args).select2({
                         data: data,
                         placeholder: '选择合作商',
                         allowClear: true
                     });
-                    $("#edit_EcList").select2({
+                    $("#edit_EcList", args).select2({
                         data: data,
                         placeholder: '选择合作商',
                         allowClear: true
                     });
-                    $("#copy_EcList").select2({
+                    $("#copy_EcList", args).select2({
                         data: data,
                         placeholder: '选择合作商',
                         allowClear: true
                     });
-                    $('#copy_EcList').select2("val", null);
-                    $('#add_EcList').select2("val", null);
-                    $('#edit_EcList').select2("val", null);
+                    $('#copy_EcList', args).select2("val", null);
+                    $('#add_EcList', args).select2("val", null);
+                    $('#edit_EcList', args).select2("val", null);
                 }
             });
-            $("#btn_add").click(function () {
-                self.add();
+            $("#btn_add", args).click(function () {
+                self.add(args);
             });
-            $("#btn_edit").click(function () {
-                self.edit();
+            $("#btn_edit", args).click(function () {
+                self.edit(args);
             });
-            $("#btn_copy").click(function () {
-                self.copy();
+            $("#btn_copy", args).click(function () {
+                self.copy(args);
             });
-            $("#btn_delete").click(function () {
-                self.remove();
+            $("#btn_delete", args).click(function () {
+                self.remove(args);
             });
-            $("#btn_query").click(function () {
-                $("#offerTable").bootstrapTable('refresh');
+            $("#btn_query", args).click(function () {
+                // $("#offerTable",args).bootstrapTable('refresh');
+                $("#offerTable", args).bootstrapTable('selectPage', 1);
             });
-            $("#clearSearch").click(function () {
+            $("#clearSearch", args).click(function () {
                 base.reset(".main-box-header");
             });
-            $("#btnClose").click(function () {
-                $("#editForm").data("bootstrapValidator").resetForm(true);
+            $("#btnClose", args).click(function () {
+                $("#editForm", args).data("bootstrapValidator").resetForm(true);
             });
-            $('#addModal').on('shown.bs.modal', function () {
-                $("#add_Collage").val(" ").trigger("change");
-                $("#add_sendAreaId").val(" ").trigger("change");
-                $("#add_dispAreaId").val(" ").trigger("change");
-                $("#add_EcList").val(" ").trigger("change");
-                $('#addForm').data('bootstrapValidator').resetForm(true);
+            $('#addModal', args).on('shown.bs.modal', function () {
+                $("#add_Collage", args).val(" ").trigger("change");
+                $("#add_sendAreaId", args).val(" ").trigger("change");
+                $("#add_dispAreaId", args).val(" ").trigger("change");
+                $("#add_EcList", args).val(" ").trigger("change");
+                $('#addForm', args).data('bootstrapValidator').resetForm(true);
             });
 
         },
-        add: function () {
+        add: function (args) {
             var self = this;
-            $('#addModal').modal({
+            $('#addModal', args).modal({
                 keyboard: false,
                 backdrop: 'static'
             });
@@ -306,28 +307,29 @@ define(['base'], function (base) {
                     }
 
                 }
-            }, "#addForm", self.create);
+            }, "#addForm", self.create, args);
         },
-        create: function () {
+        create: function (args) {
             $.post("/manage/companyofferprice/add",
                 {
-                    "offerName": $("#add_offerName").val(),
-                    "initialWeight": $("#add_initialWeight").val(),
-                    "additionalWeight": $("#add_additionalWeight").val(),
-                    "sendAreaId": $("#add_sendAreaId").val(),
-                    "dispAreaId": $("#add_dispAreaId").val(),
-                    "sortNo": $("#add_sortNo").val(),
-                    "isEnabled": $("#addYEnabled").prop('checked') ? "1" : "0",
-                    "ecList": $("#add_EcList").val().join(','),
-                    "collageList": $("#add_Collage").val() && $("#add_Collage").val().join(',')
+                    "offerName": $("#add_offerName", args).val(),
+                    "initialWeight": $("#add_initialWeight", args).val(),
+                    "additionalWeight": $("#add_additionalWeight", args).val(),
+                    "sendAreaId": $("#add_sendAreaId", args).val(),
+                    "dispAreaId": $("#add_dispAreaId", args).val(),
+                    "sortNo": $("#add_sortNo", args).val(),
+                    "isEnabled": $("#addYEnabled", args).prop('checked') ? "1" : "0",
+                    "ecList": $("#add_EcList", args).val().join(','),
+                    "collageList": $("#add_Collage", args).val() && $("#add_Collage", args).val().join(',')
                 },
                 function (data, status) {
                     if (status == "success") {
 
                         if (data.success == 0) {
                             base.success("添加成功！")
-                            $('#offerTable').bootstrapTable('refresh');
-                            $("#addModal").modal('hide');
+                            // $('#offerTable',args).bootstrapTable('refresh');
+                            $("#offerTable", args).bootstrapTable('selectPage', 1);
+                            $("#addModal", args).modal('hide');
                         } else {
                             base.error(data.message);
                         }
@@ -336,9 +338,9 @@ define(['base'], function (base) {
                     }
                 });
         },
-        edit: function () {
+        edit: function (args) {
             var self = this;
-            var arrselections = $("#offerTable").bootstrapTable('getSelections');
+            var arrselections = $("#offerTable", args).bootstrapTable('getSelections');
             if (arrselections.length > 1) {
                 base.error("只能选择一行进行编辑!");
                 return;
@@ -347,27 +349,27 @@ define(['base'], function (base) {
                 base.error("请选择有效数据!");
                 return;
             }
-            $('#editModal').modal({
+            $('#editModal', args).modal({
                 keyboard: false,
                 backdrop: 'static'
             });
 
 
-            $('#editModal').modal();
+            $('#editModal', args).modal();
             // $("#editForm").data("bootstrapValidator").resetForm(true);
-            $("#edit_offerName").val(arrselections[0].offerName);
-            $("#edit_initialWeight").val(arrselections[0].initialWeight);
-            $("#edit_additionalWeight").val(arrselections[0].additionalWeight);
-            $("#edit_sortNo").val(arrselections[0].sortNo);
-            $("#editYEnabled").prop("checked", arrselections[0].isEnabled == 1 ? true : false);
-            $("#editNEnabled").prop("checked", arrselections[0].isEnabled == 1 ? false : true);
+            $("#edit_offerName", args).val(arrselections[0].offerName);
+            $("#edit_initialWeight", args).val(arrselections[0].initialWeight);
+            $("#edit_additionalWeight", args).val(arrselections[0].additionalWeight);
+            $("#edit_sortNo", args).val(arrselections[0].sortNo);
+            $("#editYEnabled", args).prop("checked", arrselections[0].isEnabled == 1 ? true : false);
+            $("#editNEnabled", args).prop("checked", arrselections[0].isEnabled == 1 ? false : true);
 
-            $("#edit_offerId").val(arrselections[0].offerId);
-            $("#edit_EcList").val(arrselections[0].ecList).trigger("change");
-            $("#edit_Collage").val(arrselections[0].collageList).trigger("change");
+            $("#edit_offerId", args).val(arrselections[0].offerId);
+            $("#edit_EcList", args).val(arrselections[0].ecList).trigger("change");
+            $("#edit_Collage", args).val(arrselections[0].collageList).trigger("change");
 
-            $("#edit_sendAreaId").val(arrselections[0].sendAreaId).trigger("change");
-            $("#edit_dispAreaId").val(arrselections[0].dispAreaId).trigger("change");
+            $("#edit_sendAreaId", args).val(arrselections[0].sendAreaId).trigger("change");
+            $("#edit_dispAreaId", args).val(arrselections[0].dispAreaId).trigger("change");
             base.validator({
                 fields: {
                     edit_store: {
@@ -381,6 +383,28 @@ define(['base'], function (base) {
                         validators: {
                             notEmpty: {
                                 message: '快递品牌不能为空'
+                            }
+                        }
+                    },
+                    edit_initialWeight: {
+                        validators: {
+                            notEmpty: {
+                                message: '首重费用不能为空'
+                            },
+                            regexp: {
+                                regexp: /^[1-9]*[1-9][0-9]*$/,
+                                message: '首重费用必须为正整数'
+                            }
+                        }
+                    },
+                    edit_additionalWeight: {
+                        validators: {
+                            notEmpty: {
+                                message: '续重费用不能为空'
+                            },
+                            regexp: {
+                                regexp: /^[1-9]*[1-9][0-9]*$/,
+                                message: '续重费用必须为正整数'
                             }
                         }
                     },
@@ -417,11 +441,11 @@ define(['base'], function (base) {
                         }
                     }
                 }
-            }, '#editForm', self.update)
+            }, '#editForm', self.update, args)
         },
-        copy: function () {
+        copy: function (args) {
             var self = this;
-            var arrselections = $("#offerTable").bootstrapTable('getSelections');
+            var arrselections = $("#offerTable", args).bootstrapTable('getSelections');
             if (arrselections.length > 1) {
                 base.error("只能选择一行进行复制!");
                 return;
@@ -430,24 +454,24 @@ define(['base'], function (base) {
                 base.error("请选择有效数据!");
                 return;
             }
-            $('#copyModal').modal({
+            $('#copyModal', args).modal({
                 keyboard: false,
                 backdrop: 'static'
             });
-            $("#copy_offerName").val(arrselections[0].offerName);
-            $("#copy_initialWeight").val(arrselections[0].initialWeight);
-            $("#copy_additionalWeight").val(arrselections[0].additionalWeight);
-            $("#copy_sortNo").val(arrselections[0].sortNo);
-            $("#copyYEnabled").prop("checked", arrselections[0].isEnabled == 1 ? true : false);
-            $("#ecopyNEnabled").prop("checked", arrselections[0].isEnabled == 1 ? false : true);
+            $("#copy_offerName", args).val(arrselections[0].offerName);
+            $("#copy_initialWeight", args).val(arrselections[0].initialWeight);
+            $("#copy_additionalWeight", args).val(arrselections[0].additionalWeight);
+            $("#copy_sortNo", args).val(arrselections[0].sortNo);
+            $("#copyYEnabled", args).prop("checked", arrselections[0].isEnabled == 1 ? true : false);
+            $("#copyNEnabled", args).prop("checked", arrselections[0].isEnabled == 1 ? false : true);
 
-            $("#copy_offerId").val(arrselections[0].offerId);
-            $('#copyModal').modal();
-            $("#copy_EcList").val(arrselections[0].ecList).trigger("change");
-            $("#copy_Collage").val(arrselections[0].collageList).trigger("change");
+            $("#copy_offerId", args).val(arrselections[0].offerId);
+            $('#copyModal', args).modal();
+            $("#copy_EcList", args).val(arrselections[0].ecList).trigger("change");
+            $("#copy_Collage", args).val(arrselections[0].collageList).trigger("change");
 
-            $("#copy_sendAreaId").val(arrselections[0].sendAreaId).trigger("change");
-            $("#copy_dispAreaId").val(arrselections[0].dispAreaId).trigger("change");
+            $("#copy_sendAreaId", args).val(arrselections[0].sendAreaId).trigger("change");
+            $("#copy_dispAreaId", args).val(arrselections[0].dispAreaId).trigger("change");
             base.validator({
                 fields: {
                     copy_store: {
@@ -483,28 +507,29 @@ define(['base'], function (base) {
                         }
                     }
                 }
-            }, '#copyForm', self.copycreate)
+            }, '#copyForm', self.copycreate, args)
         },
-        copycreate: function () {
+        copycreate: function (args) {
             $.post("/manage/companyofferprice/add",
                 {
-                    "offerName": $("#copy_offerName").val(),
-                    "initialWeight": $("#copy_initialWeight").val(),
-                    "additionalWeight": $("#copy_additionalWeight").val(),
-                    "sendAreaId": $("#copy_sendAreaId").val(),
-                    "dispAreaId": $("#copy_dispAreaId").val(),
-                    "sortNo": $("#copy_sortNo").val(),
-                    "isEnabled": $("#ecopyYEnabled").prop('checked') ? "1" : "0",
-                    "ecList": $("#copy_EcList").val().join(','),
-                    "collageList": $("#copy_Collage").val() && $("#copy_Collage").val().join(',')
+                    "offerName": $("#copy_offerName", args).val(),
+                    "initialWeight": $("#copy_initialWeight", args).val(),
+                    "additionalWeight": $("#copy_additionalWeight", args).val(),
+                    "sendAreaId": $("#copy_sendAreaId", args).val(),
+                    "dispAreaId": $("#copy_dispAreaId", args).val(),
+                    "sortNo": $("#copy_sortNo", args).val(),
+                    "isEnabled": $("#copyYEnabled", args).prop('checked') ? "1" : "0",
+                    "ecList": $("#copy_EcList", args).val().join(','),
+                    "collageList": $("#copy_Collage", args).val() && $("#copy_Collage", args).val().join(',')
                 },
                 function (data, status) {
                     if (status == "success") {
 
                         if (data.success == 0) {
                             base.success("添加成功！")
-                            $('#offerTable').bootstrapTable('refresh');
-                            $("#copyModal").modal('hide');
+                            // $('#offerTable',args).bootstrapTable('refresh');
+                            $("#offerTable", args).bootstrapTable('selectPage', 1);
+                            $("#copyModal", args).modal('hide');
                         } else {
                             base.error(data.message);
                         }
@@ -513,27 +538,28 @@ define(['base'], function (base) {
                     }
                 });
         },
-        update: function () {
+        update: function (args) {
             $.post("/manage/companyofferprice/update",
                 {
-                    "offerName": $("#edit_offerName").val(),
-                    "initialWeight": $("#edit_initialWeight").val(),
-                    "additionalWeight": $("#edit_additionalWeight").val(),
-                    "sendAreaId": $("#edit_sendAreaId").val(),
-                    "dispAreaId": $("#edit_dispAreaId").val(),
-                    "sortNo": $("#edit_sortNo").val(),
-                    "isEnabled": $("#editYEnabled").prop('checked') ? "1" : "0",
-                    "offerId": $("#edit_offerId").val(),
-                    "ecList": $("#edit_EcList").val().join(','),
-                    "collageList": $("#edit_Collage").val() && $("#edit_Collage").val().join(',')
+                    "offerName": $("#edit_offerName", args).val(),
+                    "initialWeight": $("#edit_initialWeight", args).val(),
+                    "additionalWeight": $("#edit_additionalWeight", args).val(),
+                    "sendAreaId": $("#edit_sendAreaId", args).val(),
+                    "dispAreaId": $("#edit_dispAreaId", args).val(),
+                    "sortNo": $("#edit_sortNo", args).val(),
+                    "isEnabled": $("#editYEnabled", args).prop('checked') ? "1" : "0",
+                    "offerId": $("#edit_offerId", args).val(),
+                    "ecList": $("#edit_EcList", args).val().join(','),
+                    "collageList": $("#edit_Collage", args).val() && $("#edit_Collage", args).val().join(',')
                 },
                 function (data, status) {
                     if (status == "success") {
                         if (data.success == 0) {
                             base.success("更新成功！")
-                            $('#offerTable').bootstrapTable('refresh');
-                            $("#editModal").modal('hide');
-                            $("#editForm").data("bootstrapValidator").resetForm(true);
+                            // $('#offerTable',args).bootstrapTable('refresh');
+                            $("#offerTable", args).bootstrapTable('selectPage', 1);
+                            $("#editModal", args).modal('hide');
+                            $("#editForm", args).data("bootstrapValidator").resetForm(true);
 
                         } else {
                             base.error(data.message);
@@ -543,8 +569,8 @@ define(['base'], function (base) {
                     }
                 });
         },
-        remove: function () {
-            var arrselections = $("#offerTable").bootstrapTable('getSelections');
+        remove: function (args) {
+            var arrselections = $("#offerTable", args).bootstrapTable('getSelections');
             if (arrselections.length <= 0) {
                 base.error("请选择有效数据!");
                 return;
@@ -556,7 +582,8 @@ define(['base'], function (base) {
                 }, function (data, status) {
                     if (status == "success") {
                         if (data.success == 0) {
-                            $('#offerTable').bootstrapTable('refresh');
+                            // $('#offerTable',args).bootstrapTable('refresh');
+                            $("#offerTable", args).bootstrapTable('selectPage', 1);
                             base.success("删除成功！");
                         } else {
                             base.error(data.message);

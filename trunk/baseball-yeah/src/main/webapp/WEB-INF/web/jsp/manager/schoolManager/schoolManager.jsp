@@ -1,62 +1,22 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="/common/comm.jsp" %>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<input type="hidden" class="inmodule" value="collegeManagerModules">
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>爱学派</title>
-
-    <link rel="stylesheet"
-          href="<%=request.getContextPath()%>/css/libs/select2.min.css">
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/js/select2/select2.full.min.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/js/select2/i18n/zh-CN.js"></script>
-    <link rel="stylesheet"
-          href="<%=request.getContextPath()%>/css/libs/bootstrap-table.min.css">
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/js/bootstrap-table.min.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/js/locale/bootstrap-table-zh-CN.min.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/js/axp/base.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/plugs/JSON-js-master/json_parse.js"></script>
-    <script type="text/javascript"
-            src="<%=request.getContextPath()%>/plugs/blockui-master/jquery.blockUI.js"></script>
-    <link
-            href="<%=request.getContextPath()%>/plugs/sweet-alert/css/sweet-alert.css"
-            rel="stylesheet">
-    <script
-            src="<%=request.getContextPath()%>/plugs/sweet-alert/js/sweet-alert.min.js"></script>
-    <script
-            src="<%=request.getContextPath()%>/js/validator/bootstrapValidator.min.js"></script>
-    <script
-            src="<%=request.getContextPath()%>/js/extensions/export/bootstrap-table-export.min.js"></script>
-    <script
-            src="<%=request.getContextPath()%>/js/extensions/export/tableExport.js"></script>
-    <script src="<%=request.getContextPath()%>/js/require.js"
-            data-main="<%=request.getContextPath()%>/js/modules/main"></script>
-</head>
-<body>
 <div id="page-wrapper" class="container">
     <div class="row">
         <div class="row">
             <div class="col-lg-12">
                 <div class="main-box clearfix">
                     <div class="main-box-body clearfix">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <ol class="breadcrumb">
-                                    <li><a href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>
-                                    <li class="active"><span>基础设置</span></li>
-                                </ol>
-                                <h1>学校管理</h1>
-                            </div>
-                        </div>
+                        <%--<div class="row">--%>
+                            <%--<div class="col-lg-12">--%>
+                                <%--<ol class="breadcrumb">--%>
+                                    <%--<li><a href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>--%>
+                                    <%--<li class="active"><span>基础设置</span></li>--%>
+                                <%--</ol>--%>
+                                <%--<h1>学校管理</h1>--%>
+                            <%--</div>--%>
+                        <%--</div>--%>
                         <div class="table-responsive">
 
                             <div id="toolbar" class="btn-group">
@@ -73,15 +33,14 @@
                                 </shiro:hasPermission>
 
                                 <shiro:hasPermission name="15_DELETE">
-                                    <button id="btn_delete" type="button" class="btn btn-default"
-                                            onclick="delcollege();">
+                                    <button id="btn_delete" type="button" class="btn btn-default">
                                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
                                     </button>
                                 </shiro:hasPermission>
 
                                 <shiro:hasPermission name="15_QUERY">
                                     <button type="button" id="btn_query" class="btn btn-default">
-                                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+                                        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>刷新
                                     </button>
                                 </shiro:hasPermission>
 
@@ -235,10 +194,10 @@
                 <form role="form" id="form_packet_mode">
                     <div class="form-group">
                         <div class="radio" style="float: left;">
-                            <input type="radio" name="packetMode" id="p1" value="1" checked>
-                            <label for="p1">开启众包模式</label> <input
-                                type="radio" name="packetMode" id="p2" value="0"><label
-                                for="p2"> 关闭众包模式</label>
+                            <input type="radio" name="packetMode" id="schoolManager_p1" value="1" checked>
+                            <label for="schoolManager_p1">开启众包模式</label> <input
+                                type="radio" name="packetMode" id="schoolManager_p2" value="0"><label
+                                for="schoolManager_p2"> 关闭众包模式</label>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -253,7 +212,3 @@
         </div>
     </div>
 </div>
-<script src="<%=request.getContextPath()%>/js/demo-skin-changer.js"></script>
-<script src="<%=request.getContextPath()%>/js/axp/school.js"></script>
-</body>
-</html>

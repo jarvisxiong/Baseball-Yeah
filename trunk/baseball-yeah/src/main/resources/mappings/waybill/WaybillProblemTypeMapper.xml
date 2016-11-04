@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.waybill.mapper.WaybillProblemMapper">
+<mapper namespace="com.rofour.baseball.dao.waybill.mapper.WaybillProblemTypeMapper">
 	<select id="selectWaybillProblemTypeList"
-		parameterType="com.zhiduan.axp.controller.model.waybill.WayBillProblemTypeInfo"
-		resultType="com.zhiduan.axp.controller.model.waybill.WayBillProblemTypeInfo">
+		parameterType="com.rofour.baseball.controller.model.waybill.WayBillProblemTypeInfo"
+		resultType="com.rofour.baseball.controller.model.waybill.WayBillProblemTypeInfo">
 		select t.do_return doReturn,t.update_user_id updateUserId,
 		CASE
 		t.problem_type_group WHEN 1 THEN '货源' WHEN 2 THEN '门店' WHEN 3 THEN
@@ -14,7 +14,7 @@
 		t.problem_type_group
 		problemTypeGroup,t.problem_type_name problemTypeName
 		,t.sort_no
-		sortNo,date_format(t.update_time,'%Y-%m-%d %h:%i:%s')
+		sortNo,date_format(t.update_time,'%Y-%m-%d %H:%i:%s')
 		updateTime,t2.nickname nickName
 		from tb_waybill_problem_type t LEFT
 		JOIN tb_user t2 ON
@@ -25,15 +25,18 @@
 				and t.problem_type_group=#{problemTypeGroup}
 			</if>
 			<if test="updateStartTime!=null and updateStartTime!=''">
-				and   <![CDATA[t.update_time>#{updateStartTime}]]>
+				and <![CDATA[t.update_time>#{updateStartTime}]]>
 			</if>
 			<if test="updateEndTime!=null and updateEndTime!=''">
 				and <![CDATA[t.update_time<#{updateEndTime}]]>
 			</if>
+			<if test="problemTypeCode!=null and problemTypeCode!=''">
+				and t.problem_type_code=#{problemTypeCode}
+			</if>
 		</where>
 	</select>
 	<insert id="insertWaybillProblem"
-		parameterType="com.zhiduan.axp.controller.model.waybill.WayBillProblemTypeInfo">
+		parameterType="com.rofour.baseball.controller.model.waybill.WayBillProblemTypeInfo">
 		INSERT INTO tb_waybill_problem_type (problem_type_code,
 		problem_type_name,
 		problem_type_group, sort_no, is_enabled, do_return,
@@ -44,7 +47,7 @@
 	</insert>
 	<!-- 更新问题类型 -->
 	<update id="updateWaybillProblem"
-		parameterType="com.zhiduan.axp.controller.model.waybill.WayBillProblemTypeInfo">
+		parameterType="com.rofour.baseball.controller.model.waybill.WayBillProblemTypeInfo">
 		update tb_waybill_problem_type
 		<set>
 			<if test="problemTypeName!=null">

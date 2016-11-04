@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.MenuMapper" >
-  <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.MenuBean" >
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.MenuMapper" >
+  <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.manager.bean.MenuBean" >
       <result property="menuId" column="menu_id" jdbcType="BIGINT" javaType="java.lang.Long" />
       <result property="menuCtrlPath" column="menu_ctrl_path" jdbcType="VARCHAR" javaType="java.lang.String" />
       <result property="menuStatusCode" column="menu_status_code" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -21,11 +21,11 @@
       <result property="action" column="action" jdbcType="VARCHAR" javaType="java.lang.String" />
   </resultMap>
   
-  <resultMap id="ZtreeResultMap" type="com.zhiduan.axp.controller.model.Ztree" >
+  <resultMap id="ZtreeResultMap" type="com.rofour.baseball.controller.model.Ztree" >
       <result property="id" column="menu_id" jdbcType="BIGINT" javaType="java.lang.Long" />
       <result property="name" column="caption" jdbcType="VARCHAR" javaType="java.lang.String" />
       <result property="pId" column="parent_id" jdbcType="BIGINT" javaType="java.lang.Long" />
-      <result property="action" column="aciton"/>
+      <result property="action" column="acitons"/>
   </resultMap>
   <sql id="Base_Column_List" >
     tb_menu.menu_id menuId, tb_menu.menu_ctrl_path menuCtrlPath, tb_menu.menu_status_code menuStatusCode, tb_menu.menu_dev_status_code menuDevStatusCode, 
@@ -35,7 +35,7 @@
   </sql>
   
   <!-- 查询全部 -->
-  <select id="selectAll" resultMap="BaseResultMap" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean">
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="com.rofour.baseball.dao.manager.bean.MenuBean">
   	select
   	<include refid="Base_Column_List" />
   	from tb_menu where 1=1 
@@ -47,14 +47,14 @@
 		LIMIT #{offset}, #{limit}
   </select>
   <!-- 查询全部 -->
-  <select id="getTotal" resultType="int" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean">
+  <select id="getTotal" resultType="int" parameterType="com.rofour.baseball.dao.manager.bean.MenuBean">
   	select count(1) from tb_menu where 1=1
   		<if test="caption != null">
   			and caption like CONCAT('%',#{caption},'%')
   		</if>
   </select>
 	<!-- 查询非leafMenu,只有非叶子节点才能做parentId-->
-  <select id="selectAllParent" resultType="com.zhiduan.axp.controller.model.manager.MenuInfo">
+  <select id="selectAllParent" resultType="com.rofour.baseball.controller.model.manager.MenuInfo">
   	select menu_id menuId,caption caption
   	from tb_menu where be_leaf=0 
   </select>
@@ -87,7 +87,7 @@
   </delete>
   
   <!-- 新增 -->
-  <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean" >
+  <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.MenuBean" >
     insert into tb_menu (menu_ctrl_path, menu_status_code, 
       menu_dev_status_code, be_leaf, caption, 
       hint, parent_id, menu_type_id, 
@@ -103,7 +103,7 @@
   </insert>
   
   <!-- 新增 -->
-  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean" >
+  <insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.MenuBean" >
     insert into tb_menu
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="menuCtrlPath != null" >
@@ -202,7 +202,7 @@
   </insert>
   
   <!-- 更新 -->
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.MenuBean" >
     update tb_menu
     <set >
       <if test="menuCtrlPath != null" >
@@ -255,7 +255,7 @@
   </update>
   
   <!-- 更新 -->
-  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean" >
+  <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.MenuBean" >
     update tb_menu
     set menu_ctrl_path = #{menuCtrlPath,jdbcType=VARCHAR},
       menu_status_code = #{menuStatusCode,jdbcType=VARCHAR},
@@ -297,12 +297,12 @@
   </select>
   
   <!-- 获取用户的menu树-->
-  <select id="getZtree" resultMap="ZtreeResultMap" parameterType="com.zhiduan.axp.dao.manager.bean.MenuBean">
+  <select id="getZtree" resultMap="ZtreeResultMap" parameterType="com.rofour.baseball.dao.manager.bean.MenuBean">
   	select menu_id,caption,parent_id,action
   	from tb_menu where 1=1 
   </select>
   
-  <select id="getRoleMenu" resultType="com.zhiduan.axp.controller.model.manager.MenuInfo" parameterType="java.lang.Long">
+  <select id="getRoleMenu" resultType="com.rofour.baseball.controller.model.manager.MenuInfo" parameterType="java.lang.Long">
   	SELECT DISTINCT a.menu_id menuId,b.action FROM tb_menu a LEFT JOIN tb_role_permission b  on a.menu_id=b.menu_id where b.role_id=#{roleId}
   </select>
   

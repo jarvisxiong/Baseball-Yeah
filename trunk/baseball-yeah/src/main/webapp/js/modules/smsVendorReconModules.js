@@ -5,18 +5,18 @@
  * Created by wny on 2016-06-17.
  */
 define(['base'], function (base) {
-    var datatable;
+    //var datatable;
 
     var _sumMethod;
     var _startSubmitTime;
     var _endSubmitTime;
 
     return {
-        init: function (args) {
+        init: function (panel) {
             var self = this;
 
             //开始时间
-            $('#starttimePicker').datetimepicker({
+            $('#starttimePicker',panel).datetimepicker({
                 format: 'yyyy-mm-dd hh:ii:ss',
                 autoclose: true,
                 pickTime: true,
@@ -24,7 +24,7 @@ define(['base'], function (base) {
             })
 
             //结束时间
-            $('#endtimePicker').datetimepicker({
+            $('#endtimePicker',panel).datetimepicker({
                 format: 'yyyy-mm-dd hh:ii:ss',
                 autoclose: true,
                 pickTime: true,
@@ -38,27 +38,27 @@ define(['base'], function (base) {
                 url: '/message/sms/getSumMethod',
                 dataType: 'json',
                 success: function (data) {
-                    $("#selsmsSumMethod").select2({
+                    $("#selsmsSumMethod",panel).select2({
                         data: data,
-                        allowClear: true
+                        allowClear: false
                     });
-                    $('#selsmsSumMethod').select2("val", "month");
+                    $('#selsmsSumMethod',panel).select2("val", "month");
                 }
             });
             if (new Date().getMonth().toString() == "1"||new Date().getMonth().toString()=="01") {
-                $("#startdate").val(new Date(new Date().getFullYear() - 1, 12, 01, 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
+                $("#startdate",panel).val(new Date(new Date().getFullYear() - 1, 12, 01, 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
 
             }
             else {
-                $("#startdate").val(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 01, 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
+                $("#startdate",panel).val(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 01, 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
 
             }
-            $("#enddate").val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59).Format("yyyy-MM-dd HH:mm:ss"));
-            _sumMethod = $("#selsmsSumMethod").val();
-            _startSubmitTime = $("#startdate").val();
-            _endSubmitTime = $("#enddate").val();
-            function queryList() {
-                datatable = base.datagrid({
+            $("#enddate",panel).val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59).Format("yyyy-MM-dd HH:mm:ss"));
+            _sumMethod = $("#selsmsSumMethod",panel).val();
+            _startSubmitTime = $("#startdate",panel).val();
+            _endSubmitTime = $("#enddate",panel).val();
+            function queryList(panel) {
+                base.datagrid({
                     url: '/message/sms/querySmsVendorSumGrid',
                     method: 'post',
                     queryParams: function (params) {
@@ -73,6 +73,23 @@ define(['base'], function (base) {
                     pagination: true, // 是否显示分页（*）
                     sidePagination: "client", // 分页方式：client客户端分页，server服务端分页（*）
                     pageList: [10, 20, 50, 100], // 可供选择的每页的行数（*）
+                    onLoadSuccess : function(data) {
+    					// 表格控件不支持高度自适应
+    					var tableHeight = 105
+    							+ $("#userTable", panel).find("thead")
+    									.height()
+    							+ $("#userTable", panel).find("tbody")
+    									.height()
+    							+ $("#userTable", panel).parent().parent()
+    									.parent().parent().find(".clearfix")
+    									.height();
+    					if (!data || data.length == 0) {// 如果没有数据 给固定文字的高度
+    						tableHeight = 105;
+    					}
+    					$("#userTable", panel).bootstrapTable('resetView', {
+    						"height" : tableHeight
+    					});
+                    },
                     columns: [
                         {
                             field: 'groupDate',
@@ -123,33 +140,38 @@ define(['base'], function (base) {
                                 break;
                         }
                     }
-                }, '#userTable');
-                datatable.bootstrapTable('refresh');
+                }, '#userTable',panel);
+                $('#userTable',panel).bootstrapTable('refresh');
+                //$('#userTable',panel).bootstrapTable('selectPage', 1);
                 $(window).resize(function () {
-                    $('#wayBillLogTable').bootstrapTable('resetView');
+                    $('#userTable',panel).bootstrapTable('resetView');
                 });
             }
 
 
-            $("#btn_query").click(function () {
+            $("#btn_query",panel).click(function () {
 
-                _sumMethod = $("#selsmsSumMethod").val();
-                _startSubmitTime = $("#startdate").val();
-                _endSubmitTime = $("#enddate").val();
-                queryList();
+                _sumMethod = $("#selsmsSumMethod",panel).val();
+                _startSubmitTime = $("#startdate",panel).val();
+                _endSubmitTime = $("#enddate",panel).val();
+                if ((new Date(Date.parse(_endSubmitTime.replace(/-/g, "/"))).getTime() - new Date(Date.parse(_startSubmitTime.replace(/-/g, "/"))).getTime()) < 0) {
+                    sweetAlert("", "结束时间不能小于开始时间!", "info");
+                    return;
+                }
+                queryList(panel);
             });
-            $("#clearSearch").click(function () {
-                base.reset(".main-box-header");
+            $("#clearSearch",panel).click(function () {
+                base.reset($(".main-box-header",panel));
                 if (new Date().getMonth().toString() == "1"||new Date().getMonth().toString()=="01") {
-                    $("#startdate").val(new Date(new Date().getFullYear() - 1, 12, 01, 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
+                    $("#startdate",panel).val(new Date(new Date().getFullYear() - 1, 12, 01, 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
 
                 }
                 else {
-                    $("#startdate").val(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 01, 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
+                    $("#startdate",panel).val(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 01, 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
 
                 }
-                $("#enddate").val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59).Format("yyyy-MM-dd HH:mm:ss"));
-                $('#selsmsSumMethod').select2("val", "month");
+                $("#enddate",panel).val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59).Format("yyyy-MM-dd HH:mm:ss"));
+                $('#selsmsSumMethod',panel).select2("val", "month");
             });
         }
 

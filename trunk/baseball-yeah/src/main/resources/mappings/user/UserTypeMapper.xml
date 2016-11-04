@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.user.mapper.UserTypeMapper" >
+<mapper namespace="com.rofour.baseball.dao.user.mapper.UserTypeMapper" >
 
   
   <!-- 动态插入数据 -->
-  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.user.bean.UserTypeBean" >
+  <insert id="insertSelective" parameterType="com.rofour.baseball.dao.user.bean.UserTypeBean" >
     insert into tb_user_type
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="userTypeId != null" >
@@ -47,4 +47,17 @@
        user_id=#{userId} AND user_type=4
      </where>
   </update>
+  
+  <update id="updatePuserStatus" parameterType="map">
+     UPDATE tb_user_type
+       <set>
+         <if test="beEnabled!=null">
+           be_enabled=#{beEnabled}
+         </if>
+     </set>
+     <where>
+       user_id=#{userId} AND user_type=3
+     </where>
+  </update>
+  
 </mapper>

@@ -3,6 +3,11 @@ define(['base'], function (base) {
      * 私有成员定义区域
      */
     var datatable;
+    function refParentPage(args) {
+        args = args || $('#indextab').tabs('getSelected');
+        
+        $("#areaTable", args).bootstrapTable('refresh', {"query": {"offset": 0}});
+    }
     return {
         init: function (args) {
             // / <summary>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.wallet.mapper.WalletDrawMapper">
-	<resultMap type="com.zhiduan.axp.dao.wallet.bean.UserDrawCheckBean"
+<mapper namespace="com.rofour.baseball.dao.wallet.mapper.WalletDrawMapper">
+	<resultMap type="com.rofour.baseball.dao.wallet.bean.UserDrawCheckBean"
 		id="rtnUserDraw">
 		<result property="exchangeId" column="exchange_id" />
 		<result property="flowId" column="flow_id" />
@@ -14,6 +14,7 @@
 		<result property="acctNo" column="acct_no" />
 		<result property="acctBalance" column="balance" />
 		<result property="checkEmp" column="check_emp" />
+
 		<result property="checkTime" column="check_time" />
 		<result property="arriTime" column="arri_time" />
 		<result property="phone" column="phone" />
@@ -23,7 +24,7 @@
 		<result property="nickname" column="real_name" />
 	</resultMap>
 	
-	<resultMap type="com.zhiduan.axp.dao.wallet.bean.AcctExchangeCashBean"
+	<resultMap type="com.rofour.baseball.dao.wallet.bean.AcctExchangeCashBean"
         id="acctExchangeCash">
         <result property="exchangeId" column="exchange_id" />
         <result property="userId" column="user_id" />
@@ -45,12 +46,12 @@
     </resultMap>
 
 	<!-- 用户提现申请列表 -->
-	<select id="getUserDrawList" parameterType="map" resultType="com.zhiduan.axp.dao.wallet.bean.UserDrawCheckBean">
+	<select id="getUserDrawList" parameterType="map" resultType="com.rofour.baseball.dao.wallet.bean.UserDrawCheckBean">
 		SELECT a.exchange_id as exchangeId,a.flow_id as flowId,a.create_time as createTime,a.state,
 		       b.thd_type as thdTypeCode,c.type_name as transType,a.balance as drawAmount,
 		       e.user_name as userName,b.acct_no as acctNo,0 as acctBalance,g.user_name as checkEmp,
 		       f.check_time as checkTime,f1.arri_time as arriTime,e.phone,a.thd_flow_id as thdFlowId,
-		       b.open_id as openId,e.id_no as idNo,e.real_name as nickname
+		       b.open_id as openId,e.id_no as idNo,e.real_name as nickname,au.active_state as activeState
 		from tb_acct_exchange_cash a
 		left join (SELECT tb.exchange_id,max(tb.create_time) as check_time
 		           from tb_acct_exchange_cash_state tb
@@ -64,6 +65,7 @@
 		inner join ts_acct_thd_payment_type c on b.thd_type = c.type_code and c.state=1
 		inner join tb_user e on a.user_id = e.user_id
 		left join tb_user_manager g on a.opration_id = g.user_manager_id
+		left join tb_acct_user au on a.acct_id = au.acct_id
 		where a.is_del=0 and a.type=1
 		<if test="thdType != null">
 			and b.thd_type = #{thdType}
@@ -83,12 +85,18 @@
 		<if test="applybgnTime!=null and applyendTime!=null">
 			and a.create_time BETWEEN #{applybgnTime} and #{applyendTime}
 		</if>
-		<if test="checkbgnTime != null and checkendTime!=null">
-			and f1.create_time BETWEEN #{checkbgnTime} and #{checkendTime}
-		</if>
-		<if test="arrivebgnTime!=null and arriveendTime!=null">
-			and f.check_time BETWEEN #{arrivebgnTime} and #{arriveendTime}
-		</if>
+        <if test="checkbgnTime != null  and checkbgnTime != '' ">
+            <![CDATA[ and f.check_time  >= #{checkbgnTime}]]>
+        </if>
+        <if test="checkendTime != null  and checkendTime != '' ">
+            <![CDATA[ and f.check_time  <= #{checkendTime}]]>
+        </if>
+        <if test="arrivebgnTime != null  and arrivebgnTime != '' ">
+            <![CDATA[ and f1.arri_time  >= #{arrivebgnTime}]]>
+        </if>
+        <if test="arriveendTime != null  and arriveendTime != '' ">
+            <![CDATA[ and f1.arri_time  <= #{arriveendTime}]]>
+        </if>
 		ORDER BY ${sort} ${order}
 		LIMIT #{offset}, #{limit}
 	</select>
@@ -127,11 +135,17 @@
         <if test="applybgnTime!=null and applyendTime!=null">
             and a.create_time BETWEEN #{applybgnTime} and #{applyendTime}
         </if>
-        <if test="checkbgnTime != null and checkendTime!=null">
-            and f1.create_time BETWEEN #{checkbgnTime} and #{checkendTime}
+        <if test="checkbgnTime != null  and checkbgnTime != '' ">
+            <![CDATA[ and f.check_time  >= #{checkbgnTime}]]>
         </if>
-        <if test="arrivebgnTime!=null and arriveendTime!=null">
-            and f.check_time BETWEEN #{arrivebgnTime} and #{arriveendTime}
+        <if test="checkendTime != null  and checkendTime != '' ">
+            <![CDATA[ and f.check_time  <= #{checkendTime}]]>
+        </if>
+        <if test="arrivebgnTime != null  and arrivebgnTime != '' ">
+            <![CDATA[ and f1.arri_time  >= #{arrivebgnTime}]]>
+        </if>
+        <if test="arriveendTime != null  and arriveendTime != '' ">
+            <![CDATA[ and f1.arri_time  <= #{arriveendTime}]]>
         </if>
 	</select>
 	

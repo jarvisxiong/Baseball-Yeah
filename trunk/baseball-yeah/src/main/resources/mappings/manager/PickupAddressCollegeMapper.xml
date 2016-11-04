@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.PickupAddressCollegeMapper">
-    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.PickupAddressCollegeBean">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.PickupAddressCollegeMapper">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.manager.bean.PickupAddressCollegeBean">
         <constructor>
             <idArg column="pac_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
             <arg column="pickup_address_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
@@ -25,7 +25,7 @@
         delete from tb_pickup_address_college
         where pickup_address_id = #{pickupAddressId,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressCollegeBean">
+    <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.PickupAddressCollegeBean">
     insert into tb_pickup_address_college (pac_id, pickup_address_id, college_id)
     values (#{pacId,jdbcType=BIGINT}, #{pickupAddressId,jdbcType=BIGINT}, #{collegeId,jdbcType=BIGINT})
   </insert>
@@ -38,7 +38,7 @@
         </foreach>
     </insert>
 
-    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressCollegeBean">
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.PickupAddressCollegeBean">
     update tb_pickup_address_college
     set pickup_address_id = #{pickupAddressId,jdbcType=BIGINT},
       college_id = #{collegeId,jdbcType=BIGINT}

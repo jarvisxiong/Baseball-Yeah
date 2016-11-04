@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zhiduan.axp.dao.message.mapper.SmsMapper">
+<mapper namespace="com.rofour.baseball.dao.message.mapper.SmsMapper">
 
-    <resultMap id="BaseResultSmsMap" type="com.zhiduan.axp.dao.message.bean.SmsBean">
+    <resultMap id="BaseResultSmsMap" type="com.rofour.baseball.dao.message.bean.SmsBean">
         <id column="sms_id" property="smsId"/>
         <result column="sms_vendor_id" property="smsVendorId" jdbcType="VARCHAR"/>
         <result column="message_type_id" property="messageTypeId"
@@ -37,8 +37,8 @@
     </sql>
 
     <!-- 根据查询条件查询短信记录 -->
-    <select id="getSmsList" parameterType="com.zhiduan.axp.dao.message.bean.MessageSearchBean"
-            resultType="com.zhiduan.axp.dao.message.bean.SmsBean">
+    <select id="getSmsList" parameterType="com.rofour.baseball.dao.message.bean.MessageSearchBean"
+            resultType="com.rofour.baseball.dao.message.bean.SmsBean">
         SELECT sms_id as smsId, t1.sms_vendor_id as smsVendorId, t1.message_type_id as messageTypeId,t1.phone, content,
         submit_time as submitTime, t1.status,sms_code as smsCode,return_status as returnStatus, return_content as returnContent,
         retry_count as retryCount, last_get_data_time as lastGetDataTime, t1.user_id as userId, t1.store_id as storeId,
@@ -77,8 +77,8 @@
         LIMIT #{offset}, #{limit}
     </select>
 
-    <select id="getVendorSmsSumList" parameterType="com.zhiduan.axp.dao.message.bean.MessageSearchBean"
-            resultType="com.zhiduan.axp.dao.message.bean.MessageSumBean">
+    <select id="getVendorSmsSumList" parameterType="com.rofour.baseball.dao.message.bean.MessageSearchBean"
+            resultType="com.rofour.baseball.dao.message.bean.MessageSumBean">
         SELECT
         SUM(CASE WHEN t1.STATUS=2 THEN ((CASE WHEN CHAR_LENGTH(content)&lt;66 THEN 1 ELSE TRUNCATE(((CHAR_LENGTH(content)+4)/67),0)+1 END)) ELSE 0 END) AS sucessCount,
         SUM(CASE WHEN (t1.STATUS=-1) THEN ((CASE WHEN CHAR_LENGTH(content)&lt;66 THEN 1 ELSE TRUNCATE(((CHAR_LENGTH(content)+4)/67),0)+1 END)) ELSE 0 END) AS failCount,
@@ -114,7 +114,7 @@
 
     </select>
 
-    <select id="getSmsTotal" parameterType="com.zhiduan.axp.dao.message.bean.MessageSearchBean"
+    <select id="getSmsTotal" parameterType="com.rofour.baseball.dao.message.bean.MessageSearchBean"
             resultType="java.lang.Integer">
 
         SELECT count(1) from tb_sms t1

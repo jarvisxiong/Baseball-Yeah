@@ -14,18 +14,21 @@
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd">
 
 
-	
 
+	<import resource="spring-db-pub.xml"/>
+	<import resource="spring-db-report.xml"/>
+
+<!--
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="mapperLocations" value="classpath:/mappings/**/*.xml" />
-		<!-- <property name="typeAliasesPackage" value="com.cnblogs.yjmyzz.entity"/> -->
+		&lt;!&ndash; <property name="typeAliasesPackage" value="com.cnblogs.yjmyzz.entity"/> &ndash;&gt;
 		<property name="configLocation" value="classpath:/mybatis-config.xml"/>
 	</bean>
 
 	<bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
-		<property name="basePackage" value="com.zhiduan.axp" />
+		<property name="basePackage" value="com.rofour.baseball" />
 		<property name="annotationClass" value="javax.inject.Named" />
 	</bean>
 
@@ -59,7 +62,7 @@
 		<property name="validationQuery" value="${jdbc.validationQuery}" />
 		<property name="filters" value="${jdbc.filters}" />
 
-	</bean>
+	</bean>-->
 
 
 

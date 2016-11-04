@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.CollegeMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.CollegeMapper">
 
     <resultMap id="CollegeResultMap"
-               type="com.zhiduan.axp.dao.manager.bean.CollegeBean">
+               type="com.rofour.baseball.dao.manager.bean.CollegeBean">
         <constructor>
             <idArg column="college_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
             <arg column="college_code" jdbcType="VARCHAR" javaType="java.lang.String"/>
@@ -19,7 +19,7 @@
         </constructor>
     </resultMap>
 
-    <resultMap type="com.zhiduan.axp.dao.manager.bean.CollegeManageBean"
+    <resultMap type="com.rofour.baseball.dao.manager.bean.CollegeManageBean"
                id="selectManageRtn">
         <result column="college_id" property="collegeId"/>
         <result column="college_code" property="collegeCode"/>
@@ -41,7 +41,7 @@
     </resultMap>
 
     <resultMap id="CollegeSelectResultMap"
-               type="com.zhiduan.axp.dao.manager.bean.CollegeSelectBean">
+               type="com.rofour.baseball.dao.manager.bean.CollegeSelectBean">
         <constructor>
             <idArg column="college_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
             <arg column="simple_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
@@ -85,7 +85,7 @@
 	</select>
 
 
-    <select id="selectCollegeAJAX" parameterType="com.zhiduan.axp.dao.manager.bean.CollegeBean" resultMap="selectManageRtn">
+    <select id="selectCollegeAJAX" parameterType="com.rofour.baseball.dao.manager.bean.CollegeBean" resultMap="selectManageRtn">
         select
         t.college_id,t.simple_name,t.full_name from tb_college t
         where
@@ -100,7 +100,7 @@
 
     </select>
 
-    <select id="selectCollegeForEdit" parameterType="com.zhiduan.axp.dao.manager.bean.CollegeBean" resultMap="selectManageRtn">
+    <select id="selectCollegeForEdit" parameterType="com.rofour.baseball.dao.manager.bean.CollegeBean" resultMap="selectManageRtn">
         select
         t.college_id,t.simple_name,t.full_name from tb_college t
         where
@@ -116,7 +116,7 @@
     </select>
 
     <select id="selectByCityId"
-            resultType="com.zhiduan.axp.dao.manager.bean.CityCollegeBean">
+            resultType="com.rofour.baseball.dao.manager.bean.CityCollegeBean">
 		select
 		t.college_id,t.college_code,t.full_name,t1.county_id,t1.county_name
 		from tb_college t
@@ -132,7 +132,7 @@
 	</delete>
 
     <!-- 更新 -->
-    <update id="update" parameterType="com.zhiduan.axp.dao.manager.bean.CollegeBean">
+    <update id="update" parameterType="com.rofour.baseball.dao.manager.bean.CollegeBean">
         update tb_college
         <set>
             <if test="collegeCode != null">
@@ -170,7 +170,7 @@
     </update>
 
     <!-- 新增 -->
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.CollegeBean">
+    <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.CollegeBean">
         insert into tb_college
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="collegeCode != null">
@@ -265,5 +265,60 @@
         <foreach collection="collegeIds" item="collegeId" index="index" open="(" separator="," close=")">
             #{collegeId}
         </foreach>
+    </select>
+
+    <!--查询学校列表和运力-->
+    <select id="selectCollegeAndWorkSignin" resultType="com.rofour.baseball.dao.manager.bean.CollegeBean" parameterType="HashMap">
+        SELECT  a.college_id,a.full_name ,COUNT(b.college_id) AS work_signin
+        FROM `tb_college`  a
+        LEFT JOIN  p_work_signin b ON (a.college_id = b.college_id AND b.work_date = #{date}) WHERE a.city_id = #{cityId} GROUP BY a.college_id
+
+    </select>
+
+
+    <!--查询学校列表和运力 分页-->
+    <select id="selectCollegeAndWorkSigninPage" resultType="com.rofour.baseball.dao.manager.bean.CollegeBean" parameterType="com.rofour.baseball.controller.model.RequestWorkSigninInfo">
+        SELECT  a.college_id,a.full_name ,COUNT(b.college_id) AS work_signin
+        FROM `tb_college`  a
+        LEFT JOIN  p_work_signin b ON (a.college_id = b.college_id AND b.work_date = #{workDate}) WHERE a.city_id = #{cityId} GROUP BY a.college_id
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset},#{limit}
+    </select>
+
+    <select id="getCollegeTotal" resultType="int"
+            parameterType="java.lang.Long">
+        select
+        count(1)
+        from tb_college
+        where city_id = #{cityId,jdbcType=BIGINT}
+    </select>
+
+
+    <!--查询学校列表和运力-->
+    <select id="selectPuserAndWorkSignin" resultType="com.rofour.baseball.dao.manager.bean.PuserBean" parameterType="HashMap">
+        SELECT COUNT(c.college_id) as work_signin, a.user_id ,b.real_name FROM p_user a
+            LEFT JOIN tb_user b ON a.user_id = b.user_id
+            LEFT JOIN p_work_signin c ON (a.user_id = c.user_id AND c.work_date = #{date})
+        WHERE a.college_id=#{collegeId} GROUP BY a.user_id
+    </select>
+
+    <!--查询学校列表和运力-->
+    <select id="selectPuserAndWorkSigninPage" resultType="com.rofour.baseball.dao.manager.bean.PuserBean"
+            parameterType="com.rofour.baseball.controller.model.RequestWorkSigninInfo">
+        SELECT c.create_date, a.user_id ,b.real_name FROM p_user a
+            LEFT JOIN tb_user b ON a.user_id = b.user_id
+            LEFT JOIN p_work_signin c ON (a.user_id = c.user_id AND c.work_date = #{workDate})
+        WHERE a.college_id=#{collegeId} GROUP BY a.user_id
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset},#{limit}
+    </select>
+
+
+    <select id="getPuserTotal" resultType="int"
+            parameterType="java.lang.Long">
+        select
+        count(1)
+        from p_user
+        where college_id = #{collegeId,jdbcType=BIGINT}
     </select>
 </mapper> 

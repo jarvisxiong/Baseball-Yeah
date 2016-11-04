@@ -20,7 +20,7 @@ define(['base'], function (base) {
     };
 
     window.operateEvents = {
-       'click .seeCheck': function (e, value, row, index) {
+        'click .seeCheck': function (e, value, row, index) {
             switch (row.state) {
                 //case 0:
                 //$('#apply').attr("checked","checked");
@@ -43,17 +43,17 @@ define(['base'], function (base) {
             $('#drawAmount').html(row.drawAmount / 100);
             $('#addModal').modal();
         },
-        'click .seeUserInfo': function (e, value, row, index) { 
-        	$('#drawAcctNo').html(row.acctNo);
+        'click .seeUserInfo': function (e, value, row, index) {
+            $('#drawAcctNo').html(row.acctNo);
             $('#nickName').html(row.nickname);
             $('#idNo').html(row.idNo);
             $('#openId').html(row.openId);
-            if(row.transType == "支付宝"){
-            	$('.myopenid').addClass("myvisible");
+            if (row.transType == "支付宝") {
+                $('.myopenid').addClass("myvisible");
             } else {
-            	$('.myopenid').removeClass("myvisible");
+                $('.myopenid').removeClass("myvisible");
             }
-            
+
             $('#showDrawUseModal').modal();
         }
     };
@@ -61,23 +61,24 @@ define(['base'], function (base) {
     var datatable;
 
     return {
-        init: function (args) {
+        init: function (panel) {
             var self = this;
             datatable = base.datagrid({
+                singleSelect: false,
                 url: '/wallet/draw/getdrawlist',
                 queryParams: function (params) {
                     return $.extend(params, {
-                        thdType: $("#transationid").val() != "all" ? $("#transationid").val() : null,
-                        state: $("#orderstate").val(),
-                        userId: $('#applyerid').val(),
-                        checkerId: $('#checkerid').val(),
-                        thdFlowId: $('#thdFlowId').val(),
-                        applybgnTime: $('#apply_start_date').val(),
-                        applyendTime: $('#apply_end_date').val(),
-                        checkbgnTime: $('#check_start_date').val(),
-                        checkendTime: $('#check_end_date').val(),
-                        arrivebgnTime: $('#arrive_start_date').val(),
-                        arriveendTime: $('#arrive_end_date').val(),
+                        thdType: $("#transationid", panel).val() != "all" ? $("#transationid", panel).val() : null,
+                        state: $("#orderstate", panel).val(),
+                        userId: $('#applyerid', panel).val(),
+                        checkerId: $('#checkerid', panel).val(),
+                        thdFlowId: $('#thdFlowId', panel).val(),
+                        applybgnTime: $('#apply_start_date', panel).val(),
+                        applyendTime: $('#apply_end_date', panel).val(),
+                        checkbgnTime: $('#check_start_date', panel).val(),
+                        checkendTime: $('#check_end_date', panel).val(),
+                        arrivebgnTime: $('#arrive_start_date', panel).val(),
+                        arriveendTime: $('#arrive_end_date', panel).val(),
                         timeStamp: (new Date()).valueOf()
                     });
                 },
@@ -95,8 +96,7 @@ define(['base'], function (base) {
                         title: '提现状态',
                         sortable: true,
                         align: 'center',
-                        formatter: function (value,
-                                             row, index) {
+                        formatter: function (value, row, index) {
                             switch (value) {
                                 case 0:
                                     return "<a class='label label-info'>提交申请</a>";
@@ -114,11 +114,14 @@ define(['base'], function (base) {
                         title: '账号类型',
                         sortable: true
                     },
-                    /*{
-                        field: 'acctNo',
-                        title: '提现帐号',
-                        sortable: true
-                    },*/
+                    {
+                        field: 'thdTypeCode',
+                        title: '提现帐户',
+                        sortable: true,
+                        formatter: function (value, row, index) {
+                            return value == 1 ? row.openId : row.acctNo;
+                        }
+                    },
                     {
                         field: 'drawAmount',
                         title: '提现金额(元)',
@@ -128,13 +131,32 @@ define(['base'], function (base) {
                         }
                     },
                     {
+                        field: 'acctNo',
+                        title: '提现账号',
+                        sortable: true
+                    },
+                    {
                         field: 'userName',
                         title: '申请人',
                         sortable: true,
                         align: 'center',
                         events: operateEvents,
                         formatter: function (value, row, index) {
-                            return '<a href="#" class="seeUserInfo"><span class="label label-success">'+ value + '</span></a>';
+                            return '<a href="#" class="seeUserInfo"><span class="label label-success">' + value + '</span></a>';
+                        }
+                    },
+                    {
+                        field: 'activeState',
+                        title: '客户状态',
+                        sortable: true,
+                        align: 'center',
+                        formatter: function (value, row, index) {
+                            switch (value) {
+                                case 0:
+                                    return "<a class='label label-info'>封存</a>";
+                                case 1:
+                                    return "<a class='label label-success'>激活</a>";
+                            }
                         }
                     },
                     {
@@ -157,14 +179,14 @@ define(['base'], function (base) {
                         title: '到账时间',
                         sortable: true
                     }]
-            }, '#walletCheckTable');
+            }, '#walletCheckTable', panel);
 
             $.ajax({
                 type: "POST",
                 url: "/wallet/draw/getthdpayment",
                 dataType: "json",
                 success: function (data) {
-                    $("#transationid").select2({
+                    $("#transationid", panel).select2({
                         placeholder: '请选择交易类型',
                         allowClear: true,
                         data: data
@@ -172,97 +194,163 @@ define(['base'], function (base) {
                 }
             });
 
-            $("#orderstate").select2({
+            $("#orderstate", panel).select2({
                 placeholder: '请选择订单状态',
                 allowClear: true
             });
 
-            $('#btn_query').click(function () {
-            	if($('#apply_start_date').val()==='' || $('#apply_end_date').val()===''){
-            		base.error("提现日期不能为空!");
-            		return;
-            	}
-                datatable.bootstrapTable('refresh');
+            $('#btn_query', panel).click(function () {
+                if ($('#apply_start_date', panel).val() === '' || $('#apply_end_date', panel).val() === '') {
+                    base.error("提现日期不能为空!");
+                    return;
+                }
+                datatable.bootstrapTable('refresh', {"query": {"offset": 0}});
+                // datatable.bootstrapTable('selectPage', 1);
+                // datatable.bootstrapTable('selectPage', 1);
             });
 
             $(window).resize(function () {
-                $('#walletCheckTable').bootstrapTable('resetView');
+                $('#walletCheckTable', panel).bootstrapTable('resetView');
             });
-            
-            $('#btnUpdate').click(function(){
-            	var rows = $('#walletCheckTable').bootstrapTable('getSelections');
+
+            $('#btnUpdate', panel).click(function () {
+                var rows = $('#walletCheckTable', panel).bootstrapTable('getSelections');
                 if (rows.length < 1) {
                     sweetAlert("", "请选择有效数据", "warning");
                     return;
                 }
-            	var row = rows[0];
-            	switch (row.state) {
-	                case 1:
-	                    $("#state").html("审核通过");
-	                    break;
-	                case 0:
-	                case 3: //审核失败，已到帐则不可再操作
-	                case 2:
-	                    sweetAlert("", "审核通过才可编辑", "warning");
-	                    return;
-	            }
-	            $('#exchangeId').val(row.exchangeId);
-	            $('#flowId').val(row.flowId);
-	            $('#createTime').html(row.createTime);
-	            $('#userName').html(row.userName);
-	            $('#transType').html(row.transType);
-	            $('#drawAmount').html(row.drawAmount / 100);
-	            $('#addModal').modal();
+                var row = rows[0];
+                switch (row.state) {
+                    case 1:
+                        $("#state", panel).html("审核通过");
+                        break;
+                    case 0:
+                    case 3: //审核失败，已到帐则不可再操作
+                    case 2:
+                        sweetAlert("", "审核通过才可编辑", "warning");
+                        return;
+                }
+                $('#exchangeId', panel).val(row.exchangeId);
+                $('#flowId', panel).val(row.flowId);
+                $('#createTime', panel).html(row.createTime);
+                $('#userName', panel).html(row.userName);
+                $('#transType', panel).html(row.transType);
+                $('#drawAmount', panel).html(row.drawAmount / 100);
+                $('#addModal', panel).modal();
             });
-            
-            $("#clearSearch").click(function () {
+
+            $("#clearSearch", panel).click(function () {
                 base.reset(".panel-body");
-                $("#transationid").val(" ").trigger("change");
-                $("#orderstate").val(" ").trigger("change");
+                $("#transationid", panel).val(" ").trigger("change");
+                $("#orderstate", panel).val(" ").trigger("change");
             });
 
-            $('#addModal').on('show.bs.modal', function () {
-                base.validator(validate, "#checkForm", self.checkok);
-            });
-            
-            $('#addModal').on('hidden.bs.modal', function () {
-                $('#checkForm').data('bootstrapValidator').resetForm(true);
-                $("#checkForm").data('bootstrapValidator').destroy();
+            $('#addModal', panel).on('show.bs.modal', function () {
+                base.validator(validate, "#checkForm", self.checkok, panel);
             });
 
-            $('#btnAudit').click(function(){
-            	var rows = $('#walletCheckTable').bootstrapTable('getSelections');
+            $('#addModal', panel).on('hidden.bs.modal', function () {
+                $('#checkForm', panel).data('bootstrapValidator').resetForm(true);
+                $("#checkForm", panel).data('bootstrapValidator').destroy();
+            });
+
+            $('#btnAudit', panel).click(function () {
+                var rows = $('#walletCheckTable', panel).bootstrapTable('getSelections');
                 if (rows.length < 1) {
                     sweetAlert("", "请选择有效数据", "warning");
                     return;
                 }
-            	var row = rows[0];
-	            $('#createTime1').html(row.createTime);
-	            $('#userName1').html(row.userName);
-	            $('#drawAmount1').html(row.drawAmount / 100);
-	            $('#isApprove').prop('checked',false);
-	            $('#isRefuse').prop('checked',false);
-	            $('#checkDrawModal').modal();
+
+                var exchangeIds = [];
+                var flowIds = [];
+                var total = 0;
+                for (var i = 0; i < rows.length; i++) {
+                    if (rows[i].state == 2 || rows[i].state == 3) {
+                        sweetAlert("", "审核失败，已到帐不可再审核", "warning");
+                        return;
+                    }
+                    exchangeIds.push(rows[i].exchangeId);
+                    flowIds.push(rows[i].flowId);
+                    total += rows[i].drawAmount;
+                }
+                base.cancel({title: "提现申请", text: "总条数：" + rows.length + "；总金额：" + total / 100 + "元；确认审核通过该项申请？"}, function () {
+                    $.post("/wallet/draw/check", {
+                        "exchangeId": exchangeIds.join(","),
+                        "isok": "1",
+                        "flowId": flowIds.join(",")
+                    }, function (data, status) {
+                        var obj = json_parse(data);
+                        if (obj.success == 0) {
+                            $("#walletCheckTable", panel).bootstrapTable('selectPage', 1);
+                            base.success("审核通过！");
+                        } else {
+                            base.error(obj.message);
+                        }
+                    });
+                });
             });
-            
-            $('#btnSave').click(function(){
-            	self.drawcheck();
+
+            $('#btnAuditFail', panel).click(function () {
+                var rows = $('#walletCheckTable', panel).bootstrapTable('getSelections');
+                if (rows.length < 1) {
+                    sweetAlert("", "请选择有效数据", "warning");
+                    return;
+                }
+                var exchangeIds = [];
+                var flowIds = [];
+                var total = 0;
+
+                for (var i = 0; i < rows.length; i++) {
+
+                    if (rows[i].state == 2 || rows[i].state == 3) {
+                        sweetAlert("", "审核失败，已到帐不可再审核", "warning");
+                        return;
+                    }
+                    exchangeIds.push(rows[i].exchangeId);
+                    flowIds.push(rows[i].flowId);
+                    total += rows[i].drawAmount;
+                }
+                base.cancel({title: "提现申请", text: "总条数：" + rows.length + "；总金额：" + total / 100 + "元；确认驳回该项申请？"}, function () {
+                    $.post("/wallet/draw/check", {
+                        "exchangeId": exchangeIds.join(","),
+                        "isok": "0",
+                        "flowId": flowIds.join(",")
+                    }, function (data, status) {
+                        var obj = json_parse(data);
+                        if (obj.success == 0) {
+                            $("#walletCheckTable", panel).bootstrapTable('selectPage', 1);
+                            base.success("审核通过！");
+                        } else {
+                            base.error(obj.message);
+                        }
+                    });
+                });
+            });
+
+            $('#btnSave', panel).click(function () {
+                self.drawcheck(panel);
             });
 
         },
-        checkok: function () {
+        checkok: function (panel) {
             $.post("/wallet/draw/addthdid", {
-                "exchangeId": $("#exchangeId").val(),
-                "thdId": $('#thdId').val(),
-                "flowId": $('#flowId').val()
+                "exchangeId": $("#exchangeId", panel).val(),
+                "thdId": $('#thdId', panel).val(),
+                "flowId": $('#flowId', panel).val()
             }, function (data, status) {
                 if (status == "success") {
                     var obj = json_parse(data);
                     if (obj.success == 0) {
-                        $("#walletCheckTable").bootstrapTable('refresh');
-                        $('#addModal').modal('hide');
-                        $('#checkForm').data('bootstrapValidator').resetForm(true);
-                        base.success("保存成功！");
+                        // $("#walletCheckTable", panel).bootstrapTable('refresh');
+                        $("#walletCheckTable", panel).bootstrapTable('selectPage', 1);
+                        $('#addModal', panel).modal('hide');
+                        $('#checkForm', panel).data('bootstrapValidator').resetForm(true);
+
+
+                        swal({
+                            title: "恭喜!", text: "保存成功！", timer: 3000,
+                            showConfirmButton: false, type: "success"
+                        });
                     } else {
                         base.error(obj.message);
                     }
@@ -271,40 +359,40 @@ define(['base'], function (base) {
                 }
             });
         },
-        drawcheck: function() {
-        	var self = this;
-        	var rows = $('#walletCheckTable').bootstrapTable('getSelections');
+        drawcheck: function (panel) {
+            var self = this;
+            var rows = $('#walletCheckTable', panel).bootstrapTable('getSelections');
             if (rows.length < 1) {
                 sweetAlert("", "请选择有效数据", "warning");
                 return;
             }
             var row = null;
-        	if($('#isApprove').prop('checked')){
-        		for (var i = 0; i < rows.length; i++) {
+            if ($('#isApprove', panel).prop('checked')) {
+                for (var i = 0; i < rows.length; i++) {
                     if (rows[i].state == 0) {
-                    	row = rows[i];
+                        row = rows[i];
                     }
                 }
                 if (row == null) {
                     sweetAlert("", "只有申请状态数据才可以审核", "warning");
                     return;
                 }
-        		self.drawcheckok(row);
-        	} else if($('#isRefuse').prop('checked')){
-        		for (var i = 0; i < rows.length; i++) {
+                self.drawcheckok(row);
+            } else if ($('#isRefuse', panel).prop('checked')) {
+                for (var i = 0; i < rows.length; i++) {
                     if (rows[i].state == 0 || rows[i].state == 1) {
-                    	row = rows[i];
+                        row = rows[i];
                     }
                 }
                 if (row == null) {
                     sweetAlert("", "已审核失败或已到帐不可再审核", "warning");
                     return;
                 }
-        		self.drawcheckno(row);
-        	}
+                self.drawcheckno(row, panel);
+            }
         },
-        drawcheckok: function(row) {
-        	sweetAlert({
+        drawcheckok: function (row, panel) {
+            sweetAlert({
                 title: "提示信息",
                 text: "确认审核通过该项申请?",
                 type: "warning",
@@ -322,8 +410,9 @@ define(['base'], function (base) {
                     if (status == "success") {
                         var obj = json_parse(data);
                         if (obj.success == 0) {
-                            $("#walletCheckTable").bootstrapTable('refresh');
-                            $('#checkDrawModal').modal('hide');
+                            // $("#walletCheckTable", panel).bootstrapTable('refresh');
+                            $("#walletCheckTable", panel).bootstrapTable('selectPage', 1);
+                            $('#checkDrawModal', panel).modal('hide');
                             base.success("审核通过！");
                         } else {
                             base.error(obj.message);
@@ -334,8 +423,8 @@ define(['base'], function (base) {
                 });
             });
         },
-        drawcheckno: function(row) {
-        	sweetAlert({
+        drawcheckno: function (row, panel) {
+            sweetAlert({
                 title: "提示信息",
                 text: "确认驳回该项申请?",
                 type: "warning",
@@ -348,14 +437,15 @@ define(['base'], function (base) {
                 $.post("/wallet/draw/check", {
                     "exchangeId": row.exchangeId,
                     "isok": "0",
-                    "drawAmount":row.drawAmount,
+                    "drawAmount": row.drawAmount,
                     "flowId": row.flowId
                 }, function (data, status) {
                     if (status == "success") {
                         var obj = json_parse(data);
                         if (obj.success == 0) {
-                            $("#walletCheckTable").bootstrapTable('refresh');
-                            $('#checkDrawModal').modal('hide');
+                            // $("#walletCheckTable", panel).bootstrapTable('refresh');
+                            $("#walletCheckTable", panel).bootstrapTable('selectPage', 1);
+                            $('#checkDrawModal', panel).modal('hide');
                             base.success("审核不通过！");
                         } else {
                             base.error(obj.message);
@@ -366,8 +456,8 @@ define(['base'], function (base) {
                 });
             });
         },
-        batchcheckok: function () {
-            var rows = $('#walletCheckTable').bootstrapTable('getSelections');
+        batchcheckok: function (panel) {
+            var rows = $('#walletCheckTable', panel).bootstrapTable('getSelections');
             if (rows.length < 1) {
                 sweetAlert("", "请选择有效数据", "warning");
                 return;
@@ -402,8 +492,9 @@ define(['base'], function (base) {
                     if (status == "success") {
                         var obj = json_parse(data);
                         if (obj.success == 0) {
-                            $("#walletCheckTable").bootstrapTable('refresh');
-                            $('#addModal').modal('hide');
+                            // $("#walletCheckTable", panel).bootstrapTable('refresh');
+                            $("#walletCheckTable", panel).bootstrapTable('selectPage', 1);
+                            $('#addModal', panel).modal('hide');
                             base.success("审核通过！");
                         } else {
                             base.error(obj.message);
@@ -414,8 +505,8 @@ define(['base'], function (base) {
                 });
             });
         },
-        batchcheckno: function () {
-            var rows = $('#walletCheckTable').bootstrapTable('getSelections');
+        batchcheckno: function (panel) {
+            var rows = $('#walletCheckTable', panel).bootstrapTable('getSelections');
             if (rows.length < 1) {
                 sweetAlert("", "请选择有效数据", "warning");
                 return;
@@ -450,8 +541,9 @@ define(['base'], function (base) {
                     if (status == "success") {
                         var obj = json_parse(data);
                         if (obj.success == 0) {
-                            $("#walletCheckTable").bootstrapTable('refresh');
-                            $('#addModal').modal('hide');
+                            // $("#walletCheckTable", panel).bootstrapTable('refresh');
+                            $("#walletCheckTable", panel).bootstrapTable('selectPage', 1);
+                            $('#addModal', panel).modal('hide');
                             base.success("审核不通过！");
                         } else {
                             base.error(obj.message);

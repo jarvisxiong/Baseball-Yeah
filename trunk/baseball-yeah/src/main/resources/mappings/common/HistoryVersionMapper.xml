@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.HistoryVersionMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.HistoryVersionMapper">
    
    <!-- 查询历史版本号 -->
-   <select id="selectVersion" parameterType="com.zhiduan.axp.controller.model.HistoryVersionInfo" resultType="com.zhiduan.axp.controller.model.HistoryVersionInfo">
+   <select id="selectVersion" parameterType="com.rofour.baseball.controller.model.HistoryVersionInfo" resultType="com.rofour.baseball.controller.model.HistoryVersionInfo">
        select t.version_id versionId,t.version,t.content,date_format(t.create_time,'%Y-%m-%d %h:%i:%s') createTime,t.sort_no sortNo,t.title from ts_version_histroy t
        <where>
          1=1
           <if test="version!=null and version!=''">
-              and t.version=#{version}
+              and t.version like CONCAT('%',TRIM(#{version}),'%')
           </if>
            <if test="startTime!=null and startTime!=''">
 	        and <![CDATA[t.create_time>#{startTime}]]>
@@ -20,12 +20,12 @@
        </where>
    </select>
    <!-- 新增 -->
-   <insert id="insertVersion" parameterType="com.zhiduan.axp.controller.model.HistoryVersionInfo">
+   <insert id="insertVersion" parameterType="com.rofour.baseball.controller.model.HistoryVersionInfo">
         insert into ts_version_histroy (version,title,content,create_time,sort_no)
         values (#{version},#{title},#{content},now(),#{sortNo})
    </insert>
    <!-- 修改 -->
-   <update id="updateVersion" parameterType="com.zhiduan.axp.controller.model.HistoryVersionInfo">
+   <update id="updateVersion" parameterType="com.rofour.baseball.controller.model.HistoryVersionInfo">
        update ts_version_histroy 
        <set>
            <if test="version!=null and version!=''">

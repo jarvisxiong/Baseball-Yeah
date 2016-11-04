@@ -1,8 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <header class="navbar" id="header-navbar">
 	<div class="container">
-		<a target="mainFrame"
-			href="<%=request.getContextPath()%>/user/gotoIndex" id="logo"
+		<a
+			href="#" id="logo"
 			class="navbar-brand"> <img
 			src="<%=request.getContextPath()%>/img/logo.png" alt=""
 			class="normal-logo logo-white" /> <img

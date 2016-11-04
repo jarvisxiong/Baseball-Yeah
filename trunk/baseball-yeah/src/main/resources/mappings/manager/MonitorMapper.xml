@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.MonitorMapper">
-    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.MonitorBean">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.MonitorMapper">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.manager.bean.MonitorBean">
         <constructor>
             <idArg column="monitor_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
             <arg column="monitor_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
@@ -15,7 +15,7 @@
         </constructor>
     </resultMap>
 
-    <resultMap id="SelectListMap" type="com.zhiduan.axp.dao.manager.bean.MonitorBean">
+    <resultMap id="SelectListMap" type="com.rofour.baseball.dao.manager.bean.MonitorBean">
         <id column="monitor_id" property="monitorId" jdbcType="BIGINT" javaType="java.lang.Long"/>
         <result column="monitor_name" property="monitorName" jdbcType="VARCHAR" javaType="java.lang.String"/>
         <result column="monitor_sql" property="monitorSql" jdbcType="VARCHAR" javaType="java.lang.String"/>
@@ -25,8 +25,8 @@
         <result column="run_interval" property="runInterval" jdbcType="INTEGER" javaType="java.lang.Integer"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
         <collection property="monitorContactsInfoList" column="monitor_id"
-                    ofType="com.zhiduan.axp.dao.manager.bean.MonitorContactsBean"
-                    select="com.zhiduan.axp.dao.manager.mapper.MonitorContactsMapper.selectByMonitorId"/>
+                    ofType="com.rofour.baseball.dao.manager.bean.MonitorContactsBean"
+                    select="com.rofour.baseball.dao.manager.mapper.MonitorContactsMapper.selectByMonitorId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -62,7 +62,7 @@
     </delete>
 
     <!-- 新增 -->
-    <insert id="insertMonitor" parameterType="com.zhiduan.axp.dao.manager.bean.MonitorBean" useGeneratedKeys="true"
+    <insert id="insertMonitor" parameterType="com.rofour.baseball.dao.manager.bean.MonitorBean" useGeneratedKeys="true"
             keyColumn="monitor_id" keyProperty="monitorId">
         insert into ts_monitor
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -126,7 +126,7 @@
     </insert>
 
     <!--更新-->
-    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.MonitorBean">
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.MonitorBean">
         update ts_monitor
         <set>
             <if test="monitorName != null">

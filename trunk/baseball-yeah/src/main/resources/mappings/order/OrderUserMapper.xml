@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.order.mapper.OrderUserMapper">
-    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.order.bean.Order">
+<mapper namespace="com.rofour.baseball.dao.order.mapper.OrderUserMapper">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.order.bean.Order">
         <id column="order_id" property="orderId" jdbcType="BIGINT"/>
         <result column="source" property="source" jdbcType="VARCHAR"/>
         <result column="channel" property="channel" jdbcType="VARCHAR"/>
@@ -113,7 +113,7 @@
 		tb_order
 		where order_id = #{orderId,jdbcType=BIGINT}
 	</delete>
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.order.bean.Order">
+    <insert id="insert" parameterType="com.rofour.baseball.dao.order.bean.Order">
 		insert into tb_order
 		(order_id, source, channel,
 		type, total_money, rebate_money,
@@ -146,7 +146,7 @@
 		#{updateDate,jdbcType=TIMESTAMP},
 		#{sex,jdbcType=VARCHAR})
 	</insert>
-    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.order.bean.Order">
+    <insert id="insertSelective" parameterType="com.rofour.baseball.dao.order.bean.Order">
         insert into tb_order
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="orderId != null">
@@ -303,7 +303,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.order.bean.Order">
+    <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.order.bean.Order">
         update tb_order
         <set>
             <if test="source != null">
@@ -383,7 +383,7 @@
         </set>
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.order.bean.Order">
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.order.bean.Order">
 		update tb_order
 		set source = #{source,jdbcType=VARCHAR},
 		channel =
@@ -425,8 +425,8 @@
 	</update>
 
     <!-- 查询send（寄件）订单列表 -->
-    <select id="getAllOrder" resultType="com.zhiduan.axp.controller.model.order.OrderInfo"
-            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+    <select id="getAllOrder" resultType="com.rofour.baseball.controller.model.order.OrderInfo"
+            parameterType="com.rofour.baseball.controller.model.order.RequestOrderInfo">
         SELECT tbo.order_id orderId,tbo.create_date
         createDate,tbo.delivery_end_date deliveryEndDate,tbo.state
         state,tbo.pay_type payType,tbo.pay_id payId,tbo.mobile
@@ -434,13 +434,13 @@
         finalMoney,tbo.pay_money/100 payMoney,tbo.rebate_money/100
         rebateMoney,tbo.address,tbo.consignee,tbo.delivery_start_date
         deliveryStartDate,tbcol.full_name fullName,tbu.real_name realName,tboi.commodity_code
-        commodityCode,tboi.type,tboi.rebate_price/100 rebatePrice
+        commodityCode,tboi.type,tboi.rebate_price/100 rebatePrice,tbo.lock_state
         FROM
         tb_order tbo LEFT JOIN
         p_send_order p ON tbo.order_id=p.order_id
         LEFT
         JOIN
-        tb_college tbcol ON p.college_id=tbcol.college_id
+        tb_college tbcol ON tbo.college_id=tbcol.college_id
         LEFT
         JOIN tb_user tbu
         ON
@@ -461,6 +461,9 @@
         <if test="payType != null and payType != ''">
             AND tbo.pay_type=#{payType}
         </if>
+        <if test="payState != null and payState != ''">
+            AND tbo.pay_state=#{payState}
+        </if>
         <if test="payId != null and payId != ''">
             AND tbo.pay_id=#{payId}
         </if>
@@ -468,7 +471,7 @@
             AND tbu.phone LIKE CONCAT('%',#{phone},'%')
         </if>
         <if test="collegeId != null">
-            AND p.college_id =#{collegeId}
+            AND tbo.college_id =#{collegeId}
         </if>
         <if test="mobile != null and mobile != ''">
             AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
@@ -480,7 +483,7 @@
             AND <![CDATA[tbo.create_date <= #{createEndDate}]]>
         </if>
         <if test="deliveryStartDate != null and deliveryStartDate != ''">
-            AND <![CDATA[tbo.delivery_end_date >= #{deliveryStartDate}]]>
+            AND <![CDATA[tbo.delivery_start_date >= #{deliveryStartDate}]]>
         </if>
         <if test="deliveryEndDate != null and deliveryEndDate != ''">
             AND <![CDATA[tbo.delivery_end_date <= #{deliv.eryEndDate}]]>
@@ -498,8 +501,8 @@
         #{limit}
     </select>
     <!-- 查询派件（取件）订单列表 -->
-    <select id="getPacketOrder" resultType="com.zhiduan.axp.controller.model.order.OrderInfo"
-            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+    <select id="getPacketOrder" resultType="com.rofour.baseball.controller.model.order.OrderInfo"
+            parameterType="com.rofour.baseball.controller.model.order.RequestOrderInfo">
         SELECT tbo.order_id orderId,tbo.create_date
         createDate,tbo.delivery_end_date deliveryEndDate,tbo.state
         state,tbo.pay_type payType,tbo.pay_id payId,tbo.mobile
@@ -513,7 +516,7 @@
         p_order p ON tbo.order_id=p.order_id
         LEFT
         JOIN
-        tb_college tbcol ON p.college_id=tbcol.college_id
+        tb_college tbcol ON tbo.college_id=tbcol.college_id
         LEFT
         JOIN tb_user tbu
         ON
@@ -532,6 +535,9 @@
         <if test="payType != null and payType != ''">
             AND tbo.pay_type=#{payType}
         </if>
+        <if test="payState != null and payState != ''">
+            AND (tbo.pay_state=#{payState}  or tbo.pay_mode= 2)
+        </if>
         <if test="payId != null and payId != ''">
             AND tbo.pay_id=#{payId}
         </if>
@@ -539,7 +545,7 @@
             AND tbu.phone LIKE CONCAT('%',#{phone},'%')
         </if>
         <if test="collegeId != null">
-            AND p.college_id =#{collegeId}
+            AND tbo.college_id =#{collegeId}
         </if>
         <if test="mobile != null and mobile != ''">
             AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
@@ -570,8 +576,8 @@
     </select>
 
     <!-- 查询代取件订单列表 -->
-    <select id="getPickupOrder" resultType="com.zhiduan.axp.controller.model.order.OrderInfo"
-            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+    <select id="getPickupOrder" resultType="com.rofour.baseball.controller.model.order.OrderInfo"
+            parameterType="com.rofour.baseball.controller.model.order.RequestOrderInfo">
         SELECT tbo.order_id orderId,tbo.create_date
         createDate,tbo.delivery_end_date deliveryEndDate,tbo.state
         state,tbo.pay_type payType,tbo.pay_id payId,tbo.mobile
@@ -582,7 +588,7 @@
         commodityCode,tboi.type,tboi.rebate_price/100 rebatePrice
         FROM
         tb_order tbo LEFT JOIN p_order p ON tbo.order_id=p.order_id
-        LEFT JOIN tb_college tbcol ON p.college_id=tbcol.college_id
+        LEFT JOIN tb_college tbcol ON tbo.college_id=tbcol.college_id
         LEFT JOIN tb_user tbu ON tbo.winner=tbu.user_id
         LEFT JOIN tb_order_item tboi ON tbo.order_id=tboi.order_id AND tboi.type='1008'
         <where>
@@ -598,6 +604,9 @@
             <if test="payType != null and payType != ''">
                 AND tbo.pay_type=#{payType}
             </if>
+            <if test="payState != null and payState != ''">
+                AND tbo.pay_state=#{payState}
+            </if>
             <if test="payId != null and payId != ''">
                 AND tbo.pay_id=#{payId}
             </if>
@@ -605,7 +614,7 @@
                 AND tbu.phone LIKE CONCAT('%',#{phone},'%')
             </if>
             <if test="collegeId != null">
-                AND p.college_id =#{collegeId}
+                AND tbo.college_id =#{collegeId}
             </if>
             <if test="mobile != null and mobile != ''">
                 AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
@@ -636,7 +645,7 @@
 
     <!-- 寄件订单总数量 -->
     <select id="getOrderTotal" resultType="java.lang.Integer"
-            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+            parameterType="com.rofour.baseball.controller.model.order.RequestOrderInfo">
         SELECT count(1)
         FROM tb_order tbo LEFT JOIN
         p_send_order p ON
@@ -660,6 +669,9 @@
         <if test="payId != null and payId != ''">
             AND tbo.pay_id=#{payId}
         </if>
+        <if test="payState != null and payState != ''">
+            AND tbo.pay_state=#{payState}
+        </if>
         <if test="phone != null and phone != ''">
             AND tbu.phone LIKE CONCAT('%',#{phone},'%')
         </if>
@@ -667,7 +679,7 @@
             AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
         </if>
         <if test="collegeId != null">
-            AND p.college_id =#{collegeId}
+            AND tbo.college_id =#{collegeId}
         </if>
         <if test="createStartDate != null and createStartDate != ''">
             AND <![CDATA[tbo.create_date >= #{createStartDate}]]>
@@ -690,7 +702,7 @@
     </select>
     <!-- 派件（取件）订单总数量 -->
     <select id="getPacketOrderTotal" resultType="java.lang.Integer"
-            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+            parameterType="com.rofour.baseball.controller.model.order.RequestOrderInfo">
         SELECT count(1)
         FROM tb_order tbo LEFT JOIN
         p_order p ON
@@ -711,6 +723,9 @@
         <if test="payType != null and payType != ''">
             AND tbo.pay_type=#{payType}
         </if>
+        <if test="payState != null and payState != ''">
+            AND (tbo.pay_state=#{payState}  or tbo.pay_mode= 2)
+        </if>
         <if test="payId != null and payId != ''">
             AND tbo.pay_id=#{payId}
         </if>
@@ -721,7 +736,7 @@
             AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
         </if>
         <if test="collegeId != null">
-            AND p.college_id =#{collegeId}
+            AND tbo.college_id =#{collegeId}
         </if>
         <if test="createStartDate != null and createStartDate != ''">
             AND <![CDATA[tbo.create_date >= #{createStartDate}]]>
@@ -745,7 +760,7 @@
 
     <!-- 代取件订单总数量 -->
     <select id="getPickupOrderTotal" resultType="java.lang.Integer"
-            parameterType="com.zhiduan.axp.controller.model.order.RequestOrderInfo">
+            parameterType="com.rofour.baseball.controller.model.order.RequestOrderInfo">
         SELECT count(1)
         FROM tb_order tbo
         LEFT JOIN p_order p ON tbo.order_id=p.order_id
@@ -764,6 +779,9 @@
             <if test="payType != null and payType != ''">
                 AND tbo.pay_type=#{payType}
             </if>
+            <if test="payState != null and payState != ''">
+                AND tbo.pay_state=#{payState}
+            </if>
             <if test="payId != null and payId != ''">
                 AND tbo.pay_id=#{payId}
             </if>
@@ -774,7 +792,7 @@
                 AND tbo.mobile LIKE CONCAT('%',#{mobile},'%')
             </if>
             <if test="collegeId != null">
-                AND p.college_id =#{collegeId}
+                AND tbo.college_id =#{collegeId}
             </if>
             <if test="createStartDate != null and createStartDate != ''">
                 AND <![CDATA[tbo.create_date >= #{createStartDate}]]>
@@ -800,8 +818,8 @@
     <!-- 查询订单明细 -->
 
 
-    <select id="getOrderDetail" resultType="com.zhiduan.axp.dao.order.bean.OrderDetailBean"
-            parameterType="java.lang.Long">
+    <select id="getOrderDetail" resultType="com.rofour.baseball.dao.order.bean.OrderDetailBean"
+            parameterType="com.rofour.baseball.controller.model.order.RequestOrderInfo">
 		SELECT
 		tbo.order_id
 		orderId,tbo.mobile,tbo.final_money/100 finalMoney,tbo.pay_money/100
@@ -829,11 +847,19 @@
 		stateStr,tbo.address,tbs.location,tbs.store_name
 		storeName,tbc.city_name cityName, tbcoll.full_name fullName
 		FROM
-		tb_order tbo LEFT JOIN p_order po
+		tb_order tbo 
+		<choose>
+			<when test="type=='send'">
+				LEFT JOIN p_send_order po
+			</when>
+			<otherwise>
+				LEFT JOIN p_order po
+			</otherwise>
+		</choose>
 		ON tbo.order_id=po.order_id
 		LEFT JOIN
 		tb_college tbcoll ON
-		po.college_id=tbcoll.college_id LEFT
+		tbo.college_id=tbcoll.college_id LEFT
 		JOIN tb_user
 		tbu ON
 		tbo.winner=tbu.user_id LEFT JOIN tb_user_store_exp
@@ -844,69 +870,70 @@
 	</select>
 
     <!-- 查询订单状态集合 -->
-    <select id="getOrderStateDetail" resultType="com.zhiduan.axp.dao.order.bean.OrderStateDetailBean"
-            parameterType="java.lang.Long">
-            SELECT
-      ss.createUser,
-      ss.winnerName,
-      ss.create_date
-               createDate,
-      CASE
-      ss.state
-      WHEN 1
-        THEN
-          CASE WHEN ss.createUser
-                    IS NULL
+    <select id="getOrderStateDetail" resultType="com.rofour.baseball.dao.order.bean.OrderStateDetailBean" parameterType="java.lang.Long">
+
+        SELECT
+          ss.createUser,
+          ss.winnerName,
+          ss.create_date
+                   createDate,ss.remark content
+          /*CASE
+          ss.state
+          WHEN 1
             THEN
-              '创建订单'
+              CASE WHEN ss.createUser
+                        IS NULL
+                THEN
+                  '创建订单'
+              ELSE
+                concat(ss.createUser, '创建订单') END
+          WHEN 2
+            THEN
+              CASE WHEN
+                ss.winnerName
+                IS
+                NULL
+                THEN '已被接单'
+              ELSE concat(ss.winnerName, '已接单') END
+          WHEN 3
+            THEN
+              CASE
+              WHEN ss.winnerName
+                   IS NULL
+                THEN '配送中'
+              ELSE
+                concat(ss.winnerName, '配送中')
+              END
+          WHEN 4
+            THEN '处理中'
+          WHEN 5
+            THEN '完成'
+          WHEN 6
+            THEN CASE ss.cancel_type WHEN 1 then '接单人取消' WHEN 2 then '下单人取消' WHEN 3 then '系统取消' when 4 then '退件取消' end
+            取消类型: 1 接单人取消,2 下单人取消,3 系统取消4 退件取消
+          WHEN 7
+            THEN '异常'
           ELSE
-            concat(ss.createUser, '创建订单') END
-      WHEN 2
-        THEN
-          CASE WHEN
-            ss.winnerName
-            IS
-            NULL
-            THEN '已被接单'
-          ELSE concat(ss.winnerName, '已接单') END
-      WHEN 3
-        THEN
-          CASE
-          WHEN ss.winnerName
-               IS NULL
-            THEN '配送中'
-          ELSE
-            concat(ss.winnerName, '配送中')
-          END
-      WHEN 4
-        THEN '处理中'
-      WHEN 5
-        THEN '完成'
-      WHEN 6
-        THEN CASE ss.cancel_type WHEN 1 then '接单人取消' WHEN 2 then '下单人取消' WHEN 3 then '系统取消' when 4 then '退件取消' end
-        /*取消类型: 1 接单人取消,2 下单人取消,3 系统取消4 退件取消*/
-      WHEN 7
-        THEN '异常'
-      ELSE
-        '' END content
-    FROM
-      (SELECT
-         tbof.create_date,
-         tbof.state,
-         tbo.cancel_type,
-         createuser.real_name createUser,
-         w.real_name  winnerName
-       FROM
-         tb_order_flow tbof LEFT JOIN
-         tb_order tbo ON tbo.order_id =
-                         tbof.order_id
-         /*LEFT JOIN p_order po ON
-                                tbo.order_id = po.order_id*/
-         LEFT JOIN tb_user createUser on createUser.user_id
-                = tbo.create_user
-         LEFT JOIN tb_user w on w.user_id
-                = tbo.winner
-       WHERE tbof.order_id =#{orderId}) ss;
+            '' END content*/
+        FROM
+          (SELECT
+             tbof.create_date,
+             tbof.state,
+             tbo.cancel_type,
+             createuser.real_name createUser,
+             w.real_name  winnerName,tbof.remark
+           FROM
+             tb_order_flow tbof LEFT JOIN
+             tb_order tbo ON tbo.order_id =
+                             tbof.order_id
+             LEFT JOIN p_order po ON
+                                    tbo.order_id = po.order_id
+             LEFT JOIN tb_user createUser on createUser.user_id
+                    = tbo.create_user
+             LEFT JOIN tb_user w on w.user_id
+                    = tbo.winner
+           WHERE tbof.order_id =#{orderId} AND tbof.state <![CDATA[ <> ]]> 4
+            AND (tbof.state&gt;1 OR locate('&quot;payState&quot;:&quot;3&quot;',ifnull(tbof.content,''))&lt;=0)) ss ORDER BY ss.create_date DESC;
 	</select>
 
     <!-- 获取今日订单数量 -->

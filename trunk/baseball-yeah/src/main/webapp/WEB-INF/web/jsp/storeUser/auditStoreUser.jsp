@@ -109,15 +109,15 @@
                         >正确</label> <input type="radio" name="f6" id="fe6" value="option2"><label for="fe6"> 错误</label>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label label-operation">许可证正面照片：</label>
-                        <div class="radio" style="float: left;">
-                            <input type="radio" name="f9" id="f9" value="option1" checked=""> <label for="f9"
-                        >正确</label> <input type="radio" name="f9" id="fe9" value="option2"><label for="fe9"> 错误</label>
-                        </div>
-                        <div class="col-lg-3" style="margin-top: 8;color: #2980b9;"><i
-                                class="fa fa-file-image-o fa-fw fa-lg"></i><strong id="labelimg3" style="cursor: pointer;">点击查看 </strong></div>
-                    </div>
+                    <%--<div class="form-group">--%>
+                        <%--<label class="col-lg-3 control-label label-operation">许可证正面照片：</label>--%>
+                        <%--<div class="radio" style="float: left;">--%>
+                            <%--<input type="radio" name="f9" id="f9" value="option1" checked=""> <label for="f9"--%>
+                        <%-->正确</label> <input type="radio" name="f9" id="fe9" value="option2"><label for="fe9"> 错误</label>--%>
+                        <%--</div>--%>
+                        <%--<div class="col-lg-3" style="margin-top: 8;color: #2980b9;"><i--%>
+                                <%--class="fa fa-file-image-o fa-fw fa-lg"></i><strong id="labelimg3" style="cursor: pointer;">点击查看 </strong></div>--%>
+                    <%--</div>--%>
 
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">校区信息：</label>

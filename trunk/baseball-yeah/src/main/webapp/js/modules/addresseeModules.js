@@ -5,7 +5,7 @@ define(['base'], function (base) {
     var datatable;
 
     return {
-        init: function () {
+        init: function (panel) {
             // / <summary>
             // / 模块初始化方法
             // / </summary>
@@ -17,12 +17,12 @@ define(['base'], function (base) {
                 queryParams: function (params) {
                     return $.extend(params,
                         {
-                            userName: $("#userName").val(),//登录账号
-                            realName: $("#realName").val(),//姓名
-                            gender: $("#gender").val(),//性别
-                            phone: $("#phone").val(),
-                            startDate: $("#startDate").val(),
-                            endDate: $('#endDate').val() == "" ? "" : $('#endDate').val() + " 23:59:59"
+                            userName: $("#userName",panel).val(),//登录账号
+                            realName: $("#realName",panel).val(),//姓名
+                            gender: $("#gender",panel).val(),//性别
+                            phone: $("#phone",panel).val(),
+                            startDate: $("#startDate",panel).val(),
+                            endDate: $('#endDate',panel).val() == "" ? "" : $('#endDate',panel).val() + " 23:59:59"
 
                         });
                 },
@@ -69,11 +69,11 @@ define(['base'], function (base) {
                         title: 'userId',
                         visible: false
                     }]
-            }, '#userTable');
+            }, '#userTable',panel);
 
 
             //开始时间
-            $('#starttimePicker').datetimepicker({
+            $('#starttimePicker',panel).datetimepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 pickTime: false,
@@ -81,28 +81,33 @@ define(['base'], function (base) {
             })
 
             //结束时间
-            $('#endtimePicker').datetimepicker(
+            $('#endtimePicker',panel).datetimepicker(
                 {
                     format: 'yyyy-mm-dd',
                     autoclose: true,
                     pickTime: false,
                     minView: 2
                 });
-            $("#btn_query").click(function () {
-                $("#userTable").bootstrapTable('refresh');
+            $("#btn_query",panel).click(function () {
+                //$("#userTable",panel).bootstrapTable('refresh',{"query": {"offset": 0}});
+            	if ((new Date(Date.parse($('#endDate',panel).val().replace(/-/g, "/"))).getTime() - new Date(Date.parse($('#startDate',panel).val().replace(/-/g, "/"))).getTime()) < 0) {
+                    sweetAlert("", "结束时间不能小于开始时间!", "info");
+                    return;
+                }
+                $("#userTable", panel).bootstrapTable('selectPage', 1);
             })
-            $("#btn_delete").click(function () {
-                self.remove();
+            $("#btn_delete",panel).click(function () {
+                self.remove(panel);
             });
-            $("#btn_activation").click(function () {
-                self.grab();
+            $("#btn_activation",panel).click(function () {
+                self.grab(panel);
             });
-            $("#clearSearch").click(function () {
-                base.reset(".main-box-header");
+            $("#clearSearch",panel).click(function () {
+                base.reset($(".main-box-header",panel));
             });
         },
-        remove: function () {
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+        remove: function (panel) {
+            var arrselections = $("#userTable",panel).bootstrapTable('getSelections');
 
             if (arrselections.length <= 0) {
                 base.error("请选择有效数据!");
@@ -118,7 +123,7 @@ define(['base'], function (base) {
                     , function (data, status) {
                         if (status == "success") {
                             if (data.success == 0) {
-                                $("#userTable").bootstrapTable('refresh');
+                                $("#userTable",panel).bootstrapTable('refresh');
                                 base.success("注销成功！")
                             } else {
                                 base.error(data.message);
@@ -129,9 +134,9 @@ define(['base'], function (base) {
                     });
             });
         },
-        grab: function () {
+        grab: function (panel) {
             var self = this;
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+            var arrselections = $("#userTable",panel).bootstrapTable('getSelections');
             if (arrselections.length > 1) {
                 base.error("只能选择一行进行操作!");
                 return;
@@ -140,31 +145,31 @@ define(['base'], function (base) {
                 base.error("请选择有效数据!");
                 return;
             }
-            $("#grab_phone").val(arrselections[0].phone);
-            $("#grab_realName").val(arrselections[0].realName);
-            $("#userId").val(arrselections[0].userId);
+            $("#grab_phone",panel).val(arrselections[0].phone);
+            $("#grab_realName",panel).val(arrselections[0].realName);
+            $("#userId",panel).val(arrselections[0].userId);
 
             if (arrselections[0].grabOrderMode) {
-                $("#grabY").prop("checked", arrselections[0].grabOrderMode == "1");
-                $("#grabN").prop("checked", arrselections[0].grabOrderMode != "1");
+                $("#grabY_addressee",panel).prop("checked", arrselections[0].grabOrderMode == "1");
+                $("#grabN_addressee",panel).prop("checked", arrselections[0].grabOrderMode != "1");
             }
-            $('#grabModal').modal({
+            $('#grabModal',panel).modal({
                 keyboard: false,
                 backdrop: 'static'
             });
-            $(".btn-primary").click(function () {
-                self.grabUpdate();
+            $(".btn-primary",panel).click(function () {
+                self.grabUpdate(panel);
             });
         },
-        grabUpdate: function () {
+        grabUpdate: function (panel) {
             $.post("/user/activation", {
-                "userId": $("#userId").val(),
-                "beEnabled": $("#grabY").prop('checked') ? "1" : "0"
+                "userId": $("#userId",panel).val(),
+                "beEnabled": $("#grabY_addressee",panel).prop('checked') ? "1" : "0"
             }, function (data, status) {
                 if (status == "success") {
                     if (data.success == 0) {
-                        $("#userTable").bootstrapTable('refresh');
-                        $('#grabModal').modal('hide');
+                        $("#userTable",panel).bootstrapTable('refresh');
+                        $('#grabModal',panel).modal('hide');
                         base.success("操作成功！")
                     } else {
                         base.error(data.message);

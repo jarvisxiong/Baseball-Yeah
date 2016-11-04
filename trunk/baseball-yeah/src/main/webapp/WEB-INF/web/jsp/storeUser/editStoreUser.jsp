@@ -57,6 +57,13 @@
                                    id="edit_idNo" placeholder="身份证" readonly="readonly" maxlength="20">
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label label-operation">角色</label>
+                        <div class="col-lg-7 div-operation ">
+                            <input type="text"  class="form-control"
+                                   id="edit_beSupervisor"  readonly="readonly"maxlength="20">
+                        </div>
+                    </div>
 
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">性别</label>
@@ -67,15 +74,7 @@
                             <label for="editWoman"> 女</label>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label label-operation">负责人</label>
-                        <div class="radio">
-                            <input type="radio" name="editSupervisors" id="editYSupervisor" value="option1"
-                                   checked=""> <label for="editYSupervisor">是</label> <input
-                                type="radio" name="editSupervisors" id="editNSupervisor" value="option2">
-                            <label for="editNSupervisor"> 否</label>
-                        </div>
-                    </div>
+
 
                 </div>
                 <div class="modal-footer">

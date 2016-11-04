@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rofour.baseball.dao.report.mapper.ReportBusinessMapper">
+
+	<select id="queryDayStatistics" resultType="com.rofour.baseball.controller.model.report.ReportBusinessInfo" parameterType="com.rofour.baseball.controller.model.report.ReportBusinessInfo">
+		SELECT 
+		  e.cityName as cityName,
+		  DATE(a.add_time) AS date,
+		  COUNT(CASE WHEN a.be_signed=0 THEN a.waybill_id END) AS arrivTotal,
+		  COUNT(CASE WHEN a.be_signed=1 THEN a.waybill_id END) AS collectTotal,
+		  e.storeName AS storeName,
+		  e.xx AS expressName,
+		  e.store_id AS storeId
+		FROM
+		  tb_waybill a,
+		  (SELECT 
+		    city.city_name AS cityName,
+		    city.city_id AS city_id,
+		    b.store_name AS storeName,
+		    b.store_id,
+		    GROUP_CONCAT(DISTINCT d.full_name) xx 
+		  FROM
+		    tb_store b,
+		    tb_store_ec_rel c,
+		    tb_express_company d,
+		    tb_city city,
+		    tb_college college,
+		    tb_store_college_rel tscl
+		  WHERE b.store_id = c.store_id 
+		    AND c.express_company_id = d.express_company_id
+		    AND city.city_id = college.city_id
+		    AND college.college_id = tscl.college_id
+		    AND tscl.store_id = b.store_id
+		    <if test="storeName != null and storeName != ''">
+				AND b.store_id = #{storeName} 
+			</if>
+			<if test="expressName != null and expressName != ''">
+				AND d.express_company_id = #{expressName}
+			</if>
+			<if test="cityName != null and cityName != ''">
+				AND city.city_id = TRIM(#{cityName})
+			</if>
+		  GROUP BY b.store_id) e 
+		WHERE a.disp_exp_id = e.store_id 
+		AND a.be_virtual=0
+		<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+			AND (date(a.add_time) between #{startDate} and #{endDate})
+		</if>
+		GROUP BY date(a.add_time),e.store_id
+		ORDER BY ${sort} ${order}
+		limit #{offset},#{limit}
+	</select>
+ 
+ 
+ <select id="queryDayStatisticsCount" resultType="int" parameterType="com.rofour.baseball.controller.model.report.ReportBusinessInfo">
+		SELECT 
+		 	COUNT(1)
+		FROM
+		  tb_waybill a,
+		  (SELECT 
+		    city.city_name AS cityName,
+		    city.city_id AS city_id,
+		    b.store_name AS storeName,
+		    b.store_id,
+		    GROUP_CONCAT(DISTINCT d.full_name) xx 
+		  FROM
+		    tb_store b,
+		    tb_store_ec_rel c,
+		    tb_express_company d,
+		    tb_city city,
+		    tb_college college,
+		    tb_store_college_rel tscl
+		  WHERE b.store_id = c.store_id 
+		    AND c.express_company_id = d.express_company_id
+		    AND city.city_id = college.city_id
+		    AND college.college_id = tscl.college_id
+		    AND tscl.store_id = b.store_id
+		    <if test="storeName != null and storeName != ''">
+				AND b.store_id = #{storeName} 
+			</if>
+			<if test="expressName != null and expressName != ''">
+				AND d.express_company_id = #{expressName}
+			</if>
+			<if test="cityName != null and cityName != ''">
+				AND city.city_id = TRIM(#{cityName})
+			</if>
+		  GROUP BY b.store_id) e 
+		WHERE a.disp_exp_id = e.store_id 
+		AND a.be_virtual=0
+		<if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+			AND (date(a.add_time) between #{startDate} and #{endDate})
+		</if>
+		GROUP BY date(a.add_time),e.store_id
+		ORDER BY ${sort} ${order}
+		limit #{offset},#{limit}
+	</select>
+
+</mapper>

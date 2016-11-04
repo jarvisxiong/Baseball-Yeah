@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.order.mapper.StatisticsMapper">
+    <select id="getOrderStatis" resultType="com.rofour.baseball.controller.model.order.OrderStatisInfo">
+        SELECT
+        to1.order_id orderId,
+        to1.type orderType,
+        toi.total_money reward_money,
+        to1.total_money - to1.final_money discount_money,
+        to1.final_money,
+        to1.state,
+        to1.pay_money,
+        to1.pay_type,
+        to1.create_user,
+        to1.create_user_mobile createUserMobile,
+        to1.mobile,
+        to1.create_date createDate,
+        to1.update_user,
+        to1.update_date updateDate,
+        to1.pay_mode,
+        to1.college_id,
+        tc.full_name collegeName,
+        to1.winner packet_user_id,
+        tu.phone packetPhone
+        FROM tb_order to1
+        LEFT JOIN tb_order_item toi
+        ON (to1.order_id = toi.order_id AND toi.type=1001)
+        LEFT JOIN tb_college tc
+        ON to1.college_id = tc.college_id
+        LEFT JOIN tb_user tu
+        ON tu.user_id = to1.winner
+        WHERE to1.state = 5 AND to1.type IN ('packet', 'agent_packet', 'send')
+        <if test="orderId!=null">
+            AND to1.order_id = #{orderId}
+        </if>
+        <if test="startDate!=null and startDate!=''">
+            <![CDATA[AND to1.create_date >= #{startDate}]]>
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            <![CDATA[AND to1.create_date <= #{endDate}]]>
+        </if>
+        <if test="updStartDate!=null and updStartDate!=''">
+            <![CDATA[AND to1.update_date >= #{updStartDate}]]>
+        </if>
+        <if test="updEndDate!=null and updEndDate!=''">
+            <![CDATA[AND to1.update_date <= #{updEndDate}]]>
+        </if>
+        <if test="packetUserId!=null and packetUserId!=''">
+            AND to1.winner = #{packetUserId}
+        </if>
+        <if test="payMode!=null and payMode!=''">
+            AND to1.pay_mode = #{payMode}
+        </if>
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+    </select>
+    <select id="getOrderStatisCount" resultType="java.lang.Integer">
+        SELECT COUNT(0)
+        FROM tb_order to1
+        LEFT JOIN tb_college tc
+        ON to1.college_id = tc.college_id
+        LEFT JOIN tb_user tu
+        ON tu.user_id = to1.winner
+        WHERE to1.state = 5 AND to1.type IN('packet','agent_packet','send')
+        <if test="orderId!=null">
+            AND to1.order_id = #{orderId}
+        </if>
+        <if test="startDate!=null and startDate!=''">
+            <![CDATA[AND to1.create_date >= #{startDate}]]>
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            <![CDATA[AND to1.create_date <= #{endDate}]]>
+        </if>
+        <if test="updStartDate!=null and updStartDate!=''">
+            <![CDATA[AND to1.update_date >= #{updStartDate}]]>
+        </if>
+        <if test="updEndDate!=null and updEndDate!=''">
+            <![CDATA[AND to1.update_date <= #{updEndDate}]]>
+        </if>
+        <if test="packetUserId!=null and packetUserId!=''">
+            AND to1.winner = #{packetUserId}
+        </if>
+        <if test="payMode!=null and payMode!=''">
+            AND to1.pay_mode = #{payMode}
+        </if>
+    </select>
+    <select id="getOrderComment" resultType="com.rofour.baseball.controller.model.order.OrderCommentInfo">
+        SELECT
+        toa.appraise_id,
+        toa.order_id orderId,
+        toa.appraiser_mobile appraiserMobile,
+        toa.overall_score,
+        toa.overall_desc,
+        toa.create_date createDate,
+        tu.phone packetPhone,
+        to1.type
+        FROM tb_order_appraise toa
+        LEFT JOIN tb_user tu
+        ON tu.user_id = toa.appraiser_other
+        LEFT JOIN tb_order to1
+        ON toa.order_id = to1.order_id
+        <where>
+            <if test="orderId!=null">
+                AND toa.order_id = #{orderId}
+            </if>
+            <if test="commentStartDate!=null and commentStartDate!=''">
+                <![CDATA[AND toa.create_date >= #{commentStartDate}]]>
+            </if>
+            <if test="commentEndDate!=null and commentEndDate!=''">
+                <![CDATA[AND toa.create_date <= #{commentEndDate}]]>
+            </if>
+            <if test="packetUserId!=null and packetUserId!=''">
+                AND toa.appraiser_other = #{packetUserId}
+            </if>
+            <if test="customerPhone!=null and customerPhone!=''">
+                AND toa.appraiser_mobile like CONCAT('%',TRIM(#{customerPhone}),'%')
+            </if>
+            <if test="score!=null and score!=''">
+                AND toa.overall_score = #{score}
+            </if>
+        </where>
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+    </select>
+    <select id="getOrderCommentCount" resultType="java.lang.Integer">
+        SELECT count(0)
+        FROM tb_order_appraise toa
+        LEFT JOIN tb_user tu
+        ON tu.user_id = toa.appraiser_other
+        <where>
+            <if test="orderId!=null">
+                AND toa.order_id = #{orderId}
+            </if>
+            <if test="commentStartDate!=null and commentStartDate!=''">
+                AND toa.create_date >= #{commentStartDate}
+            </if>
+            <if test="commentEndDate!=null and commentEndDate!=''">
+                AND #{commentEndDate} >= toa.create_date
+            </if>
+            <if test="packetUserId!=null and packetUserId!=''">
+                AND toa.appraiser_other = #{packetUserId}
+            </if>
+            <if test="customerPhone!=null and customerPhone!=''">
+                AND toa.appraiser_mobile like CONCAT('%',TRIM(#{customerPhone}),'%')
+            </if>
+            <if test="score!=null and score!=''">
+                AND toa.overall_score = #{score}
+            </if>
+        </where>
+    </select>
+    <select id="getOrderCommentDetail" resultType="com.rofour.baseball.controller.model.order.OrderAppraiseInfo">
+        SELECT
+          appraise_id,
+          order_id,
+          appraiser_mobile customer_phone,
+          appraiser_other packet_user_id,
+          overall_score,
+          overall_desc
+        FROM tb_order_appraise WHERE appraise_id=#{appraiseId}
+    </select>
+    <select id="getAcctFlow" resultType="com.rofour.baseball.controller.model.wallet.AcctFlowInfo">
+        SELECT DISTINCT
+        a.acct_id,
+        a.thd_flow_id,
+        a.thd_type,
+        a.biz_type,
+        a.flow_id flowId,
+        CASE
+        WHEN a.biz_type = 1 THEN a.state
+        WHEN a.biz_type = 2 THEN taec.state
+        END AS state,
+        a.biz_id,
+        a.opt_amount optAmount,
+        a.create_time createTime,
+        tat.acct_no thdAcctNo,
+        tat.acct_name thd_acct_name
+        FROM (SELECT
+        taud.acct_id,
+        taud.flow_id flowId,
+        taud.thd_flow_id,
+        taud.thd_type,
+        taud.biz_type,
+        taud.flow_id,
+        SUM(taud.opt_amount) opt_amount,
+        taud.state,
+        taud.create_time,
+        taud.biz_id
+        FROM tb_acct_user_detail taud
+        WHERE taud.acct_id = #{packetUserId}
+        GROUP BY biz_id) a
+        LEFT JOIN tb_acct_exchange_cash taec
+        ON (a.acct_id = taec.acct_id AND a.flow_id = taec.flow_id)
+        LEFT JOIN tb_acct_thirdparty tat
+        ON taec.thd_id = tat.thd_id
+        where 1=1
+        <if test="startDate!=null and startDate!=''">
+            <![CDATA[AND a.create_time >= #{startDate}]]>
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            <![CDATA[AND #{endDate} >= a.create_time]]>
+        </if>
+        <if test="tradeType!=null and tradeType!=''">
+            AND a.biz_type = #{tradeType}
+        </if>
+        ORDER BY ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+    </select>
+    <select id="getAcctFlowCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM(
+        SELECT DISTINCT
+        a.acct_id,
+        a.thd_flow_id,
+        a.thd_type,
+        a.biz_type,
+        a.flow_id flowId,
+        CASE
+        WHEN a.biz_type = 1 THEN a.state
+        WHEN a.biz_type = 2 THEN taec.state
+        END AS state,
+        a.biz_id,
+        a.opt_amount optAmount,
+        a.create_time createTime,
+        tat.acct_no thdAcctNo,
+        tat.acct_name thd_acct_name
+        FROM (SELECT
+        taud.acct_id,
+        taud.flow_id flowId,
+        taud.thd_flow_id,
+        taud.thd_type,
+        taud.biz_type,
+        taud.flow_id,
+        SUM(taud.opt_amount) opt_amount,
+        taud.state,
+        taud.create_time,
+        taud.biz_id
+        FROM tb_acct_user_detail taud
+        WHERE taud.acct_id = #{packetUserId}
+        GROUP BY biz_id) a
+        LEFT JOIN tb_acct_exchange_cash taec
+        ON (a.acct_id = taec.acct_id AND a.flow_id = taec.flow_id)
+        LEFT JOIN tb_acct_thirdparty tat
+        ON taec.thd_id = tat.thd_id
+        where 1=1
+        <if test="startDate!=null and startDate!=''">
+            <![CDATA[AND a.create_time >= #{startDate}]]>
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            <![CDATA[AND #{endDate} >= a.create_time]]>
+        </if>
+        <if test="tradeType!=null and tradeType!=''">
+            AND a.biz_type = #{tradeType}
+        </if>
+        )b
+    </select>
+
+</mapper>

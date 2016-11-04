@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.DeptMapper">
-	<resultMap id="deptResultMap" type="com.zhiduan.axp.dao.manager.bean.DeptBean">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.DeptMapper">
+	<resultMap id="deptResultMap" type="com.rofour.baseball.dao.manager.bean.DeptBean">
 		<constructor>
 			<idArg column="dept_id" jdbcType="BIGINT" javaType="java.lang.Long" />
 			<arg column="dept_code" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -33,14 +33,14 @@
 		be_deleted=1
 		where be_deleted=0 and dept_id = #{deptId,jdbcType=BIGINT}
 	</delete>
-	<insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.DeptBean">
+	<insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.DeptBean">
 		insert into tb_dept
 		(dept_code, dept_name,
 		be_deleted)
 		values (#{deptCode,jdbcType=VARCHAR},
 		#{deptName,jdbcType=VARCHAR},0)
 	</insert>
-	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.DeptBean">
+	<insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.DeptBean">
 		insert into tb_dept
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 
@@ -67,7 +67,7 @@
 			</if>
 		</trim>
 	</insert>
-	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.DeptBean">
+	<update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.DeptBean">
 		update tb_dept
 		<set>
 			<if test="deptCode != null">
@@ -80,7 +80,7 @@
 		</set>
 		where be_deleted=0 and dept_id = #{deptId,jdbcType=BIGINT}
 	</update>
-	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.DeptBean">
+	<update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.DeptBean">
 		update tb_dept
 		set
 		dept_code = #{deptCode,jdbcType=VARCHAR},
@@ -91,7 +91,7 @@
 		dept_id= #{deptId,jdbcType=BIGINT}
 	</update>
 	<select id="isDeptExist" resultType="int"
-		parameterType="com.zhiduan.axp.dao.manager.bean.DeptBean">
+		parameterType="com.rofour.baseball.dao.manager.bean.DeptBean">
 		select count(1) from tb_dept t
 		where (t.dept_name =
 		#{deptName,jdbcType=VARCHAR} or t.dept_code =

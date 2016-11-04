@@ -30,8 +30,8 @@ define(['base'], function (base) {
                 queryParams: function (params) {
                     return $.extend(params,
                         {
-                            "storeName": $("#sel_storename").val().trim(),
-                            "storePhone": $("#sel_phone").val().trim()
+                            "storeName": $("#sel_storename",args).val().trim(),
+                            "storePhone": $("#sel_phone",args).val().trim()
                         });
                 },
                 singleSelect: false,
@@ -64,20 +64,20 @@ define(['base'], function (base) {
                         title: '添加时间',
                         sortable: true
                     }]
-            }, '#pickupAddressTable');
+            }, '#pickupAddressTable',args);
 
             $.ajax({
                 type: "POST",
                 url: "/manage/college/getCollageForSel",
                 dataType: "json",
                 success: function (data) {
-                    $("#sel_college").select2({
+                    $("#sel_college",args).select2({
                         data: data.data
                     });
-                    $("#add_college").select2({
+                    $("#add_college",args).select2({
                         data: data.data
                     });
-                    $("#edit_college").select2({
+                    $("#edit_college",args).select2({
                         data: data.data
                     });
                 }
@@ -136,24 +136,28 @@ define(['base'], function (base) {
              });*/
             //endregion
 
-            $("#btn_add").click(function () {
-                self.add();
+            $("#btn_add",args).click(function () {
+                self.add(args);
             });
-            $("#btn_edit").click(function () {
-                self.edit();
+            $("#btn_edit",args).click(function () {
+                self.edit(args);
             });
-            $("#btn_delete").click(function () {
-                self.remove();
+            $("#btn_delete",args).click(function () {
+                self.remove(args);
             });
-            $("#btn_query").click(function () {
-                $("#pickupAddressTable").bootstrapTable('refresh');
+            $("#btn_query",args).click(function () {
+                // $("#pickupAddressTable",args).bootstrapTable('refresh');
+                $("#pickupAddressTable",args).bootstrapTable('selectPage', 1);
             });
-            $('#addModal').on('shown.bs.modal', function () {
-                $("#add_college").val("").trigger("change");
-                $('#addForm').data('bootstrapValidator').resetForm(true);
-                $("#add_address").val("");
+            $('#addModal',args).on('shown.bs.modal', function () {
+                $("#add_college",args).val("").trigger("change");
+                $('#addForm',args).data('bootstrapValidator').resetForm(true);
+                $("#add_address",args).val("");
             });
-
+            $("#editModal", args).on('hidden.bs.modal', function() {
+                $("#editForm", args).data('bootstrapValidator').destroy();
+                $("#editForm", args).data('bootstrapValidator', null);
+            });
             //region 省市区处理先去掉
             /*$("#add_province").on("change",
              function (e) {
@@ -265,9 +269,9 @@ define(['base'], function (base) {
             //endregion
 
         },
-        add: function () {
+        add: function (args) {
             var self = this;
-            $('#addModal').modal({
+            $('#addModal',args).modal({
                 keyboard: false,
                 backdrop: 'static'
             });
@@ -304,22 +308,23 @@ define(['base'], function (base) {
                         }
                     },
                 }
-            }, "#addForm", self.create);
+            }, "#addForm", self.create,args);
         },
-        create: function () {
+        create: function (args) {
             $.post("/manage/pickupaddress/add",
                 {
-                    "storeName": $("#add_store").val(),
-                    "storePhone": $("#add_phone").val(),
-                    "colleges": $("#add_college").val().join(),
-                    "address": $("#add_address").val()
+                    "storeName": $("#add_store",args).val(),
+                    "storePhone": $("#add_phone",args).val(),
+                    "colleges": $("#add_college",args).val().join(),
+                    "address": $("#add_address",args).val()
                 },
                 function (data, status) {
                     if (status == "success") {
                         if (data.success == 0) {
                             base.success("添加成功！");
-                            $("#pickupAddressTable").bootstrapTable('refresh');
-                            $("#addModal").modal('hide');
+                            // $("#pickupAddressTable",args).bootstrapTable('refresh');
+                            $("#pickupAddressTable",args).bootstrapTable('selectPage', 1);
+                            $("#addModal",args).modal('hide');
                         } else {
                             base.error(data.message);
                         }
@@ -328,9 +333,9 @@ define(['base'], function (base) {
                     }
                 });
         },
-        edit: function () {
+        edit: function (args) {
             var self = this;
-            var arrselections = $("#pickupAddressTable").bootstrapTable('getSelections');
+            var arrselections = $("#pickupAddressTable",args).bootstrapTable('getSelections');
             if (arrselections.length > 1) {
                 sweetAlert("Oops...",
                     "只能选择一行进行编辑!", "error");
@@ -341,22 +346,22 @@ define(['base'], function (base) {
                     "error");
                 return;
             }
-            $('#editModal').modal({
+            $('#editModal',args).modal({
                 keyboard: false,
                 backdrop: 'static'
             });
-            $("#edit_pickupaddressid").val(arrselections[0].pickupAddressId)
-            $("#edit_store").val(arrselections[0].storeName)
-            $("#edit_phone").val(arrselections[0].storePhone)
+            $("#edit_pickupaddressid",args).val(arrselections[0].pickupAddressId)
+            $("#edit_store",args).val(arrselections[0].storeName)
+            $("#edit_phone",args).val(arrselections[0].storePhone)
             if (arrselections[0].collegeIds) {
                 var collegeIds = arrselections[0].collegeIds;
-                $("#edit_college").val(collegeIds.split(',')).trigger("change");
+                $("#edit_college",args).val(collegeIds.split(',')).trigger("change");
             } else {
-                $("#edit_college").val("").trigger("change");
+                $("#edit_college",args).val("").trigger("change");
             }
-            $("#edit_address").val(arrselections[0].address);
+            $("#edit_address",args).val(arrselections[0].address);
 
-            $('#editForm').bootstrapValidator({
+            $('#editForm',args).bootstrapValidator({
                 message: 'This value is not valid',
                 feedbackIcons: {
                     valid: 'glyphicon glyphicon-ok',
@@ -397,27 +402,28 @@ define(['base'], function (base) {
                 }
             }).on('success.form.bv', function (e) {
                 e.preventDefault();
-                self.update();
+                self.update(args);
             });
-            $('#editModal').modal();
+            $('#editModal',args).modal();
         },
-        update: function () {
+        update: function (args) {
             $.post("/manage/pickupaddress/edit",
                 {
-                    "pickupAddressId": $("#edit_pickupaddressid").val(),
-                    "storeName": $("#edit_store").val().trim(),
-                    "storePhone": $("#edit_phone").val().trim(),
-                    "address": $("#edit_address").val().trim(),
-                    "colleges": $("#edit_college").val().join(),
+                    "pickupAddressId": $("#edit_pickupaddressid",args).val(),
+                    "storeName": $("#edit_store",args).val().trim(),
+                    "storePhone": $("#edit_phone",args).val().trim(),
+                    "address": $("#edit_address",args).val().trim(),
+                    "colleges": $("#edit_college",args).val().join(),
                 },
                 function (data, status) {
                     if (status == "success") {
 
                         if (data.success == 0) {
                             base.success("更新成功！");
-                            $("#pickupAddressTable").bootstrapTable('refresh');
-                            $("#editModal").modal('hide');
-                            $("#editForm").data("bootstrapValidator").resetForm(true);
+                            // $("#pickupAddressTable",args).bootstrapTable('refresh');
+                            $("#pickupAddressTable",args).bootstrapTable('selectPage', 1);
+                            $("#editModal",args).modal('hide');
+                            $("#editForm",args).data("bootstrapValidator").resetForm(true);
                         } else {
                             base.error(data.message);
                         }
@@ -426,8 +432,8 @@ define(['base'], function (base) {
                     }
                 });
         },
-        remove: function () {
-            var arrselections = $("#pickupAddressTable").bootstrapTable('getSelections');
+        remove: function (args) {
+            var arrselections = $("#pickupAddressTable",args).bootstrapTable('getSelections');
             if (arrselections.length <= 0) {
                 base.error("请选择有效数据!");
                 return;
@@ -444,7 +450,8 @@ define(['base'], function (base) {
                     if (status == "success") {
                         if (data.success == 0) {
                             base.success("删除成功！");
-                            $("#pickupAddressTable").bootstrapTable('refresh');
+                            // $("#pickupAddressTable",args).bootstrapTable('refresh');
+                            $("#pickupAddressTable",args).bootstrapTable('selectPage', 1);
                         } else {
                             base.error(data.message);
                         }

@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.crowdsource.mapper.CrowdUserMapper">
+
+    <!--小派详情列表查询-->
+    <select id="getCrowdsourceList" parameterType="com.rofour.baseball.dao.crowdsource.bean.CrowdsourceBean"
+            resultType="com.rofour.baseball.dao.crowdsource.bean.CrowdsourceBean">
+		SELECT
+		a.user_id AS userId,
+		b.phone AS loginAccount,
+		b.signup_time AS registerTime,
+		b.real_name AS username,
+		(SELECT
+		property_value
+		FROM tb_property_dict
+		WHERE property_id = b.gender) AS sex,
+		e.city_id AS cityId,
+		e.city_name AS cityName,
+		a.college_id AS collegeId,
+		d.full_name AS collegeName,
+		a.dormitory_address AS dorm,
+		ROUND(IFNULL(c.balance, 0) / 100 , 2) AS walletBalance,
+		f.be_enabled AS userState,
+		g.exclude_task_packet_num AS orderNum,
+		ROUND(((g.overall_score_4 + g.overall_score_5) / (g.overall_score_1 + g.overall_score_2 + g.overall_score_3 + g.overall_score_4 + g.overall_score_5)) * 100, 2) AS favourable
+		FROM p_user a
+		INNER JOIN tb_user b
+		ON a.user_id = b.user_id
+		LEFT JOIN tb_acct_user c
+		ON c.user_id = a.user_id AND c.state = 1
+		LEFT JOIN tb_college d
+		ON a.college_id = d.college_id
+		LEFT JOIN tb_city e
+		ON d.city_id = e.city_id
+		LEFT JOIN tb_user_type f
+		ON f.user_id = b.user_id AND f.user_type = 3 /*众包*/
+		LEFT JOIN p_user_statistics g
+		ON a.user_id = g.user_id
+		WHERE  a.state = 2 AND b.be_deleted = 0
+			AND a.office_role_type = 1
+			<if test="loginAccount!=null and loginAccount!=''">
+				AND b.phone like CONCAT('%',TRIM(#{loginAccount}),'%')
+			</if>
+			<if test="userName!=null and userName!=''">
+				AND b.real_name like CONCAT('%',TRIM(#{userName}),'%')
+			</if>
+			<if test="sex!=null and sex!=''">
+				AND b.gender  = #{sex}
+			</if>
+			<if test="collegeId!=null and collegeId!=''">
+				AND a.college_id  = #{collegeId}
+			</if>
+			<if test="userState!=null and userState!=''">
+				AND f.be_enabled  = #{userState}
+			</if>
+			<if test="registerStartTime != null  and registerStartTime != '' ">
+				<![CDATA[ and b.signup_time  >= #{registerStartTime}]]>
+			</if>
+			<if test="registerEndTime != null  and registerEndTime != '' ">
+				<![CDATA[ and b.signup_time  <= #{registerEndTime}]]>
+			</if>
+			<if test="sort == null or sort == '' ">
+				ORDER BY a.update_date DESC
+			</if>
+			<if test="sort != null and sort != '' ">
+				ORDER BY ${sort} ${order}
+			</if>
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<!--小派列表总数-->
+    <select id="getCrowdsourceListCount" parameterType="com.rofour.baseball.dao.crowdsource.bean.CrowdsourceBean"
+            resultType="int">
+        SELECT
+        COUNT(*)
+        FROM p_user a
+        INNER JOIN tb_user b
+        ON a.user_id = b.user_id
+        LEFT JOIN tb_acct_user c
+        ON c.user_id = a.user_id AND c.state = 1
+        LEFT JOIN tb_college d
+        ON a.college_id = d.college_id
+        LEFT JOIN tb_city e
+        ON d.city_id = e.city_id
+        LEFT JOIN tb_user_type f
+        ON f.user_id = b.user_id AND f.user_type = 3 /*众包*/
+        LEFT JOIN p_user_statistics g
+        ON a.user_id = g.user_id
+        WHERE a.state = 2 AND a.office_role_type = 1 AND b.be_deleted = 0
+        <if test="loginAccount!=null and loginAccount!=''">
+            AND b.phone like CONCAT('%',TRIM(#{loginAccount}),'%')
+        </if>
+        <if test="userName!=null and userName!=''">
+            AND b.real_name like CONCAT('%',TRIM(#{userName}),'%')
+        </if>
+        <if test="sex!=null and sex!=''">
+            AND b.gender = #{sex}
+        </if>
+        <if test="collegeId!=null and collegeId!=''">
+            AND a.college_id = #{collegeId}
+        </if>
+        <if test="userState!=null and userState!=''">
+            AND f.be_enabled = #{userState}
+        </if>
+        <if test="registerStartTime != null  and registerStartTime != '' ">
+            <![CDATA[ and b.signup_time  >= #{registerStartTime}]]>
+        </if>
+        <if test="registerEndTime != null  and registerEndTime != '' ">
+            <![CDATA[ and b.signup_time  <= #{registerEndTime}]]>
+        </if>
+    </select>
+
+    <!--小派详情查询-->
+    <select id="getCrowdUserDetail" parameterType="com.rofour.baseball.dao.crowdsource.bean.CrowdsourceBean"
+            resultType="com.rofour.baseball.dao.crowdsource.bean.CrowdsourceBean">
+		SELECT
+			b.phone AS phone,
+			f.be_enabled AS userState,
+			b.real_name AS username,
+			(SELECT
+			  property_value
+			FROM tb_property_dict
+			WHERE property_id = b.gender) AS sex,
+			b.id_no AS cardNo,
+			b.icon AS accountImg,
+			ROUND(IFNULL(c.balance, 0) / 100 , 2) AS walletBalance,
+			g.exclude_task_packet_num AS orderNum,
+  			ROUND(((g.overall_score_4 + g.overall_score_5) / (g.overall_score_1 + g.overall_score_2 + g.overall_score_3 + g.overall_score_4 + g.overall_score_5)) * 100, 2) AS favourable,
+			e.city_name AS cityName,
+			d.full_name AS collegeName,
+			a.dormitory_address AS dorm,
+			a.update_date AS auditTime,
+			a.state AS auditState,
+			a.remark AS auditRemark,
+			a.college_address AS detailPath,
+			a.user_id
+			FROM p_user a
+			INNER JOIN tb_user b
+			ON a.user_id = b.user_id
+			LEFT JOIN tb_acct_user c
+			ON b.user_id = c.user_id AND c.state = 1
+			LEFT JOIN tb_college d
+			ON a.college_id = d.college_id
+			LEFT JOIN tb_city e
+			ON d.city_id = e.city_id
+			LEFT JOIN tb_user_type f
+			ON a.user_id = f.user_id AND f.user_type = 3 /*众包*/
+			LEFT JOIN p_user_statistics g
+			ON a.user_id = g.user_id
+			WHERE /*c.state = 1 AND a.office_role_type = 1 AND b.be_deleted = 0 AND*/ a.user_id = #{userId}
+	</select>
+
+    <!--校园详情查询-->
+    <select id="getCollegeDetail" parameterType="com.rofour.baseball.dao.crowdsource.bean.CollegePieBean"
+            resultType="com.rofour.baseball.dao.crowdsource.bean.CollegePieBean">
+		SELECT
+		  a.college_id AS collegeId,
+		  a.college_code AS collegeCode,
+		  a.full_name AS fullName,
+		  a.nature AS nature,
+		  a.college_type AS collegeType,
+		  b.province_name AS provinceName,
+		  c.city_name AS cityName,
+		  d.county_name AS countyName,
+		  a.remark AS collegeRemark,
+		  (SELECT
+			  t.real_name
+			FROM tb_user t
+			WHERE t.user_id = e.user_id AND t.be_deleted = 0) AS ceoName
+		FROM tb_college a
+		  LEFT JOIN tb_province b
+			ON a.province_id = b.province_id
+		  LEFT JOIN tb_city c
+			ON a.city_id = c.city_id
+		  LEFT JOIN tb_county d
+			ON a.county_id = d.county_id
+		  LEFT JOIN p_user e
+			ON a.college_id = e.college_id AND e.office_role_type = 3
+		WHERE a.college_id = #{collegeId}
+	</select>
+
+    <!--修改小派账户状态-->
+    <update id="updateState" parameterType="com.rofour.baseball.dao.crowdsource.bean.CrowdsourceBean">
+        update tb_user_type
+        <set>
+            be_enabled = #{userState}
+        </set>
+        where user_id IN
+        <foreach item="item" index="index" collection="userIdArr" open="(" separator="," close=")">
+            #{item,jdbcType=BIGINT}
+        </foreach>
+        and user_type = 3
+    </update>
+
+    <update id="updateUser" parameterType="com.rofour.baseball.dao.crowdsource.bean.CrowdsourceBean">
+        update p_user
+        <set>
+            college_id = #{collegeId}
+        </set>
+        where user_id =#{userId,jdbcType=BIGINT}
+
+    </update>
+    <!--小派订单详情查询-->
+    <select id="getOrderDetail" parameterType="com.rofour.baseball.dao.order.bean.PacketOrderBean" resultType="com.rofour.baseball.dao.order.bean.PacketOrderBean">
+		SELECT
+		  tbo.mobile AS userPhone,
+		  tbcoll.full_name collegeName,
+		  tbo.consignee userName,
+		  tbo.address AS deliAddress,
+		    (SELECT
+			  property_value
+			FROM tb_property_dict
+			WHERE property_id = tbo.sex) AS sex,
+		  tbo.trader_address AS fetchAddress,
+		  tbc.city_name AS cityName,
+		  tbo.order_id AS orderId,
+		  tbo.pay_money / 100 AS payMoney,
+		    CASE tbo.type
+			  WHEN 'send' THEN pso.waybill_no ELSE po.waybill_no
+			END waybillNo,
+		    CASE tbo.type
+			  WHEN 'send' THEN ts.store_name ELSE ts1.store_name
+			END expressAddress,
+		  CASE
+			  WHEN (SELECT
+				  IFNULL(toi.price, 0) / 100
+				FROM tb_order_item toi
+				WHERE tbo.order_id = toi.order_id AND toi.type = '1008') > 0 THEN '代金券'
+			END rebateType,
+		  CASE tbo.state
+			  /*WHEN 1 THEN '创建'*/
+			  WHEN 1 THEN IF((tbo.pay_mode = 1 AND tbo.pay_state = 1),'创建',IF((tbo.pay_state = 3 OR tbo.pay_mode = 2), '待接单', '创建'))
+			  WHEN 2 THEN '已接单'
+			  WHEN 3 THEN '配送中'
+			  WHEN 4 THEN '处理中'
+			  WHEN 5 THEN '完成'
+			  WHEN 6 THEN CASE tbo.cancel_type
+				  WHEN 1 THEN '接单人取消'
+				  WHEN 2 THEN '下单人取消'
+				  WHEN 3 THEN '系统取消'
+				  WHEN 4 THEN '退件取消'
+				  WHEN 5 THEN '平台取消'
+				END /*取消类型: 1 接单人取消,2 下单人取消,3 系统取消4 退件取消*/
+			  WHEN 7 THEN '异常' ELSE ''
+			END state,
+		  tbo.pay_type AS payMethod,
+		  /*(SELECT
+			  IFNULL(toi.price, 0) / 100
+			FROM tb_order_item toi
+			WHERE tbo.order_id = toi.order_id AND toi.type = '1001') feeMoney,*/
+		  tbo.pay_mode AS payType,
+		  IFNULL(tbi.price, 0) / 100 feeMoney,
+		  (tbo.total_money - tbo.final_money) / 100 AS rebateMoney,
+		  tbo.remark AS distribionRemark,
+		  po.pickup_code AS pickupCode,
+		  CONCAT(DATE_FORMAT(tbo.delivery_start_date, '%Y-%c-%d %H:%i:%s'), '至', DATE_FORMAT(tbo.delivery_end_date, '%Y-%c-%d %H:%i:%s')) AS bookTime,
+		  tbm.price/100 AS goodsAmount
+		FROM tb_order tbo
+		  LEFT JOIN tb_order_item tbi
+    		ON tbo.order_id = tbi.order_id AND tbi.type = '1001'
+    	  LEFT JOIN tb_order_item tbm
+    		ON tbo.order_id = tbm.order_id AND tbm.type = '1002'
+    	  LEFT JOIN p_send_order pso
+    		ON pso.order_id = tbo.order_id
+    	  LEFT JOIN tb_store ts
+    		ON pso.store_id = ts.store_id
+		  LEFT JOIN p_order po
+			ON tbo.order_id = po.order_id
+		  LEFT JOIN tb_store ts1
+    		ON po.store_id = ts1.store_id
+		  LEFT JOIN tb_college tbcoll
+			ON tbo.college_id = tbcoll.college_id
+		  LEFT JOIN tb_city tbc
+			ON tbcoll.city_id = tbc.city_id
+		WHERE tbo.order_id = #{orderId};
+	</select>
+
+	<!--根据CEO或COO查询下属小派列表-->
+	<select id="getListForCoOrCollege" parameterType="com.rofour.baseball.dao.crowdsource.bean.CrowdsourceBean"
+			resultType="com.rofour.baseball.dao.crowdsource.bean.CrowdsourceBean">
+		SELECT
+		a.user_id AS userId,
+		b.phone AS loginAccount,
+		b.signup_time AS registerTime,
+		b.real_name AS username,
+		(SELECT
+		property_value
+		FROM tb_property_dict
+		WHERE property_id = b.gender) AS sex,
+		e.city_id AS cityId,
+		e.city_name AS cityName,
+		a.college_id AS collegeId,
+		d.full_name AS collegeName,
+		a.dormitory_address AS dorm,
+		ROUND(IFNULL(c.balance, 0) / 100 , 2) AS walletBalance,
+		f.be_enabled AS userState,
+		g.exclude_task_packet_num AS orderNum,
+		ROUND(((g.overall_score_4 + g.overall_score_5) / (g.overall_score_1 + g.overall_score_2 + g.overall_score_3 + g.overall_score_4 + g.overall_score_5)) * 100, 2) AS favourable
+		/*ROUND(((g.overall_score_4 * 8 + g.overall_score_5 * 10) / ((g.overall_score_1 + g.overall_score_2 + g.overall_score_3 + g.overall_score_4 + g.overall_score_5) * 10) * 100), 2) AS favourable*/
+		FROM p_user a
+		INNER JOIN tb_user b
+		ON a.user_id = b.user_id
+		LEFT JOIN tb_acct_user c
+		ON c.user_id = a.user_id AND c.state = 1
+		LEFT JOIN tb_college d
+		ON a.college_id = d.college_id
+		LEFT JOIN tb_city e
+		ON d.city_id = e.city_id
+		LEFT JOIN tb_user_type f
+		ON f.user_id = b.user_id AND f.user_type = 3 /*众包*/ /*AND be_enabled = 1*/
+		LEFT JOIN p_user_statistics g
+		ON a.user_id = g.user_id
+		WHERE  /*a.state = 2 AND*/ b.be_deleted = 0
+		<if test="(searchType == '3' or searchType == 3) and userId != null and userId != ''">
+			AND a.user_id != #{userId} AND a.coo_id IS NULL AND a.office_role_type != 3 /*ceo查询下面coo和小派*/ AND (a.ceo_id = #{userId} OR a.college_id = #{collegeId})
+		</if>
+		<if test="(searchType == '2' or searchType == 2) and userId != null and userId != ''">
+			AND a.user_id != #{userId} AND a.office_role_type = 1 /*coo只查询下面小派*/ AND a.coo_id = #{userId}
+		</if>
+		<if test="loginAccount!=null and loginAccount!=''">
+			AND b.phone like CONCAT('%',TRIM(#{loginAccount}),'%')
+		</if>
+		<if test="userName!=null and userName!=''">
+			AND b.real_name like CONCAT('%',TRIM(#{userName}),'%')
+		</if>
+		<if test="sex!=null and sex!=''">
+			AND b.gender  = #{sex}
+		</if>
+<!--		<if test="collegeId!=null and collegeId!=''">
+                    AND a.college_id  = #{collegeId}
+                </if>-->
+        <if test="userState!=null and userState!=''">
+            AND f.be_enabled = #{userState}
+        </if>
+        <if test="registerStartTime != null  and registerStartTime != '' ">
+            <![CDATA[ and b.signup_time  >= #{registerStartTime}]]>
+        </if>
+        <if test="registerEndTime != null  and registerEndTime != '' ">
+            <![CDATA[ and b.signup_time  <= #{registerEndTime}]]>
+        </if>
+        <if test="sort == null or sort == '' ">
+            ORDER BY a.update_date DESC
+        </if>
+        <if test="sort != null and sort != '' ">
+            ORDER BY ${sort} ${order}
+        </if>
+        LIMIT #{offset}, #{limit}
+    </select>
+    <!--根据CEO或COO查询下属小派总数-->
+    <select id="getListForCoOrCollegeCount" parameterType="com.rofour.baseball.dao.crowdsource.bean.CrowdsourceBean"
+            resultType="int">
+        SELECT
+        COUNT(*)
+        FROM p_user a
+        INNER JOIN tb_user b
+        ON a.user_id = b.user_id
+        LEFT JOIN tb_acct_user c
+        ON c.user_id = a.user_id AND c.state = 1
+        LEFT JOIN tb_college d
+        ON a.college_id = d.college_id
+        LEFT JOIN tb_city e
+        ON d.city_id = e.city_id
+        LEFT JOIN tb_user_type f
+        ON f.user_id = b.user_id AND f.user_type = 3 /*众包*/ /*AND be_enabled = 1*/
+        LEFT JOIN p_user_statistics g
+        ON a.user_id = g.user_id
+        WHERE /*a.state = 2 AND*/ /*a.office_role_type = 1 AND*/ b.be_deleted = 0
+        <if test="(searchType == '3' or searchType == 3) and userId != null and userId != ''">
+            AND a.user_id != #{userId} AND a.coo_id IS NULL AND a.office_role_type != 3 /*ceo查询下面coo和小派*/ AND (a.ceo_id = #{userId} OR a.college_id =
+            #{collegeId})
+        </if>
+        <if test="(searchType == '2' or searchType == 2) and userId != null and userId != ''">
+            AND a.user_id != #{userId} AND a.office_role_type = 1 /*coo只查询下面小派*/ AND a.coo_id = #{userId}
+        </if>
+        <if test="loginAccount!=null and loginAccount!=''">
+            AND b.phone like CONCAT('%',TRIM(#{loginAccount}),'%')
+        </if>
+        <if test="userName!=null and userName!=''">
+            AND b.real_name like CONCAT('%',TRIM(#{userName}),'%')
+        </if>
+        <if test="sex!=null and sex!=''">
+            AND b.gender = #{sex}
+        </if>
+        <!--		<if test="collegeId!=null and collegeId!=''">
+                    AND a.college_id  = #{collegeId}
+                </if>-->
+        <if test="userState!=null and userState!=''">
+            AND f.be_enabled = #{userState}
+        </if>
+        <if test="registerStartTime != null  and registerStartTime != '' ">
+            <![CDATA[ and b.signup_time  >= #{registerStartTime}]]>
+        </if>
+        <if test="registerEndTime != null  and registerEndTime != '' ">
+            <![CDATA[ and b.signup_time  <= #{registerEndTime}]]>
+        </if>
+    </select>
+
+</mapper>

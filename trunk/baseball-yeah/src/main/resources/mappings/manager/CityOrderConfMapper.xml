@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.CityOrderConfMapper" >
+  <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.manager.bean.CityOrderConfBean" >
+	<id column="id" property="id" jdbcType="BIGINT" />
+	<result column="city_id" property="cityId" jdbcType="BIGINT" />
+	<result column="order_type" property="orderType" jdbcType="VARCHAR" />
+	<result column="cost_type" property="costType" jdbcType="VARCHAR" />
+	<result column="cost_value" property="costValue" jdbcType="BIGINT" />
+	<result column="state" property="state" jdbcType="INTEGER" />
+	<result column="remark" property="remark" jdbcType="VARCHAR" />
+	<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+	<result column="create_user" property="createUser" jdbcType="BIGINT" />
+	<result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+	<result column="update_user" property="updateUser" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, city_id, order_type, cost_type, cost_value, state, remark, create_date, create_user, 
+    update_date, update_user
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_city_order_conf
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <!-- 分页查询所有的信息 -->
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="com.rofour.baseball.dao.manager.bean.CityOrderConfBean">
+		select con.id,
+			   p.province_id,
+		       p.province_name,
+		       con.city_id,
+		       city.city_name,
+		       CASE con.order_type
+           		WHEN 'packet' THEN '派件'
+	            WHEN 'agent_packet' THEN '代取件'
+	            WHEN 'send' THEN '寄件'
+	            WHEN 'errands' THEN '跑腿'
+	            ELSE '未知订单类型'
+       		   END order_type,
+		       con.cost_type,
+		       d.property_value,
+		       con.cost_value/100 cost_value,
+		       con.state,
+		       CASE con.state 
+		       	WHEN 0 THEN '禁用'
+		       	WHEN 1 THEN '启用'
+		       	ELSE '未知状态'
+		       END stateDesc,
+		       con.remark,
+		       con.create_date,
+		       u.login_name createUserName
+		  from tb_city_order_conf con
+		 inner join tb_city city
+		    on con.city_id = city.city_id
+		 inner join tb_province p
+		    on city.province_id = p.province_id
+		  left join tb_user_manager u on con.create_user = u.user_manager_id
+		  left join tb_property_dict d on con.cost_type = d.property_id
+		 where 1=1 
+		   <if test="cityName != null  and cityName != ''">
+		   		and city.city_name like CONCAT('%',TRIM(#{cityName}),'%')
+		   </if>
+		   <if test="provinceId != null and provinceId != ''">
+				and city.province_id = #{provinceId} 
+		   </if>
+		   <if test="orderType != null and orderType != ''">
+				and con.order_type = #{orderType}
+		   </if>
+		   <if test="costType != null and costType != ''">
+				and con.cost_type = #{costType}
+		   </if>
+		   <if test="state != null">
+				and con.state = #{state}
+		   </if>
+		   <if test="createUserName != null and createUserName != ''">
+				and u.login_name like CONCAT('%',TRIM(#{createUserName}),'%')
+		   </if>
+		   <if test="createStartDate != null and createStartDate !=''">
+		    	<![CDATA[ AND con.create_date >= #{createStartDate}]]>
+		   </if>
+		   <if test="createEndDate != null and createEndDate!=''">
+		   	 	<![CDATA[ AND con.create_date <= #{createEndDate}]]>
+		   </if>
+		ORDER BY ${sort} ${order}
+		LIMIT #{offset}, #{limit}
+  </select>
+  <select id="selectAllCount" resultType="integer" parameterType="com.rofour.baseball.dao.manager.bean.CityOrderConfBean">
+    select count(1) from (
+        select con.id,
+        	   p.province_id,
+		       p.province_name,
+		       con.city_id,
+		       city.city_name,
+		       con.order_type,
+		       con.cost_value,
+		       con.state,
+		       con.remark,
+		       con.create_date,
+		       con.create_user,
+		       u.login_name createUserName
+		  from tb_city_order_conf con
+		 inner join tb_city city
+		    on con.city_id = city.city_id
+		 inner join tb_province p
+		    on city.province_id = p.province_id
+		  left join tb_user_manager u on con.create_user = u.user_manager_id
+		  left join tb_property_dict d on con.cost_type = d.property_id
+		 where 1=1 
+		   <if test="cityName != null  and cityName != ''">
+		   		and city.city_name like CONCAT('%',TRIM(#{cityName}),'%')
+		   </if>
+		   <if test="provinceId != null and provinceId != ''">
+				and city.province_id = #{provinceId} 
+		   </if>
+		   <if test="orderType != null and orderType != ''">
+				and con.order_type = #{orderType}
+		   </if>
+		   <if test="costType != null and costType != ''">
+				and con.cost_type = #{costType}
+		   </if>
+		   <if test="state != null">
+				and con.state = #{state}
+		   </if>
+		   <if test="createUserName != null and createUserName != ''">
+				and u.login_name like CONCAT('%',TRIM(#{createUserName}),'%')
+		   </if>
+		   <if test="createStartDate != null and createStartDate !=''">
+		    	<![CDATA[ AND con.create_date >= #{createStartDate}]]>
+		   </if>
+		   <if test="createEndDate != null and createEndDate!=''">
+		   	 	<![CDATA[ AND con.create_date <= #{createEndDate}]]>
+		   </if>) t1
+  </select>
+
+  <select id="selectIsExtNameCount" resultType="integer" parameterType="com.rofour.baseball.dao.manager.bean.CityOrderConfBean">
+	    select count(1)
+	      from tb_city_order_conf con
+	     where con.city_id = #{cityId}
+	       and con.order_type = #{orderType}
+	       and con.cost_type = #{costType}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_city_order_conf
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.CityOrderConfBean" >
+    insert into tb_city_order_conf (id, city_id, order_type, 
+      cost_type, cost_value, state, 
+      remark, create_date, create_user, 
+      update_date, update_user)
+    values (#{id,jdbcType=BIGINT}, #{cityId,jdbcType=BIGINT}, #{orderType,jdbcType=VARCHAR}, 
+      #{costType,jdbcType=VARCHAR}, #{costValue,jdbcType=BIGINT}, #{state,jdbcType=INTEGER}, 
+      #{remark,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{createUser,jdbcType=BIGINT}, 
+      #{updateDate,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.CityOrderConfBean" >
+    insert into tb_city_order_conf
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="cityId != null" >
+        city_id,
+      </if>
+      <if test="orderType != null" >
+        order_type,
+      </if>
+      <if test="costType != null" >
+        cost_type,
+      </if>
+      <if test="costValue != null" >
+        cost_value,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="cityId != null" >
+        #{cityId,jdbcType=BIGINT},
+      </if>
+      <if test="orderType != null" >
+        #{orderType,jdbcType=VARCHAR},
+      </if>
+      <if test="costType != null" >
+        #{costType,jdbcType=VARCHAR},
+      </if>
+      <if test="costValue != null" >
+        #{costValue,jdbcType=BIGINT},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.CityOrderConfBean" >
+    update tb_city_order_conf
+    <set >
+      <if test="cityId != null" >
+        city_id = #{cityId,jdbcType=BIGINT},
+      </if>
+      <if test="orderType != null" >
+        order_type = #{orderType,jdbcType=VARCHAR},
+      </if>
+      <if test="costType != null" >
+        cost_type = #{costType,jdbcType=VARCHAR},
+      </if>
+      <if test="costValue != null" >
+        cost_value = #{costValue,jdbcType=BIGINT},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.CityOrderConfBean" >
+    update tb_city_order_conf
+    set city_id = #{cityId,jdbcType=BIGINT},
+      order_type = #{orderType,jdbcType=VARCHAR},
+      cost_type = #{costType,jdbcType=VARCHAR},
+      cost_value = #{costValue,jdbcType=BIGINT},
+      state = #{state,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=BIGINT},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateCostValueByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.CityOrderConfBean" >
+    update tb_city_order_conf
+       set cost_value  = #{costValue,jdbcType = BIGINT},
+           update_date = #{updateDate,jdbcType = TIMESTAMP},
+           update_user = #{updateUser,jdbcType = BIGINT}
+     where id = #{id, jdbcType = BIGINT}
+  </update>
+
+  <update id="enable" parameterType="com.rofour.baseball.dao.manager.bean.CityOrderConfBean" >
+    update tb_city_order_conf
+       set state = 1
+     where id in
+        <foreach collection="array"  open="(" close=")" index="index" separator="," item="item">
+            #{item}
+        </foreach>
+  </update>  
+  <update id="disable" parameterType="com.rofour.baseball.dao.manager.bean.CityOrderConfBean" >
+    update tb_city_order_conf
+       set state = 0
+     where id in
+        <foreach collection="array"  open="(" close=")" index="index" separator="," item="item">
+            #{item}
+        </foreach>
+  </update> 
+</mapper>

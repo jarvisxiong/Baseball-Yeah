@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper
-	namespace="com.zhiduan.axp.dao.activity.mapper.AcctPolicyVoucherMapper">
+	namespace="com.rofour.baseball.dao.activity.mapper.AcctPolicyVoucherMapper">
 	<resultMap id="BaseResultMap"
-		type="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean">
+		type="com.rofour.baseball.dao.activity.bean.AcctPolicyVoucherBean">
 		<constructor>
 			<idArg column="voucher_id" jdbcType="BIGINT" javaType="java.lang.Long" />
 			<arg column="policy_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
@@ -39,7 +39,7 @@
 	</delete>
 
 	<insert id="insert"
-		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean">
+		parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyVoucherBean">
 		insert into tb_acct_policy_voucher (voucher_id, policy_id, user_id,
 		face_value, effect_time, expire_time,
 		receive_time, use_time, state
@@ -52,7 +52,7 @@
 		)
 	</insert>
 	<insert id="insertSelective"
-		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean">
+		parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyVoucherBean">
 		insert into tb_acct_policy_voucher
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="voucherId != null">
@@ -129,7 +129,7 @@
 		</foreach>
 	</insert>
 	<update id="updateByPrimaryKeySelective"
-		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean">
+		parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyVoucherBean">
 		update tb_acct_policy_voucher
 		<set>
 			<if test="policyId != null">
@@ -160,7 +160,7 @@
 		where voucher_id = #{voucherId,jdbcType=BIGINT}
 	</update>
 	<update id="updateByPrimaryKey"
-		parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean">
+		parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyVoucherBean">
 		update tb_acct_policy_voucher
 		set policy_id = #{policyId,jdbcType=INTEGER},
 		user_id = #{userId,jdbcType=BIGINT},
@@ -179,7 +179,7 @@
 	</update>
 
 	<!-- 查询用户代金券 -->
-	<select id="getUserVoucher" parameterType="java.lang.Long" resultType="com.zhiduan.axp.controller.model.activity.ReturnVoucherInfo">
+	<select id="getUserVoucher" parameterType="java.lang.Long" resultType="com.rofour.baseball.controller.model.activity.ReturnVoucherInfo">
 		SELECT voucher_id voucherId,CASE state WHEN 0 THEN '已失效'WHEN 1 THEN '已领取'
 		WHEN 2 THEN '已使用' WHEN 3 THEN '已生成' END stateStr,state,state,effect_time effectTime,expire_time expireTime,receive_time receiveTime,use_time usetime
 		FROM tb_acct_policy_voucher WHERE user_id=#{userId} AND state IN (0,1,2);
@@ -191,17 +191,17 @@
 	</update>
 	
 	<!-- 查询用户可使用代金券数量 -->
-	<select id="getUserVoucherCount" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean" resultType="java.lang.Integer">
+	<select id="getUserVoucherCount" parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyVoucherBean" resultType="java.lang.Integer">
 		select count(voucher_id) from tb_acct_policy_voucher where user_id=#{userId} and state=#{state}
 	</select>
 	<!-- 查询用户可使用代金券列表 -->
-	<select id="queryUserVoucherList" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyVoucherBean" resultType="com.zhiduan.axp.controller.model.activity.UsableVoucherInfo">
+	<select id="queryUserVoucherList" parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyVoucherBean" resultType="com.rofour.baseball.controller.model.activity.UsableVoucherInfo">
 		SELECT pv.voucher_id,pv.user_id phone,pv.face_value,pv.effect_time effectTime,pv.expire_time expireTime,p.policy_name policyName  
 		FROM tb_acct_policy_voucher pv LEFT JOIN tb_acct_activity_policy p ON pv.policy_id = p.policy_id  WHERE 
 		pv.user_id = #{userId} and pv.state = #{state} ORDER BY pv.receive_time DESC 
 	</select>
 
-	<select id="selectPolicyVoucherInfo" parameterType="com.zhiduan.axp.controller.model.wallet.AcctPolicyVoucherInfo" resultType="com.zhiduan.axp.controller.model.wallet.AcctPolicyVoucherInfo">
+	<select id="selectPolicyVoucherInfo" parameterType="com.rofour.baseball.controller.model.wallet.AcctPolicyVoucherInfo" resultType="com.rofour.baseball.controller.model.wallet.AcctPolicyVoucherInfo">
 		select t1.policy_id policyId,t1.effect_time effectTime,t1.expire_time
 		expireTime,t1.face_value faceValue,
 		t1.receive_time receiveTime,CASE t1.state WHEN 0 THEN '已失效' WHEN 1 THEN '已领取' WHEN 2
@@ -241,7 +241,7 @@
 		LIMIT #{offset},
 		#{limit}
 	</select>
-	<select id="selectPolicyVoucherInfoCount" parameterType="com.zhiduan.axp.controller.model.wallet.AcctPolicyVoucherInfo" resultType="int">
+	<select id="selectPolicyVoucherInfoCount" parameterType="com.rofour.baseball.controller.model.wallet.AcctPolicyVoucherInfo" resultType="int">
 		select  count(1) from tb_acct_policy_voucher t1
 		INNER JOIN tb_acct_activity_policy t2 ON t1.policy_id=t2.policy_id
 		INNER JOIN tb_acct_activity t3 ON t3.activity_id=t2.activity_id

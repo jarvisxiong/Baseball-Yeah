@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.order.mapper.TbSysTaskOrderMapper">
-    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.order.bean.TbSysTaskOrder">
+<mapper namespace="com.rofour.baseball.dao.order.mapper.TbSysTaskOrderMapper">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.order.bean.TbSysTaskOrder">
         <constructor>
             <arg column="order_id" jdbcType="BIGINT" javaType="java.lang.String"/>
             <arg column="task_sub_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
@@ -18,7 +18,7 @@
     <sql id="Base_Column_List">
     order_id, task_id, college_id, overall_score, audit_remark
   </sql>
-    <insert id="insert" parameterType="com.zhiduan.axp.controller.model.order.TbSysTaskOrderInfo">
+    <insert id="insert" parameterType="com.rofour.baseball.controller.model.order.TbSysTaskOrderInfo">
       insert into tb_sys_task_order (order_id, task_sub_id, college_id,
       overall_score, audit_remark, accept_date,
       submit_audit_date,audit_user)
@@ -27,7 +27,7 @@
       now(), #{auditUser,jdbcType=BIGINT}
   )
   </insert>
-    <update id="updateAuditResult" parameterType="com.zhiduan.axp.controller.model.order.TbSysTaskOrderInfo">
+    <update id="updateAuditResult" parameterType="com.rofour.baseball.controller.model.order.TbSysTaskOrderInfo">
         update tb_sys_task_order
         <set>
             <if test="overallScore!=null">
@@ -56,12 +56,14 @@
             order_id=#{orderId}
         </where>
     </update>
-    <select id="selectDoOrderTaskListByParams" parameterType="com.zhiduan.axp.dao.order.bean.DoOrderTaskSearchBean"
-            resultType="com.zhiduan.axp.dao.order.bean.DoOrderTaskResultBean">
+    <select id="selectDoOrderTaskListByParams" parameterType="com.rofour.baseball.dao.order.bean.DoOrderTaskSearchBean"
+            resultType="com.rofour.baseball.dao.order.bean.DoOrderTaskResultBean">
         select t1.task_id taskId,t5.task_sub_id taskSubId, t5.task_no taskNo,t2.order_id orderId,t3.state,t4.real_name
         winner,t6.full_name collegeName,t1.theme,
         t4.phone,t3.delivery_end_date endTime,t2.accept_date receiveTime,t2.submit_audit_date auditTime,
-        t3.winner_remark remark ,t3.final_money finalMoney,t5.task_unit_price taskUnitPrice
+        t3.winner_remark remark ,t3.final_money finalMoney,
+        t5.effective_start_date effectiveStartDate,t5.effective_end_date effectiveEndDate,t5.deadline,
+        t5.task_unit_price taskUnitPrice,t5.unit_total unitTotal,t5.upper_limit upperLimit,t5.task_unit_num taskUnitNum,t5.college_id collegeId
         from tb_task t1
         INNER JOIN tb_task_sub t5 ON t5.task_id=t1.task_id
         LEFT JOIN tb_sys_task_order t2 ON t5.task_sub_id=t2.task_sub_id
@@ -99,18 +101,25 @@
             <if test="endOverTime!=null and endOverTime!=''">
                 and <![CDATA[t3.delivery_end_date<#{endOverTime}]]>
             </if>
+            <!-- 提交审核时间 160920lijun -->
             <if test="startAuditTime!=null and startAuditTime!=''">
+                and   <![CDATA[t2.submit_audit_date>#{startAuditTime}]]>
+            </if>
+            <if test="endAuditTime!=null and endAuditTime!=''">
+                and <![CDATA[t2.submit_audit_date<#{endAuditTime}]]>
+            </if>
+            <!--<if test="startAuditTime!=null and startAuditTime!=''">
                 and   <![CDATA[t2.audit_date>#{startAuditTime}]]>
             </if>
             <if test="endAuditTime!=null and endAuditTime!=''">
                 and <![CDATA[t2.audit_date<#{endAuditTime}]]>
-            </if>
+            </if>-->
         </where>
         ORDER BY ${sort} ${order}
         LIMIT #{offset},
         #{limit}
     </select>
-    <select id="selectDoOrderTaskCount" parameterType="com.zhiduan.axp.dao.order.bean.DoOrderTaskSearchBean"
+    <select id="selectDoOrderTaskCount" parameterType="com.rofour.baseball.dao.order.bean.DoOrderTaskSearchBean"
             resultType="int">
         select count(1) from tb_task t1
         INNER JOIN tb_task_sub t5 ON t5.task_id=t1.task_id
@@ -148,15 +157,22 @@
             <if test="endOverTime!=null and endOverTime!=''">
                 and <![CDATA[t3.delivery_end_date<#{endOverTime}]]>
             </if>
+            <!-- 提交审核时间 160920lijun -->
             <if test="startAuditTime!=null and startAuditTime!=''">
+                and   <![CDATA[t2.submit_audit_date>#{startAuditTime}]]>
+            </if>
+            <if test="endAuditTime!=null and endAuditTime!=''">
+                and <![CDATA[t2.submit_audit_date<#{endAuditTime}]]>
+            </if>
+<!--            <if test="startAuditTime!=null and startAuditTime!=''">
                 and   <![CDATA[t2.audit_date>#{startAuditTime}]]>
             </if>
             <if test="endAuditTime!=null and endAuditTime!=''">
                 and <![CDATA[t2.audit_date<#{endAuditTime}]]>
-            </if>
+            </if>-->
         </where>
     </select>
-    <select id="selectDoOrderTaskDetail" resultType="com.zhiduan.axp.controller.model.order.DoOrderTaskDetailInfo"
+    <select id="selectDoOrderTaskDetail" resultType="com.rofour.baseball.controller.model.order.DoOrderTaskDetailInfo"
             parameterType="map">
       select t1.task_id taskId,t5.task_sub_id taskSubId,t5.task_no taskNo,t2.order_id orderId,t3.state,t4.real_name winner,
       t4.phone,date_format(t3.delivery_end_date,'%Y-%m-%d %H:%i:%s') endTime, date_format(t2.accept_date,'%Y-%m-%d %H:%i:%s') receiveTime,

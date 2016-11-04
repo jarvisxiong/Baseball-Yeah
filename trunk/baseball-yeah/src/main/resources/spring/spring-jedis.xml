@@ -47,7 +47,7 @@
 		</property>
 	</bean>
 	
-	 <bean id = "redisCommons" class = "com.zhiduan.axp.common.RedisCommons"> 
+	 <bean id = "redisCommons" class = "com.rofour.baseball.common.RedisCommons">
     	<property name="redisTemplate" ref="redisTemplate"/>
     	<property name="redisSwitch" value="1"/>
     	<property name="defaultTimeoutDay" value="1"/>

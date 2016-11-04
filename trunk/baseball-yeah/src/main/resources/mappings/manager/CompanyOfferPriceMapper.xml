@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.CompanyOfferPriceMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.CompanyOfferPriceMapper">
 
 
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.OfferBean"
+    <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.OfferBean"
             useGeneratedKeys="true" keyProperty="offerId">
         insert into tb_offer
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -67,7 +67,7 @@
         </trim>
     </insert>
 
-    <insert id="insertExpressCompany" parameterType="com.zhiduan.axp.dao.manager.bean.OfferExpressCompanyBran"
+    <insert id="insertExpressCompany" parameterType="com.rofour.baseball.dao.manager.bean.OfferExpressCompanyBran"
             useGeneratedKeys="true" keyProperty="oecId">
         insert into tb_offer_express_company
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -91,7 +91,7 @@
         </trim>
     </insert>
 
-    <insert id="insertExpressCollage" parameterType="com.zhiduan.axp.dao.manager.bean.OfferExpressCollageBran"
+    <insert id="insertExpressCollage" parameterType="com.rofour.baseball.dao.manager.bean.OfferExpressCollageBran"
             useGeneratedKeys="true" keyProperty="oecId">
         insert into tb_offer_college
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -123,7 +123,7 @@
         DELETE FROM tb_offer_college  WHERE  offer_id=#{offerId}
     </delete>
 
-    <update id="update" parameterType="com.zhiduan.axp.dao.manager.bean.OfferBean"  useGeneratedKeys="true" >
+    <update id="update" parameterType="com.rofour.baseball.dao.manager.bean.OfferBean"  useGeneratedKeys="true" >
         update tb_offer
         <set>
             <if test="offerName != null">
@@ -154,7 +154,7 @@
       UPDATE tb_offer SET  is_deleted=1  WHERE  offer_id=#{offerId}
     </delete>
 
-    <select id="selectAll" resultType="com.zhiduan.axp.dao.manager.bean.OfferBean" parameterType="com.zhiduan.axp.dao.manager.bean.OfferBean">
+    <select id="selectAll" resultType="com.rofour.baseball.dao.manager.bean.OfferBean" parameterType="com.rofour.baseball.dao.manager.bean.OfferBean">
         select offer_id offerId,offer_name offerName,
         initial_weight initialWeight,additional_weight additionalWeight,
         send_area_id sendAreaId,disp_area_id dispAreaId,is_enabled isEnabled,
@@ -183,7 +183,7 @@
         LIMIT #{offset}, #{limit}
     </select>
 
-    <select id="selectAllCount" resultType="integer" parameterType="com.zhiduan.axp.dao.manager.bean.OfferBean">
+    <select id="selectAllCount" resultType="integer" parameterType="com.rofour.baseball.dao.manager.bean.OfferBean">
 
         select count(1) from (
         select offer_id offerId,offer_name offerName,
@@ -203,7 +203,7 @@
         ) t1
     </select>
 
-    <select id="selectIsExtNameCount" resultType="integer" parameterType="com.zhiduan.axp.dao.manager.bean.OfferBean">
+    <select id="selectIsExtNameCount" resultType="integer" parameterType="com.rofour.baseball.dao.manager.bean.OfferBean">
 
         select count(1) from (
         select offer_id offerId,offer_name offerName,

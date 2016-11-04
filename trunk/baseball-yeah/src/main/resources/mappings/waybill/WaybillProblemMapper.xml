@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.waybill.mapper.WaybillProblemMapper">
+	<!-- 查询异常件  create by wzq -->
+	<select id="getWaybillProblem" parameterType="Long"
+            resultType="com.rofour.baseball.dao.waybill.bean.WaybillProblemBean">
+        select t.is_canceled isCanceled,t.is_returned isReturned,t.problem_reason problemReason,
+        t.problem_id problemId,t.return_reason returnReason,t.waybill_id waybillId,
+        t.create_user_id createUserId,t.order_id orderId,t.biz_id bizId
+        from tb_waybill_problem t
+        where t.is_canceled=0 and t.is_returned=0 and t.order_id=#{orderId}
+	</select>
+	
+	<!-- 删除异常件  create by wzq -->
+	<delete id="deleteWaybillProblem" parameterType="Long">
+        delete from tb_waybill_problem where problem_id = #{problemId}
+    </delete>
+</mapper>

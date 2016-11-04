@@ -5,7 +5,7 @@ define(['base', 'auditUserModules'], function (base, audit) {
 
 
     return {
-        init: function (args) {
+        init: function (panel) {
             // / <summary>
             // / 模块初始化方法
             // / </summary>
@@ -18,17 +18,17 @@ define(['base', 'auditUserModules'], function (base, audit) {
                 queryParams: function (params) {
                     return $.extend(params,
                         {
-                            beSupervisor: $("#beSupervisor").val(),
-                            realName: $("#realName").val(),
-                            storeName: $("#storeName").val(),
-                            idNo: $("#idNo").val(),
-                            verifyStatus: $("#verifyStatus").val(),
-                            cityId: $("#selcity").val(),
-                            phone: $("#phone").val(),
-                            storeId: $("#selstore").val() == "请选择" ? "" : $("#selstore").val(),
-                            startDate: $('#startDate').val(),
-                            endDate: $('#endDate').val() == "" ? "" : $('#endDate').val() + " 23:59:59",
-                            expressId: $('#expressId').val()
+                            beSupervisor: $("#beSupervisor",panel).val(),
+                            realName: $("#realName",panel).val(),
+                            storeName: $("#storeName",panel).val(),
+                            idNo: $("#idNo",panel).val(),
+                            verifyStatus: $("#verifyStatus",panel).val(),
+                            cityId: $("#selcity",panel).val(),
+                            phone: $("#phone",panel).val(),
+                            storeId: $("#selstore",panel).val() == "请选择" ? "" : $("#selstore",panel).val(),
+                            startDate: $('#startDate',panel).val(),
+                            endDate: $('#endDate',panel).val() == "" ? "" : $('#endDate',panel).val() + " 23:59:59",
+                            expressId: $('#expressId',panel).val()
                         });
                 },
                 columns: [
@@ -165,10 +165,10 @@ define(['base', 'auditUserModules'], function (base, audit) {
                 onClickCell: function (field, value, row) {
                     switch (field) {
                         case "message":
-                            self.messageTemplate(row);
+                            self.messageTemplate(row, panel);
                             break;
                         case "sms":
-                            self.sms(row);
+                            self.sms(row, panel);
                             break;
                         case"auditDetail":
 
@@ -193,9 +193,9 @@ define(['base', 'auditUserModules'], function (base, audit) {
                             break;
                     }
                 }
-            }, '#userTable');
-            $('#auditcollage').bootstrapTable({
-                data:[],
+            }, '#userTable', panel);
+            $('#auditcollage', panel).bootstrapTable({
+                data: [],
                 height: 200
             });
             /**
@@ -206,12 +206,12 @@ define(['base', 'auditUserModules'], function (base, audit) {
                 dataType: 'json',
                 type: 'post',
                 success: function (data) {
-                    $("#expressId").select2({
+                    $("#expressId", panel).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#expressId').select2("val", null);
+                    $('#expressId', panel).select2("val", null);
                 }
             });
 
@@ -220,7 +220,7 @@ define(['base', 'auditUserModules'], function (base, audit) {
                 url: "/store/exp/storecodeinfo",
                 dataType: "json",
                 success: function (data) {
-                    $("#selstore").select2({
+                    $("#selstore", panel).select2({
                         data: data
                     });
                 }
@@ -231,10 +231,10 @@ define(['base', 'auditUserModules'], function (base, audit) {
                 dataType: "json",
                 success: function (data) {
 
-                    $("#add_store").select2({
+                    $("#add_store", panel).select2({
                         data: data
                     });
-                    $("#edit_store").select2({
+                    $("#edit_store", panel).select2({
                         data: data
                     });
                 }
@@ -245,17 +245,17 @@ define(['base', 'auditUserModules'], function (base, audit) {
                 url: "/manage/province/getcity",
                 dataType: "json",
                 success: function (data) {
-                    $("#selcity").select2({
+                    $("#selcity", panel).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#selcity').select2("val", null);
+                    $('#selcity', panel).select2("val", null);
                 }
             });
 
             //开始时间
-            $('#starttimePicker').datetimepicker({
+            $('#starttimePicker', panel).datetimepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 pickTime: false,
@@ -263,7 +263,7 @@ define(['base', 'auditUserModules'], function (base, audit) {
             })
 
             //结束时间
-            $('#endtimePicker').datetimepicker(
+            $('#endtimePicker', panel).datetimepicker(
                 {
                     format: 'yyyy-mm-dd',
                     autoclose: true,
@@ -271,41 +271,46 @@ define(['base', 'auditUserModules'], function (base, audit) {
                     minView: 2
                 });
 
-            $("#btn_add").click(function () {
-                self.add();
+            $("#btn_add", panel).click(function () {
+                self.add(panel);
             });
-            $("#btn_edit").click(function () {
-                self.edit();
+            $("#btn_edit", panel).click(function () {
+                self.edit(panel);
             });
-            $("#btn_delete").click(function () {
-                self.remove();
+            $("#btn_delete", panel).click(function () {
+                self.remove(panel);
             });
-            $("#btn_initPwd").click(function () {
-                self.initPwd();
+            $("#btn_initPwd", panel).click(function () {
+                self.initPwd(panel);
             });
-            $("#btn_query").click(function () {
-                $("#userTable").bootstrapTable('refresh');
+            $("#btn_query", panel).click(function () {
+                //$("#userTable", panel).bootstrapTable('refresh',{"query": {"offset": 0}});
+            	if ((new Date(Date.parse($('#endDate',panel).val().replace(/-/g, "/"))).getTime() - new Date(Date.parse($('#startDate',panel).val().replace(/-/g, "/"))).getTime()) < 0) {
+                    sweetAlert("", "结束时间不能小于开始时间!", "info");
+                    return;
+                }
+                $("#userTable", panel).bootstrapTable('selectPage', 1);
             });
-            $("#btn_audit").click(function () {
-                self.audit();
-            });
-
-            $("#clearSearch").click(function () {
-                base.reset(".main-box-header");
-                $('#expressId').select2("val", null);
-                $('#selcity').select2("val", null);
-                $("#selstore").val(" ").trigger("change");
+            $("#btn_audit", panel).click(function () {
+                self.audit(panel);
             });
 
-            $('#addModal').on('shown.bs.modal', function () {
-                $("#add_store").val(" ").trigger("change");
-                $('#addForm').data('bootstrapValidator').resetForm(true);
+            $("#clearSearch", panel).click(function () {
+                base.reset($(".main-box-header",panel));
+                $('#expressId', panel).select2("val", null);
+                $('#selcity', panel).select2("val", null);
+                $("#selstore", panel).val(" ").trigger("change");
+            });
+
+            $('#addModal', panel).on('shown.bs.modal', function () {
+                $("#add_store", panel).val(" ").trigger("change");
+                $('#addForm', panel).data('bootstrapValidator').resetForm(true);
             })
 
         },
-        add: function () {
+        add: function (panel) {
             var self = this;
-            $('#addModal').modal({
+            $('#addModal', panel).modal({
                 keyboard: false,
                 backdrop: 'static'
             });
@@ -344,34 +349,24 @@ define(['base', 'auditUserModules'], function (base, audit) {
                         }
                     }
                 }
-            }, "#addForm", self.create)
+            }, "#addForm", self.create, panel)
         },
-        create: function () {
-            $.post("insertselective",
+        create: function (panel) {
+            $.post("/user/insertselective",
                 {
-                    "nickname": $(
-                        "#add_nickname")
-                        .val(),
-                    "phone": $(
-                        "#add_phone")
-                        .val(),
-                    "accountPwd": $(
-                        "#add_pwd")
-                        .val(),
-                    "gender": $(
-                        "#addMan")
-                        .prop(
-                            'checked') ? "p_gender_male"
-                        : "p_gender_female",
-                    "beSupervisor": $("#addYSupervisor").prop('checked') ? "1" : "0",
-                    "storeId": $("#add_store").val() == "请选择" ? "" : $("#add_store").val()
+                    "nickname": $("#add_nickname", panel).val(),
+                    "phone": $("#add_phone", panel).val(),
+                    "accountPwd": $("#add_pwd", panel).val(),
+                    "gender": $("#addMan", panel).prop('checked') ? "p_gender_male" : "p_gender_female",
+                    "beSupervisor": $("#addYSupervisor", panel).prop('checked') ? "1" : "0",
+                    "storeId": $("#add_store", panel).val() == "请选择" ? "" : $("#add_store", panel).val()
                 },
                 function (data, status) {
                     if (status == "success") {
                         if (data.success == 0) {
-                            $("#userTable").bootstrapTable('refresh');
-                            $('#addModal').modal('hide');
-                            $("#add_store").val("").trigger("change");
+                            $("#userTable", panel).bootstrapTable('refresh');
+                            $('#addModal', panel).modal('hide');
+                            $("#add_store", panel).val("").trigger("change");
                             base.success("添加成功！")
                         } else {
                             base.error(data.message);
@@ -381,9 +376,9 @@ define(['base', 'auditUserModules'], function (base, audit) {
                     }
                 });
         },
-        edit: function () {
+        edit: function (panel) {
             var self = this;
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+            var arrselections = $("#userTable",panel).bootstrapTable('getSelections');
             if (arrselections.length > 1) {
                 base.error("只能选择一行进行编辑!");
                 return;
@@ -392,43 +387,43 @@ define(['base', 'auditUserModules'], function (base, audit) {
                 base.error("请选择有效数据!");
                 return;
             }
-            $("#edit_nickname").val(arrselections[0].nickname);
-            $("#edit_userName").val(arrselections[0].userName);
-            $("#edit_phone").val(arrselections[0].phone);
-            $("#userId").val(arrselections[0].userId);
+            $("#edit_nickname", panel).val(arrselections[0].nickname);
+            $("#edit_userName", panel).val(arrselections[0].userName);
+            $("#edit_phone", panel).val(arrselections[0].phone);
+            $("#userId", panel).val(arrselections[0].userId);
 
-            $("#edit_idNo").val(arrselections[0].idNo);
-            $("#edit_realName").val(arrselections[0].realName);
+            $("#edit_idNo", panel).val(arrselections[0].idNo);
+            $("#edit_realName", panel).val(arrselections[0].realName);
             if (arrselections[0].verifyStatus != 2) {
-                if (arrselections[0].idNo=="") {
-                    $("#edit_idNo").removeAttr("readonly");
-                }else {
-                    $("#edit_idNo").attr("readonly","readonly");
+                if (arrselections[0].idNo == "") {
+                    $("#edit_idNo", panel).removeAttr("readonly");
+                } else {
+                    $("#edit_idNo", panel).attr("readonly", "readonly");
                 }
-                if (arrselections[0].realName=="") {
-                    $("#edit_realName").removeAttr("readonly");
-                }else {
-                    $("#edit_realName").attr("readonly","readonly");
+                if (arrselections[0].realName == "") {
+                    $("#edit_realName", panel).removeAttr("readonly");
+                } else {
+                    $("#edit_realName", panel).attr("readonly", "readonly");
                 }
-            }else {
-                $("#edit_idNo").attr("readonly","readonly");
-                $("#edit_realName").attr("readonly","readonly");
+            } else {
+                $("#edit_idNo", panel).attr("readonly", "readonly");
+                $("#edit_realName", panel).attr("readonly", "readonly");
             }
 
 
             if (arrselections[0].gender) {
-                $("#editMan").prop("checked", arrselections[0].gender == "p_gender_male" ? true : false);
-                $("#editWoman").prop("checked", arrselections[0].gender == "p_gender_male" ? false : true);
+                $("#editMan", panel).prop("checked", arrselections[0].gender == "p_gender_male" ? true : false);
+                $("#editWoman", panel).prop("checked", arrselections[0].gender == "p_gender_male" ? false : true);
             }
+            $("#edit_beSupervisor", panel).val( arrselections[0].beSupervisor == 1 ? "负责人" : "员工")
 
-            $("#editYSupervisor").prop("checked", arrselections[0].beSupervisor == 1 ? true : false);
-            $("#editNSupervisor").prop("checked", arrselections[0].beSupervisor == 1 ? false : true);
+      
 
-            $('#editModal').modal({
+            $('#editModal', panel).modal({
                 keyboard: false,
                 backdrop: 'static'
             });
-            $("#edit_store").val(arrselections[0].storeId).trigger("change");
+            $("#edit_store", panel).val(arrselections[0].storeId).trigger("change");
             base.validator({
                 fields: {
                     edit_store: {
@@ -457,31 +452,30 @@ define(['base', 'auditUserModules'], function (base, audit) {
                         }
                     }
                 }
-            }, '#editForm', self.update)
+            }, '#editForm', self.update, panel)
 
         },
-        update: function () {
-            $.post(
-                "updatebyprimarykeyselective",
+        update: function (panel) {
+            $.post("/user/updatebyprimarykeyselective",
                 {
-                    "nickname": $("#edit_nickname").val(),
-                    "userName": $("#edit_userName").val(),
-                    "phone": $("#edit_phone").val(),
-                    "accountPwd": $("#edit_pwd").val(),
-                    "gender": $("#editMan").prop('checked') ? "p_gender_male" : "p_gender_female",
-                    "beSupervisor": $("#editYSupervisor").prop('checked') ? "1" : "0",
-                    "storeId": $("#edit_store").val(),
-                    "userId": $("#userId").val(),
-                    "idNo": $("#edit_idNo").val(),
-                    "realName": $("#edit_realName").val()
+                    "nickname": $("#edit_nickname", panel).val(),
+                    "userName": $("#edit_userName", panel).val(),
+                    "phone": $("#edit_phone", panel).val(),
+                    "accountPwd": $("#edit_pwd", panel).val(),
+                    "gender": $("#editMan", panel).prop('checked') ? "p_gender_male" : "p_gender_female",
+                    // "beSupervisor": $("#editYSupervisor", panel).prop('checked') ? "1" : "0",
+                    "storeId": $("#edit_store", panel).val(),
+                    "userId": $("#userId", panel).val(),
+                    "idNo": $("#edit_idNo", panel).val(),
+                    "realName": $("#edit_realName", panel).val()
                 },
                 function (data, status) {
                     if (status == "success") {
                         if (data.success == 0) {
-                            $("#userTable").bootstrapTable('refresh');
-                            $('#editModal').modal('hide');
-                            $("#edit_store").val(" ").trigger("change");
-                            $('#editForm').data('bootstrapValidator').resetForm(true);
+                            $("#userTable", panel).bootstrapTable('refresh');
+                            $('#editModal', panel).modal('hide');
+                            $("#edit_store", panel).val(" ").trigger("change");
+                            $('#editForm', panel).data('bootstrapValidator').resetForm(true);
                             base.success("更新成功！")
                         } else {
                             base.error(data.message);
@@ -491,8 +485,8 @@ define(['base', 'auditUserModules'], function (base, audit) {
                     }
                 });
         },
-        remove: function () {
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+        remove: function (panel) {
+            var arrselections = $("#userTable", panel).bootstrapTable('getSelections');
 
             if (arrselections.length <= 0) {
                 base.error("请选择有效数据!");
@@ -504,11 +498,11 @@ define(['base', 'auditUserModules'], function (base, audit) {
             }
 
             base.cancel({title: "注销用户", text: "您确定要注销此用户吗？"}, function () {
-                $.post("cancelUser", {"userIds": userInfos.join(',')}
+                $.post("/user/cancelUser", {"userIds": userInfos.join(',')}
                     , function (data, status) {
                         if (status == "success") {
                             if (data.success == 0) {
-                                $("#userTable").bootstrapTable('refresh');
+                                $("#userTable",panel).bootstrapTable('refresh');
                                 base.success("注销成功！")
                             } else {
                                 base.error(data.message);
@@ -519,8 +513,8 @@ define(['base', 'auditUserModules'], function (base, audit) {
                     });
             });
         },
-        initPwd: function () {
-            var arrselections = $("#userTable")
+        initPwd: function (panel) {
+            var arrselections = $("#userTable", panel)
                 .bootstrapTable('getSelections');
             if (arrselections.length > 1) {
                 base.error("只能选择一行进行编辑!");
@@ -532,13 +526,13 @@ define(['base', 'auditUserModules'], function (base, audit) {
             }
             var userName = arrselections[0].userName;
             base.cancel({title: "重置密码", text: "您确定要重置密码吗？"}, function () {
-                $.post("initPwd", {
+                $.post("/user/initPwd", {
                     "userName": userName
                 }, function (data, status) {
                     if (status == "success") {
                         if (data.success == 0) {
-                            $("#userTable").bootstrapTable('refresh');
-                            base.success("重置成功！")
+                            $("#userTable",panel).bootstrapTable('refresh');
+                            base.success("重置成功，密码：" + data.data)
                         } else {
                             base.error(data.message);
                         }
@@ -551,10 +545,10 @@ define(['base', 'auditUserModules'], function (base, audit) {
         audit: function () {
 
         },
-        messageTemplate: function (row) {
+        messageTemplate: function (row, panel) {
             BootstrapDialog.show({
                 title: '短信模板',
-                message: $("#divdialog").html(),
+                message: $("#divdialog", panel).html(),
                 cssClass: 'login-dialog',
                 onshown: function () {
 
@@ -591,7 +585,8 @@ define(['base', 'auditUserModules'], function (base, audit) {
 
 
                     dialogdom.find("#mes_query").click(function () {
-                        dialogdom.find("#message").bootstrapTable('refresh');
+//                        dialogdom.find("#message").bootstrapTable('refresh');
+                        dialogdom.find("#message").bootstrapTable('selectPage', 1);
                     });
                 },
                 buttons: [{
@@ -603,10 +598,10 @@ define(['base', 'auditUserModules'], function (base, audit) {
                 }]
             });
         },
-        sms: function (row) {
+        sms: function (row, panel) {
             BootstrapDialog.show({
                 title: '使用状态',
-                message: $("#divdialogsms").html(),
+                message: $("#divdialogsms", panel).html(),
                 cssClass: 'login-dialog',
                 onshown: function () {
                     var dialogdom = $("#" + $(this)[0].id);

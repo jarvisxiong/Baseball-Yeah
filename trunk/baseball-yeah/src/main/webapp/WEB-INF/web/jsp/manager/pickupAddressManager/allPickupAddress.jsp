@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="/common/comm.jsp" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%--<%@ include file="/common/comm.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,22 +55,23 @@
 <div id="page-wrapper" class="container">
 
     <div class="row">
-        <form action="">
+        <form action="">--%>
+            <input type="hidden" class="inmodule" value="pickupAddressManagerModules">
             <div class="row">
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="main-box clearfix">
                             <div class="main-box-body clearfix">
                                 <header class="main-box-header clearfix">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <ol class="breadcrumb">
-                                                <li><a href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>
-                                                <li class="active"><span>系统管理</span></li>
-                                            </ol>
-                                            <h1>代取件货源维护</h1>
-                                        </div>
-                                    </div>
+                                    <%--<div class="row">--%>
+                                        <%--<div class="col-lg-12">--%>
+                                            <%--<ol class="breadcrumb">--%>
+                                                <%--<li><a href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>--%>
+                                                <%--<li class="active"><span>系统管理</span></li>--%>
+                                            <%--</ol>--%>
+                                            <%--<h1>代取件货源维护</h1>--%>
+                                        <%--</div>--%>
+                                    <%--</div>--%>
                                     <div class="panel-group" style="margin-bottom: 0px;">
                                         <div class="panel panel-default">
                                             <div class="panel-heading">
@@ -79,11 +81,11 @@
                                                               aria-hidden="true"></span>
                                                     </a>
                                                     <a class="accordion-toggle a-search" data-toggle="collapse"
-                                                       data-parent="#accordion" href="#collapseOne"> 查询条件
+                                                       data-parent="#accordion" href="#pickupAddressManagercollapseOne"> 查询条件
                                                     </a>
                                                 </h4>
                                             </div>
-                                            <div id="collapseOne" class="panel-collapse collapse in">
+                                            <div id="pickupAddressManagercollapseOne" class="panel-collapse collapse in">
                                                 <div class="panel-body">
 
                                                     <div class="row">
@@ -144,11 +146,11 @@
                     </div>
                 </div>
             </div>
-        </form>
+       <%-- </form>
     </div>
 </div>
-</div>
+</div>--%>
 <jsp:include page="addPickupAddress.jsp"></jsp:include>
 <jsp:include page="editPickupAddress.jsp"></jsp:include>
-</body>
-</html>
+<%--</body>
+</html>--%>

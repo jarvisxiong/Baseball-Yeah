@@ -1,7 +1,7 @@
 define(['base'], function (base) {
 
     return {
-        init: function () {
+        init: function (panel) {
             var self = this;
             datatable = base.datagrid({
                 url: '/report/storesms/smsmodelreport',
@@ -15,10 +15,9 @@ define(['base'], function (base) {
                 height: 800,
                 queryParams: function (params) {
                     return $.extend(params, {
-                        userName: $('#userName').val(),
-                        storeId: $('#store').val(),
-                        phone: $('#phoneNo').val(),
-                        modelContent: $("#modelContent").val()
+                        userName: $('#userName', panel).val(),
+                        storeId: $('#store', panel).val(),
+                        phone: $('#phoneNo', panel).val()
                     });
                 },
                 columns: [{
@@ -48,29 +47,29 @@ define(['base'], function (base) {
                     title: '模板内容',
                     sortable: true
                 }]
-            }, '#userModelReportTable');
+            }, '#userModelReportTable', panel);
 
             $.ajax({
                 type: "POST",
                 url: "/store/exp/expstoreinfo",
                 dataType: "json",
                 success: function (data) {
-                    $("#store").select2({
+                    $("#store", panel).select2({
                         data: data
                     });
                 }
             });
 
             $(window).resize(function () {
-                $('#userModelReportTable').bootstrapTable('resetView');
+                $('#userModelReportTable', panel).bootstrapTable('resetView');
             });
 
-            $("#btn_query").click(function () {
-                datatable.bootstrapTable('refresh', {"query": {"offset": 0}});
+            $("#btn_query", panel).click(function () {
+                datatable.bootstrapTable('selectPage', 1);
             });
 
-            $("#btn_delete").click(function () {
-                var arrselections = $("#userModelReportTable").bootstrapTable('getSelections');
+            $("#btn_delete", panel).click(function () {
+                var arrselections = $("#userModelReportTable", panel).bootstrapTable('getSelections');
                 if (arrselections.length > 1) {
                     base.error("只能选择一行进行编辑!");
                     return;
@@ -90,7 +89,7 @@ define(['base'], function (base) {
                         if (status == "success") {
                             var obj = data;
                             if (obj.success == 0) {
-                                $("#userModelReportTable").bootstrapTable('refresh');
+                                $("#userModelReportTable", panel).bootstrapTable('refresh');
                                 base.success("删除成功！");
                             } else {
                                 base.error(obj.message);
@@ -102,13 +101,13 @@ define(['base'], function (base) {
                 });
             });
 
-            $(".text-change").on("input propertychange", function () {
+            $(".text-change", panel).on("input propertychange", function () {
                 $(this).val($(this).val().trim());
             });
 
-            $("#clearSearch").click(function () {
-                base.reset(".main-box-header");
-                $("#store").val(" ").trigger("change");
+            $("#clearSearch", panel).click(function () {
+                base.reset($(".main-box-header",panel));
+                $("#store", panel).val(" ").trigger("change");
             });
         }
     };

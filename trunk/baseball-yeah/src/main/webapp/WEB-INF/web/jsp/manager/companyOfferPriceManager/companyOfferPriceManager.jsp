@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="/common/comm.jsp" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%--<%@ include file="/common/comm.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,7 +15,7 @@
     <link
             href="<%=request.getContextPath()%>/plugs/sweet-alert/css/sweet-alert.css"
             rel="stylesheet">
-    <%--<link href="<%=request.getContextPath()%>/plugs/magnific-popup/magnific-popup.css"  rel="stylesheet">--%>
+    &lt;%&ndash;<link href="<%=request.getContextPath()%>/plugs/magnific-popup/magnific-popup.css"  rel="stylesheet">&ndash;%&gt;
     <script type="text/javascript"
             src="<%=request.getContextPath()%>/js/select2/select2.full.min.js"></script>
     <script type="text/javascript"
@@ -52,23 +53,24 @@
 
     <div class="row">
 
-        <form action="">
+        <form action="">--%>
+            <input type="hidden" class="inmodule" value="companyOfferPriceModules">
             <div class="row">
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="main-box clearfix">
                             <div class="main-box-body clearfix">
                                 <header class="main-box-header clearfix">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <ol class="breadcrumb">
-                                                <li><a
-                                                        href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>
-                                                <li class="active"><span>基础设置</span></li>
-                                            </ol>
-                                            <h1>快递公司报价管理</h1>
-                                        </div>
-                                    </div>
+                                    <%--<div class="row">--%>
+                                        <%--<div class="col-lg-12">--%>
+                                            <%--<ol class="breadcrumb">--%>
+                                                <%--<li><a--%>
+                                                        <%--href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>--%>
+                                                <%--<li class="active"><span>基础设置</span></li>--%>
+                                            <%--</ol>--%>
+                                            <%--<h1>快递公司报价管理</h1>--%>
+                                        <%--</div>--%>
+                                    <%--</div>--%>
                                     <div class="panel-group" style="margin-bottom: 0px;"
                                          id="accordion">
                                         <div class="panel panel-default">
@@ -78,11 +80,11 @@
                                                         <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
                                                     </a>
                                                     <a class="accordion-toggle a-search" data-toggle="collapse"
-                                                       data-parent="#accordion" href="#collapseThree"> 查询条件
+                                                       data-parent="#accordion" href="#companyOfferPriceManagercollapseThree"> 查询条件
                                                     </a>
                                                 </h4>
                                             </div>
-                                            <div id="collapseThree" class="panel-collapse collapse in">
+                                            <div id="companyOfferPriceManagercollapseThree" class="panel-collapse collapse in">
                                                 <div class="panel-body">
                                                     <form id="formSearch" class="form-horizontal" role="form">
                                                         <div class="row">
@@ -163,12 +165,12 @@
                     </div>
                 </div>
             </div>
-        </form>
+<%--        </form>
     </div>
-</div>
+</div>--%>
 
 <jsp:include page="addCompanyOfferPrice.jsp"></jsp:include>
 <jsp:include page="editCompantOfferPrice.jsp"></jsp:include>
 <jsp:include page="copyCompanyOfferPrice.jsp"></jsp:include>
-</body>
-</html>
+<%--</body>
+</html>--%>

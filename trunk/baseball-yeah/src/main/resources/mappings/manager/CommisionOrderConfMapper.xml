@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.CommisionOrderConfMapper" >
+  <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.manager.bean.CommisionOrderConfBean" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="store_id" property="storeId" jdbcType="BIGINT" />
+    <result column="supervisor_id" property="supervisorId" jdbcType="BIGINT" />
+    <result column="college_id" property="collegeId" jdbcType="BIGINT" />
+    <result column="role_type" property="roleType" jdbcType="VARCHAR" />
+    <result column="order_type" property="orderType" jdbcType="VARCHAR" />
+    <result column="cost_type" property="costType" jdbcType="VARCHAR" />
+    <result column="cost_value" property="costValue" jdbcType="BIGINT" />
+    <result column="cost_mode" property="costMode" jdbcType="INTEGER" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="create_user" property="createUser" jdbcType="BIGINT" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, store_id, supervisor_id, college_id, role_type, order_type, cost_type, 
+    cost_value, cost_mode, state, remark, create_date, create_user, update_date, update_user
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_commision_order_conf
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+ 
+  <select id="getCommisionOrderConfList" resultMap="BaseResultMap" parameterType="com.rofour.baseball.dao.manager.bean.CommisionOrderConfBean" >
+	select con.id,
+	       con.user_id,
+	       u.real_name userName,
+	       u.phone,
+	       con.store_id,
+	       st.store_name,
+	       con.supervisor_id,
+	       u2.phone supervisorPhone,
+	       u2.real_name supervisorName,
+	       con.college_id,
+	       c.full_name collegeName,
+	       con.role_type,
+	       CASE con.role_type
+	         WHEN 'store' THEN '商户'
+	         WHEN 'coo' THEN '校园COO'
+	         WHEN 'ceo' THEN '校园CEO'
+	         ELSE '未知角色'
+	       END roleTypeDesc,
+	       con.order_type,
+	       CASE con.order_type
+	         WHEN 'packet' THEN '派件'
+	         WHEN 'agent_packet' THEN '代取件'
+	         WHEN 'send' THEN '寄件'
+	         WHEN 'errands' THEN '跑腿'
+	         ELSE '未知订单类型'
+	       END orderTypeDesc,
+	       con.cost_type,
+	       d.property_value costTypeDesc,
+	       con.cost_value/100 costValueYuan,
+	       con.cost_mode,
+	       con.state,
+	       CASE con.state
+	         WHEN 0 THEN '禁用'
+	         WHEN 1 THEN '启用'
+	         ELSE '未知状态'
+	       END stateDesc,
+	       con.remark,
+	       con.create_date,
+	       con.create_user,
+	       um.login_name createUserName,
+	       con.update_date,
+	       con.update_user
+	  from tb_commision_order_conf con
+	 INNER JOIN tb_user u on con.user_id = u.user_id
+	  left JOIN tb_store st on con.store_id = st.store_id
+	  left join tb_user u2 on con.supervisor_id = u2.user_id
+	 left  JOIN p_user p on con.user_id = p.user_id
+	 left JOIN tb_college c on con.college_id = c.college_id
+	  left join tb_property_dict d on con.cost_type = d.property_id
+	  left join tb_user_manager um on con.create_user = um.user_manager_id
+	 where 1=1
+	   <if test="collegeId != null  and collegeId != ''">
+	   		and c.college_id = #{collegeId}
+	   </if>
+	   <if test="state != null">
+	   		and con.state = #{state}
+	   </if>
+	   <if test="roleType != null  and roleType != ''">
+	   		and con.role_type = #{roleType}
+	   </if>
+	   <if test="orderType != null  and orderType != ''">
+	   		and con.order_type = #{orderType}
+	   </if>
+	   <if test="phone != null  and phone != ''">
+	   		and u.phone like CONCAT('%',TRIM(#{phone}),'%')
+	   </if>
+	   <if test="createUserName != null and createUserName != ''">
+			and um.login_name like CONCAT('%',TRIM(#{createUserName}),'%')
+	   </if>
+	   <if test="createStartDate != null and createStartDate !=''">
+	    	<![CDATA[ AND con.create_date >= #{createStartDate}]]>
+	   </if>
+	   <if test="createEndDate != null and createEndDate!=''">
+	   	 	<![CDATA[ AND con.create_date <= #{createEndDate}]]>
+	   </if>
+		ORDER BY ${sort} ${order}
+		LIMIT #{offset}, #{limit}
+  </select> 
+
+  <select id="selectAllCount" resultType="integer" parameterType="com.rofour.baseball.dao.manager.bean.CommisionOrderConfBean" >
+	select count(1)
+	  from tb_commision_order_conf con
+	 INNER JOIN tb_user u on con.user_id = u.user_id
+	  left JOIN tb_store st on con.store_id = st.store_id
+	  left join tb_user u2 on con.supervisor_id = u2.user_id
+	 left JOIN p_user p on con.user_id = p.user_id
+	 left JOIN tb_college c on con.college_id = c.college_id
+	  left join tb_property_dict d on con.cost_type = d.property_id
+	  left join tb_user_manager um on con.create_user = um.user_manager_id
+	 where 1=1
+	   <if test="collegeId != null  and collegeId != ''">
+	   		and c.college_id = #{collegeId}
+	   </if>
+	   <if test="state != null">
+	   		and con.state = #{state}
+	   </if>
+	   <if test="roleType != null  and roleType != ''">
+	   		and con.role_type = #{roleType}
+	   </if>
+	   <if test="orderType != null  and orderType != ''">
+	   		and con.order_type = #{orderType}
+	   </if>
+	   <if test="phone != null  and phone != ''">
+	   		and u.phone like CONCAT('%',TRIM(#{phone}),'%')
+	   </if>
+	   <if test="createUserName != null and createUserName != ''">
+			and um.login_name like CONCAT('%',TRIM(#{createUserName}),'%')
+	   </if>
+	   <if test="createStartDate != null and createStartDate !=''">
+	    	<![CDATA[ AND con.create_date >= #{createStartDate}]]>
+	   </if>
+	   <if test="createEndDate != null and createEndDate!=''">
+	   	 	<![CDATA[ AND con.create_date <= #{createEndDate}]]>
+	   </if>
+  </select> 
+  
+  <select id="getUserInfoByPhone" resultMap="BaseResultMap" parameterType="com.rofour.baseball.dao.manager.bean.CommisionOrderConfBean" >
+		select u.user_id, u.real_name userName, c.college_id, c.full_name collegeName
+		  from tb_user u
+		 inner join p_user p
+		    on u.user_id = p.user_id
+		 inner join tb_college c
+		    on p.college_id = c.college_id
+		 where u.be_deleted = 0
+		   and p.office_role_type = #{roleType}
+		   and u.phone = #{phone}
+  </select>
+  
+  <select id="getStoreUserInfoByPhone" resultMap="BaseResultMap" parameterType="java.lang.String" >
+		select u.user_id, u.real_name userName, s.verify_status state
+			from tb_user u
+		 inner join tb_user_store_exp s
+				on u.user_id = s.user_id
+		 where u.be_deleted = 0
+		   and s.be_supervisor =1
+		   and u.phone = #{phone,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tb_commision_order_conf
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <select id="isExtNormalCostType" resultType="integer" parameterType="com.rofour.baseball.dao.manager.bean.CommisionOrderConfBean">
+		select count(1)
+		  from tb_commision_order_conf
+		 where user_id = #{userId,jdbcType=BIGINT}
+		   and role_type = #{roleType,jdbcType=VARCHAR}
+		   and order_type = #{orderType,jdbcType=BIGINT}
+		   and cost_type = #{costType,jdbcType=VARCHAR}
+		   <if test="collegeId != null  and collegeId != ''">
+		   and college_id = #{collegeId,jdbcType=BIGINT}
+		   </if>
+		   <if test="supervisorId != null  and supervisorId != ''">
+		   and supervisor_id = #{supervisorId,jdbcType=BIGINT}
+		   </if>
+		   <if test="isModifyFlag">
+		   and id != #{id, jdbcType = BIGINT}
+		   </if>
+  </select>
+  
+  <select id="getSupervisorListByCooId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+		SELECT exp.user_id, tse.phone, tse.supervisor_name userName
+		  FROM tb_store_exp tse
+		 INNER JOIN tb_user_store_exp exp
+		    on tse.sto_exp_id = exp.store_id
+		 WHERE be_supervisor = 1
+		   AND tse.coo_id = #{userId,jdbcType=BIGINT}
+  </select>
+  
+  <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.CommisionOrderConfBean" >
+    insert into tb_commision_order_conf (id, user_id, store_id, 
+      supervisor_id, college_id, role_type, 
+      order_type, cost_type, cost_value, 
+      cost_mode, state, remark, 
+      create_date, create_user, update_date, 
+      update_user)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{storeId,jdbcType=BIGINT}, 
+      #{supervisorId,jdbcType=BIGINT}, #{collegeId,jdbcType=BIGINT}, #{roleType,jdbcType=VARCHAR}, 
+      #{orderType,jdbcType=VARCHAR}, #{costType,jdbcType=VARCHAR}, #{costValue,jdbcType=BIGINT}, 
+      #{costMode,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{createUser,jdbcType=BIGINT}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=BIGINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.CommisionOrderConfBean" >
+    update tb_commision_order_conf
+    set user_id = #{userId,jdbcType=BIGINT},
+      store_id = #{storeId,jdbcType=BIGINT},
+      supervisor_id = #{supervisorId,jdbcType=BIGINT},
+      college_id = #{collegeId,jdbcType=BIGINT},
+      role_type = #{roleType,jdbcType=VARCHAR},
+      order_type = #{orderType,jdbcType=VARCHAR},
+      cost_type = #{costType,jdbcType=VARCHAR},
+      cost_value = #{costValue,jdbcType=BIGINT},
+      cost_mode = #{costMode,jdbcType=INTEGER},
+      state = #{state,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=BIGINT},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateCostValueByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.CommisionOrderConfBean" >
+    update tb_commision_order_conf
+       set 
+	       supervisor_id = #{supervisorId,jdbcType=BIGINT},
+	       order_type = #{orderType,jdbcType=VARCHAR},
+	       cost_type = #{costType,jdbcType=VARCHAR},
+	       cost_value  = #{costValue,jdbcType = BIGINT},
+	       remark = #{remark,jdbcType=VARCHAR},
+           update_date = #{updateDate,jdbcType = TIMESTAMP},
+           update_user = #{updateUser,jdbcType = BIGINT}
+     where id = #{id, jdbcType = BIGINT}
+  </update>
+  
+    <update id="enable" parameterType="com.rofour.baseball.dao.manager.bean.CommisionOrderConfBean" >
+    update tb_commision_order_conf
+       set state = 1
+     where id in
+        <foreach collection="array"  open="(" close=")" index="index" separator="," item="item">
+            #{item}
+        </foreach>
+  </update>  
+  <update id="disable" parameterType="com.rofour.baseball.dao.manager.bean.CommisionOrderConfBean" >
+    update tb_commision_order_conf
+       set state = 0
+     where id in
+        <foreach collection="array"  open="(" close=")" index="index" separator="," item="item">
+            #{item}
+        </foreach>
+  </update> 
+</mapper>

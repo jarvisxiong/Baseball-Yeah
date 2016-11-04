@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.activity.mapper.AcctPolicyReceiveRuleMapper" >
-  <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.activity.bean.AcctPolicyReceiveRuleBean" >
+<mapper namespace="com.rofour.baseball.dao.activity.mapper.AcctPolicyReceiveRuleMapper" >
+  <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.activity.bean.AcctPolicyReceiveRuleBean" >
     <constructor >
       <idArg column="rule_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="policy_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
@@ -30,7 +30,7 @@
     delete from tb_acct_policy_receive_rule
     where policy_id = #{policyId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyReceiveRuleBean" >
+  <insert id="insert" parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyReceiveRuleBean" >
     insert into tb_acct_policy_receive_rule (rule_id, policy_id, quota_id, 
       quota_field, operator, quota_value
       )
@@ -38,7 +38,7 @@
       #{quotaField,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, #{quotaValue,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyReceiveRuleBean" >
+  <insert id="insertSelective" parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyReceiveRuleBean" >
     insert into tb_acct_policy_receive_rule
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="ruleId != null" >
@@ -81,7 +81,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyReceiveRuleBean" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyReceiveRuleBean" >
     update tb_acct_policy_receive_rule
     <set >
       <if test="policyId != null" >
@@ -102,7 +102,7 @@
     </set>
     where rule_id = #{ruleId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.activity.bean.AcctPolicyReceiveRuleBean" >
+  <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.activity.bean.AcctPolicyReceiveRuleBean" >
     update tb_acct_policy_receive_rule
     set policy_id = #{policyId,jdbcType=INTEGER},
       quota_id = #{quotaId,jdbcType=INTEGER},

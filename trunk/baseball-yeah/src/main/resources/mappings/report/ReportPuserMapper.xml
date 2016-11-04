@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.report.mapper.ReportPuserMapper">
+	<resultMap id="ReportPuserResultMap" type="com.rofour.baseball.dao.report.bean.ReportPuserBean">
+		<constructor>
+			<idArg column="id" jdbcType="BIGINT" javaType="java.lang.Long" />
+			<arg column="day" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+			<arg column="college_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="college_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="region_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="region_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="puser_num" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="active_puser_num_day" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="active_puser_num_month" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="bonus_income" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="shipping_index" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="shipping_ability" jdbcType="INTEGER" javaType="java.lang.Integer" />
+		</constructor>
+	</resultMap>
+
+    <sql id="Base_Column_List">
+		id,day,college_id,college_name,region_id,region_name,puser_num,active_puser_num_day,active_puser_num_month,bonus_income,shipping_index,shipping_ability
+	</sql>
+	<select id="getPuserFromName" parameterType="com.rofour.baseball.dao.report.bean.SearchCriteria"
+		resultMap="ReportPuserResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from rpt_puser_num
+		where
+		college_name=#{region,jdbcType=VARCHAR} AND
+		<![CDATA[day>=#{start,jdbcType=TIMESTAMP} AND day < #{end,jdbcType=TIMESTAMP}]]> ORDER BY day DESC
+	</select>
+	<select id="getPuserFromId" parameterType="com.rofour.baseball.dao.report.bean.SearchCriteria"
+		resultType="com.rofour.baseball.dao.report.bean.ReportPuserBean">
+		select
+		<include refid="Base_Column_List" />
+		from rpt_puser_num
+		where
+		college_id=#{id,jdbcType=INTEGER} AND
+		<![CDATA[day>=#{start,jdbcType=TIMESTAMP} AND day < #{end,jdbcType=TIMESTAMP}]]>
+	</select>
+	<insert id="insert" parameterType="com.rofour.baseball.dao.report.bean.ReportPuserBean">
+		insert into rpt_puser_num
+		(id,day,college_id,college_name,region_id,region_name,puser_num,active_puser_num_day,active_puser_num_month,bonus_income,shipping_index,shipping_ability)
+		values
+		(
+		#{id,jdbcType=BIGINT},
+		#{day,jdbcType=TIMESTAMP},
+		#{college_id,jdbcType=INTEGER},
+		#{college_name,jdbcType=VARCHAR},
+		#{region_id,jdbcType=INTEGER},
+		#{region_name,jdbcType=VARCHAR},
+		#{puser_num,jdbcType=INTEGER},
+		#{active_puser_num_day,jdbcType=INTEGER},
+		#{active_puser_num_month,jdbcType=INTEGER},
+		#{bonus_income,jdbcType=INTEGER},
+		#{shipping_index,jdbcType=INTEGER},
+		#{shipping_ability,jdbcType=INTEGER},
+		)
+	</insert>
+
+	<delete id="delete">
+		delete from rpt_puser_num where
+		id =#{id,jdbcType=BIGINT}
+	</delete>
+
+</mapper> 

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.RoleMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.RoleMapper">
 
-	<resultMap id="RoleResultMap" type="com.zhiduan.axp.dao.manager.bean.RoleBean">
+	<resultMap id="RoleResultMap" type="com.rofour.baseball.dao.manager.bean.RoleBean">
 		<id column="role_id" property="roleId" />
 		<result column="role_name" property="roleName" />
 		<result column="role_type" property="roleType" />
 		<result column="be_sys_privilege" property="beSysPrivilege" />
 	</resultMap>
 
-	<resultMap id="BaseMap" type="com.zhiduan.axp.dao.manager.bean.RoleBean">
+	<resultMap id="BaseMap" type="com.rofour.baseball.dao.manager.bean.RoleBean">
 	</resultMap>
 
-	<select id="selectAllRole" resultType="com.zhiduan.axp.dao.manager.bean.RoleBean" parameterType="com.zhiduan.axp.controller.model.manager.RoleInfo">
+	<select id="selectAllRole" resultType="com.rofour.baseball.dao.manager.bean.RoleBean" parameterType="com.rofour.baseball.controller.model.manager.RoleInfo">
 		select role_id
 		roleId,role_name roleName,role_type roleType,be_sys_privilege
 		beSysPrivilege from tb_role where 1=1
@@ -29,7 +29,7 @@
 		${sort} ${order}
 		LIMIT #{offset},#{limit}
 	</select>
-	<insert id="insert" parameterType="com.zhiduan.axp.controller.model.manager.RoleInfo" useGeneratedKeys="true" keyProperty="roleId">
+	<insert id="insert" parameterType="com.rofour.baseball.controller.model.manager.RoleInfo" useGeneratedKeys="true" keyProperty="roleId">
 		insert into tb_role
 		(role_name, role_type,be_sys_privilege
 		)
@@ -44,7 +44,7 @@
 		tb_role where role_id=#{roleId,jdbcType=BIGINT}
 	</delete>
 
-	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.controller.model.manager.RoleInfo">
+	<update id="updateByPrimaryKey" parameterType="com.rofour.baseball.controller.model.manager.RoleInfo">
 		update tb_role
 		set
 		role_name = #{roleName},
@@ -72,7 +72,7 @@
 	</select>
 
 	<select id="selectAllRoleByUserName" parameterType="java.lang.String"
-		resultType="com.zhiduan.axp.dao.manager.bean.RoleBean">
+		resultType="com.rofour.baseball.dao.manager.bean.RoleBean">
 		SELECT DISTINCT role_name roleName,be_sys_privilege beSysPrivilege FROM tb_role where role_id in
 		(SELECT DISTINCT a.role_id from tb_user_manager_role_rel a
 		LEFT JOIN tb_user_manager b
@@ -80,7 +80,7 @@
 		where b.be_deleted=0 AND b.login_name=#{userName})
 	</select>
 
-	<select id="getTotal" resultType="java.lang.Integer" parameterType="com.zhiduan.axp.controller.model.manager.RoleInfo">
+	<select id="getTotal" resultType="java.lang.Integer" parameterType="com.rofour.baseball.controller.model.manager.RoleInfo">
 		select count(1) from tb_role where 1=1
 		<if test="roleName != null">
 			AND role_name LIKE CONCAT('%',#{roleName},'%')
@@ -93,7 +93,7 @@
 		</if>
 	</select>
 	
-	<select id="selectAllRoleSelect" resultType="com.zhiduan.axp.dao.manager.bean.RoleBean" parameterType="com.zhiduan.axp.controller.model.manager.RoleInfo">
+	<select id="selectAllRoleSelect" resultType="com.rofour.baseball.dao.manager.bean.RoleBean" parameterType="com.rofour.baseball.controller.model.manager.RoleInfo">
 		select distinct role_id
 		roleId,role_name roleName
 		from tb_role

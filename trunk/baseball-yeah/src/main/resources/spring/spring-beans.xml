@@ -16,12 +16,12 @@
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd">
 
-    <context:component-scan base-package="com.zhiduan.axp"/>
+    <context:component-scan base-package="com.rofour.baseball"/>
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename" value="local/message" />
 	</bean>
     <!-- axp服务常量信息 -->
-    <bean class="com.zhiduan.axp.common.Constant">
+    <bean class="com.rofour.baseball.common.Constant">
         <property name="appkey" value="${axp.web}"/>
         <property name="appid" value="axp.web"/>
 		<property name="format" value="json"/>
@@ -51,6 +51,12 @@
 				<entry key="resource_getOriginAttachList_serv"  value="${slb.url}/axp-acl/resource/pic/getoriginattachlist.htm"/>
 				<!--金额结算-->
 				<entry key="do_task_settle"  value="${slb.url}/axp-acl/acct/pay/dotasksettle.htm"/>
+				<!--订单管理 取消订单-->
+				<entry key="orderMgrCancelOrder" value="${slb.url}/axp-acl/order/packet/mgrcancelorder.htm"/>
+				<!--订单管理 派单-->
+				<entry key="orderMgrAssignOrder" value="${slb.url}/axp-acl/packet/assign/mgrAssign.htm"/>
+				<!--短信模板审核-->
+				<entry key="send_message_serv" value="${slb.url}/axp-acl/msg/submit/sumitmsg.htm"/>
 			</map>
 		</property>
 	</bean>

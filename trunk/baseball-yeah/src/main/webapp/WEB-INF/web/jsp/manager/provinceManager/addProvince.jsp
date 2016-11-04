@@ -16,28 +16,28 @@
                         <label class="col-lg-3 control-label label-operation">区域名称</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_a_areaName" class="form-control"
-                                   id="add_a_areaName" placeholder="区域名称">
+                                   id="add_a_areaName" placeholder="区域名称" maxlength="20">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">商务负责人</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_a_businessPrincipal" class="form-control"
-                                   id="add_a_businessPrincipal" placeholder="商务负责人">
+                                   id="add_a_businessPrincipal" placeholder="商务负责人" maxlength="20">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">联系电话</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_a_contactPhone" class="form-control"
-                                   id="add_a_contactPhone" placeholder="联系电话">
+                                   id="add_a_contactPhone" placeholder="联系电话" maxlength="20">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">序号</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_a_sortNo" class="form-control"
-                                   id="add_a_sortNo" placeholder="序号">
+                                   id="add_a_sortNo" placeholder="序号" maxlength="5">
                         </div>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                         <label class="col-lg-3 control-label label-operation">省份名称</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_p_provinceName" class="form-control"
-                                   id="add_p_provinceName" placeholder="省份名称">
+                                   id="add_p_provinceName" placeholder="省份名称" maxlength="20">
                         </div>
                     </div>
                     <div class="form-group">
@@ -85,7 +85,7 @@
                         <label class="col-lg-3 control-label label-operation">序号</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_p_sortNo" class="form-control"
-                                   id="add_p_sortNo" placeholder="序号">
+                                   id="add_p_sortNo" placeholder="序号" maxlength="5">
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
                         <label class="col-lg-3 control-label label-operation">城市名称</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_c_cityName" class="form-control"
-                                   id="add_c_cityName" placeholder="城市名称">
+                                   id="add_c_cityName" placeholder="城市名称" maxlength="20">
                         </div>
                     </div>
                     <div class="form-group">
@@ -133,21 +133,21 @@
                         <label class="col-lg-3 control-label label-operation">电话区号</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_c_telZoneCode" class="form-control"
-                                   id="add_c_telZoneCode" placeholder="电话区号">
+                                   id="add_c_telZoneCode" placeholder="电话区号" maxlength="10">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">邮编</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_c_postCode" class="form-control"
-                                   id="add_c_postCode" placeholder="邮编">
+                                   id="add_c_postCode" placeholder="邮编" maxlength="10">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">序号</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_c_sortNo" class="form-control"
-                                   id="add_c_sortNo" placeholder="序号">
+                                   id="add_c_sortNo" placeholder="序号" maxlength="5">
                         </div>
                     </div>
                 </div>
@@ -180,7 +180,7 @@
                         <label class="col-lg-3 control-label label-operation">区县名称</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_co_countyName" class="form-control"
-                                   id="add_co_countyName" placeholder="区县名称">
+                                   id="add_co_countyName" placeholder="区县名称" maxlength="20">
                         </div>
                     </div>
                     <div class="form-group">
@@ -203,14 +203,14 @@
                         <label class="col-lg-3 control-label label-operation">邮编</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_co_postCode" class="form-control"
-                                   id="add_co_postCode" placeholder="邮编">
+                                   id="add_co_postCode" placeholder="邮编" maxlength="10">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">序号</label>
                         <div class="col-lg-7 div-operation ">
                             <input type="text" name="add_co_sortNo" class="form-control"
-                                   id="add_co_sortNo" placeholder="序号">
+                                   id="add_co_sortNo" placeholder="序号" maxlength="5">
                         </div>
                     </div>
                 </div>

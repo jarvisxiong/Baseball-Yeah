@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.report.mapper.ReportOrderStatisticsMapper">
+	<resultMap id="ReportOrderStatisticsResultMap"
+		type="com.rofour.baseball.dao.report.bean.ReportOrderStatisticsBean">
+		<constructor>
+			<idArg column="id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+			<arg column="college_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="college_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+			<arg column="day" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+			<arg column="region_id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="region_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+			<arg column="total_order_num" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_num_avg" jdbcType="FLOAT" javaType="java.lang.Double"/>
+			<arg column="total_order_money" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="total_final_money" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_status_creating" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_status_waittaking" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_status_token" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="order_status_shipping" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="order_status_done" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_status_cancel" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_status_abnormal" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_status_done_finishtime" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="take_order_mins" jdbcType="FLOAT" javaType="java.lang.Double"/>
+			<arg column="order_type_co_take" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_type_nonco_take" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_type_send" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="voucher_order_num" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="voucher_order_money" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="voucher_order_actualpay" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_source_service" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_source_sms" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="order_source_colink" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="comment_order_num" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+			<arg column="comment_order_goodnum" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="comment_order_getscore" jdbcType="INTEGER" javaType="java.lang.Integer" />
+		</constructor>
+	</resultMap>
+
+	<resultMap id="ReportOrderStatisticsResultMap1"
+		type="com.rofour.baseball.dao.report.bean.ReportOrderStatisticsInfo">
+		<constructor>
+			<idArg column="college_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="college_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+			<arg column="day" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+			<arg column="puser_num" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="order_status_done" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="bonus_income" jdbcType="INTEGER" javaType="java.lang.Integer" />
+			<arg column="shipping_ability" jdbcType="INTEGER" javaType="java.lang.Integer" />
+		</constructor>
+	</resultMap>
+   <sql id="Base_Column_List">
+		id,college_id,college_name,day,region_id,region_name,total_order_num,order_num_avg,total_order_money,total_final_money,order_status_creating,
+		order_status_waittaking,order_status_token,order_status_shipping,order_status_done,order_status_cancel,order_status_abnormal,order_status_done_finishtime,
+		take_order_mins,order_type_co_take,order_type_nonco_take,order_type_send,voucher_order_num,voucher_order_money,
+		voucher_order_actualpay,order_source_service,order_source_sms,order_source_colink,comment_order_num,comment_order_goodnum,comment_order_getscore
+	</sql>
+	<!-- 根据查询条件查询详细数据 -->
+	<select id="getOrderFromName" parameterType="com.rofour.baseball.dao.report.bean.SearchCriteria"
+		resultMap="ReportOrderStatisticsResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from rpt_order_statistics
+		where
+		college_name=#{region,jdbcType=VARCHAR}
+		AND
+		<![CDATA[day>=#{start,jdbcType=TIMESTAMP} AND day < #{end,jdbcType=TIMESTAMP}]]>
+	</select>
+	<select id="getOrderFromId" parameterType="com.rofour.baseball.dao.report.bean.SearchCriteria"
+		resultMap="ReportOrderStatisticsResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from rpt_order_statistics
+		where
+		college_id=#{id,jdbcType=INTEGER}
+		AND
+		<![CDATA[day>=#{start,jdbcType=TIMESTAMP} AND day < #{end,jdbcType=TIMESTAMP}]]>
+	</select>
+	<select id="getOrderStatisticsInfo" parameterType="com.rofour.baseball.dao.report.bean.SearchCriteria"
+		resultMap="ReportOrderStatisticsResultMap1">
+		SELECT
+		A.college_id,A.college_name,A.day,B.puser_num,A.order_status_done,B.bonus_income,B.shipping_ability
+		FROM rpt_order_statistics A
+		JOIN rpt_puser_num B
+		ON A.college_id = B.college_id AND A.day=B.day
+		WHERE A.college_name=#{region,jdbcType=VARCHAR} AND
+		<![CDATA[A.day>=#{start,jdbcType=TIMESTAMP} AND A.day < #{end,jdbcType=TIMESTAMP}]]> ORDER BY A.day DESC
+	</select>
+
+
+	<insert id="insert"
+		parameterType="com.rofour.baseball.dao.report.bean.ReportOrderStatisticsBean">
+		insert into rpt_order_statistics
+		(id,college_id,college_name,day,region_id,region_name,total_order_num,order_num_avg,total_order_money,total_final_money,order_status_creating,
+		order_status_waittaking,order_status_token,order_status_shipping,order_status_done,order_status_cancel,order_status_abnormal,order_status_done_finishtime,
+		take_order_mins,order_type_co_take,order_type_nonco_take,order_type_send,voucher_order_num,voucher_order_money,
+		voucher_order_actualpay,order_source_service,order_source_sms,order_source_colink,comment_order_num,comment_order_goodnum,comment_order_getscore)
+		values
+		(
+		#{id ,jdbcType=BIGINT},
+		#{college_id, jdbcType=INTEGER},
+		#{college_name,jdbcType=VARCHAR},
+		#{day, jdbcType=TIMESTAMP},
+		#{region_id,jdbcType=INTEGER},
+		#{region_name, jdbcType=VARCHAR} ,
+		#{total_order_num, jdbcType=INTEGER},
+		#{order_num_avg, jdbcType=FLOAT},
+		#{total_order_money, jdbcType=INTEGER},
+		#{total_final_money, jdbcType=INTEGER},
+		#{order_status_creating, jdbcType=INTEGER},
+		#{order_status_waittaking, jdbcType=INTEGER},
+		#{order_status_token,jdbcType=INTEGER},
+		#{order_status_shipping, jdbcType=INTEGER},
+		#{order_status_done, jdbcType=INTEGER} ,
+		#{order_status_cancel,jdbcType=INTEGER},
+		#{order_status_abnormal, jdbcType=INTEGER},
+		#{order_status_done_finishtime, jdbcType=INTEGER},		
+		#{take_order_mins, jdbcType=FLOAT},
+		#{order_type_co_take,jdbcType=INTEGER},
+		#{order_type_nonco_take, jdbcType=INTEGER},
+		#{order_type_send, jdbcType=INTEGER},
+		#{voucher_order_num,jdbcType=INTEGER},
+		#{voucher_order_money, jdbcType=INTEGER} ,
+		#{voucher_order_actualpay, jdbcType=INTEGER},
+		#{order_source_service,jdbcType=INTEGER},
+		#{order_source_sms, jdbcType=INTEGER},
+		#{order_source_colink, jdbcType=INTEGER},
+		#{comment_order_num,jdbcType=INTEGER},
+		#{comment_order_goodnum, jdbcType=INTEGER},
+		#{comment_order_getscore, jdbcType=INTEGER}
+		
+		)
+	</insert>
+
+	<delete id="delete">
+		delete from rpt_order_statistics where
+		id
+		=#{id,jdbcType=BIGINT}
+	</delete>
+
+</mapper> 

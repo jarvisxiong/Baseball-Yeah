@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.SysNoticeMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.SysNoticeMapper">
 	<resultMap id="BaseResultMap"
-		type="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+		type="com.rofour.baseball.dao.manager.bean.SysNoticeBean">
 		<constructor>
 			<idArg column="sys_notice_id" jdbcType="BIGINT" javaType="java.lang.Long" />
 			<arg column="caption" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -14,7 +14,7 @@
 		</constructor>
 	</resultMap>
 	<resultMap id="ResultMapWithBLOBs"
-		type="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+		type="com.rofour.baseball.dao.manager.bean.SysNoticeBean">
 		<constructor>
 			<idArg column="sys_notice_id" jdbcType="BIGINT" javaType="java.lang.Long" />
 			<arg column="caption" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -33,7 +33,7 @@
 	<sql id="Blob_Column_List">
 		content
 	</sql>
-	<select id="selectByPrimaryKey" resultType = "com.zhiduan.axp.dao.manager.bean.SysNoticeBean"
+	<select id="selectByPrimaryKey" resultType = "com.rofour.baseball.dao.manager.bean.SysNoticeBean"
 		parameterType="java.lang.Long">
 		select
 		<include refid="Base_Column_List" />
@@ -42,7 +42,7 @@
 		from tb_sys_notice
 		where sys_notice_id = #{sysNoticeId,jdbcType=BIGINT}
 	</select>
-	<select id="selectAll" parameterType="com.zhiduan.axp.controller.model.manager.SysNoticeInfo" resultType="com.zhiduan.axp.controller.model.manager.SysNoticeInfo">
+	<select id="selectAll" parameterType="com.rofour.baseball.controller.model.manager.SysNoticeInfo" resultType="com.rofour.baseball.controller.model.manager.SysNoticeInfo">
 		select
 		<include refid="Base_Column_List" />
 		,
@@ -56,7 +56,7 @@
 		${sort} ${order}
 		LIMIT #{offset}, #{limit} 
 	</select>
-	<select id="getSysNoticeTotal" resultType="int" parameterType="com.zhiduan.axp.controller.model.manager.SysNoticeInfo">
+	<select id="getSysNoticeTotal" resultType="int" parameterType="com.rofour.baseball.controller.model.manager.SysNoticeInfo">
 		select
 	count(1)
 		from tb_sys_notice
@@ -65,12 +65,12 @@
 			and caption like CONCAT('%',#{caption},'%')
 		</if>
 	</select>
-	<delete id="deleteBatch" parameterType="com.zhiduan.axp.controller.model.manager.SysNoticeInfo">
+	<delete id="deleteBatch" parameterType="com.rofour.baseball.controller.model.manager.SysNoticeInfo">
 	    <foreach collection="sysNoticeIds" item="sysNoticeId" index="index">delete from tb_sys_notice
 	where sys_notice_id = #{sysNoticeId,jdbcType=BIGINT}</foreach>
 
 	</delete>
-	<insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+	<insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.SysNoticeBean">
 		insert into tb_sys_notice (caption, url,
 		be_push, publish_time, user_id,
 		be_deleted, content,push_type)
@@ -78,7 +78,7 @@
 		 #{bePush},  #{publishTime}, #{userId},
 		#{beDeleted}, #{content},#{pushType})
 	</insert>
-	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+	<insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.SysNoticeBean">
 		insert into tb_sys_notice
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="sysNoticeId != null">
@@ -149,7 +149,7 @@
             #{noticeBean.beDeleted}, #{noticeBean.content},#{noticeBean.pushType})
         </foreach >
     </insert>
-	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+	<update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.SysNoticeBean">
 		update tb_sys_notice
 		<set>
 			<if test="caption != null">
@@ -179,7 +179,7 @@
 		</set>
 		where sys_notice_id = #{sysNoticeId,jdbcType=BIGINT}
 	</update>
-	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.zhiduan.axp.dao.manager.bean.SysNoticeBean">
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.rofour.baseball.dao.manager.bean.SysNoticeBean">
 		update tb_sys_notice
 		set caption = #{caption,jdbcType=VARCHAR},
 		url = #{url,jdbcType=VARCHAR},
@@ -191,7 +191,7 @@
 		push_type = #{pushType,jdbcType=VARCHAR}
 		where sys_notice_id = #{sysNoticeId,jdbcType=BIGINT}
 	</update>
-	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.controller.model.manager.SysNoticeInfo">
+	<update id="updateByPrimaryKey" parameterType="com.rofour.baseball.controller.model.manager.SysNoticeInfo">
 		update tb_sys_notice
 		set caption = #{caption,jdbcType=VARCHAR},
 		content = #{content,jdbcType=VARCHAR},

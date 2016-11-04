@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.KeywordMapper">
+	<!-- 新增关键字 -->
+    <insert id="insertKeyword" parameterType="com.rofour.baseball.dao.manager.bean.KeywordBean" >
+        INSERT INTO tb_sms_key_words (word_content, create_user_id, create_time) 
+		VALUES(#{addWordContent}, #{userId}, NOW())
+    </insert>
+	<!-- 删除关键字 -->
+    <delete id="deleteByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.KeywordBean" >
+        DELETE FROM tb_sms_key_words WHERE word_id = #{wordId, jdbcType=BIGINT}
+    </delete> 
+	<!-- 取关键字列表 -->    
+    <select id="getList" resultType="com.rofour.baseball.controller.model.manager.KeywordInfo" parameterType="com.rofour.baseball.controller.model.manager.KeywordInfo" >
+        SELECT 
+			tskw.word_id AS wordId, tskw.word_content AS wordContent, 
+		    DATE_FORMAT(tskw.create_time, '%Y-%m-%d %H:%i:%s') AS createTime,
+		    tum.user_name AS realName 
+		FROM 
+			tb_sms_key_words tskw, tb_user_manager tum
+		WHERE 
+			tum.user_manager_id = tskw.create_user_id
+		<if test="startDate != null and startDate != ''">  
+			AND 
+			 <![CDATA[tskw.create_time >= #{startDate}]]>
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND  
+			 <![CDATA[tskw.create_time <=  #{endDate}]]>
+		</if>		
+		<if test="wordContent != null and wordContent != ''">
+			AND  
+			 tskw.word_content LIKE TRIM(CONCAT('%', #{wordContent}, '%'))
+		</if>
+		<if test="realName != null and realName != ''">
+			AND  
+			 tum.user_name LIKE TRIM(CONCAT('%', #{realName}, '%'))
+		</if>
+		ORDER BY ${sort} ${order}
+		limit #{offset}, #{limit}
+    </select> 
+    <select id="selectAll" resultType="string">
+        SELECT tskw.word_content
+        FROM  tb_sms_key_words tskw
+    </select> 
+	<!-- 统计关键字 -->
+    <select id="getListCount" resultType="int" parameterType="com.rofour.baseball.controller.model.manager.KeywordInfo" >
+		SELECT
+			count(1)
+		FROM 
+			tb_sms_key_words tskw, tb_user_manager tum
+		WHERE 
+			tum.user_manager_id = tskw.create_user_id
+		<if test="startDate != null and startDate != ''">  
+			AND 
+			 <![CDATA[tskw.create_time >= #{startDate}]]>
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND  
+			 <![CDATA[tskw.create_time <=  #{endDate}]]>
+		</if>		
+		<if test="wordContent != null and wordContent != ''">
+			AND  
+			 tskw.word_content LIKE TRIM(CONCAT('%', #{wordContent}, '%'))
+		</if>
+		<if test="realName != null and realName != ''">
+			AND  
+			 tum.user_name LIKE TRIM(CONCAT('%', #{realName}, '%'))
+		</if>
+	</select> 
+	  
+    <select id="validateKeyword" resultType="com.rofour.baseball.dao.manager.bean.KeywordBean" parameterType="com.rofour.baseball.dao.manager.bean.KeywordBean" >
+        SELECT 
+        	tskw.word_id AS wordId 
+		FROM 
+			tb_sms_key_words tskw
+		WHERE  
+			 tskw.word_content = TRIM(#{addWordContent})  
+    </select> 
+</mapper>

@@ -18,7 +18,7 @@
 		</javaTypeResolver>
 
          <!-- 生存Model位置 -->
-		<javaModelGenerator targetPackage="com.zhiduan.axp.dao.manager.bean" targetProject="src/main/generator">
+		<javaModelGenerator targetPackage="com.rofour.baseball.dao.manager.bean" targetProject="src/main/generator">
 			<!-- 是否对model添加 构造函数 -->
 			<property name="constructorBased" value="true" />
 			<!-- 是否允许子包，即targetPackage.schemaName.tableName -->
@@ -36,7 +36,7 @@
 		</sqlMapGenerator>
 
         <!-- 生成Dao 的位置 -->
-		<javaClientGenerator type="XMLMAPPER" targetPackage="com.zhiduan.axp.dao.manager.dao" targetProject="src/main/generator">
+		<javaClientGenerator type="XMLMAPPER" targetPackage="com.rofour.baseball.dao.manager.dao" targetProject="src/main/generator">
 			<property name="enableSubPackages" value="false" />
 		</javaClientGenerator>
 	 

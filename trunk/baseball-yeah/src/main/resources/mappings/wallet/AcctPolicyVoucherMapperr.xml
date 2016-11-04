@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.wallet.mapper.AcctPolicyVoucherMapper">
-<select id="selectPolicyVoucherInfo" parameterType="com.zhiduan.axp.controller.model.wallet.AcctPolicyVoucherInfo" resultType="com.zhiduan.axp.controller.model.wallet.AcctPolicyVoucherInfo">
+<mapper namespace="com.rofour.baseball.dao.wallet.mapper.AcctPolicyVoucherMapper">
+<select id="selectPolicyVoucherInfo" parameterType="com.rofour.baseball.controller.model.wallet.AcctPolicyVoucherInfo" resultType="com.rofour.baseball.controller.model.wallet.AcctPolicyVoucherInfo">
 	select t1.policy_id policyId,date_format(t1.effect_time,'%Y-%m-%d %h:%i:%s') effectTime,
 	date_format(t1.expire_time,'%Y-%m-%d %h:%i:%s') expireTime,t1.face_value faceValue,
 	date_format(t1.receive_time,'%Y-%m-%d %h:%i:%s') receiveTime,

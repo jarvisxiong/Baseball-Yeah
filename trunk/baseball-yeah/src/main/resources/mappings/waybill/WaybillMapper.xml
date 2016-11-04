@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.waybill.mapper.WaybillMapper">
+	<!-- sql语句 -->
+    <sql id="Base_Column_List">
+		waybill_id, waybill_no, express_company_id,
+		freight_collect, payment_of_goods,
+		phone, position, be_signed, signer,
+		sign_type, sign_time,
+		add_time,send_exp_id,send_axp_id,disp_exp_id,disp_axp_id,state,problem_state
+	</sql>
+	
+	<!-- 查询运单  create by wzq -->
+	<select id="getWaybill" resultType="com.rofour.baseball.dao.waybill.bean.WaybillBean">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM tb_waybill WHERE waybill_id=#{waybillId} LIMIT 1
+	</select>
+	
+	<!-- 更新运单状态  create by wzq -->
+	<update id="updateWaybillState">
+		update tb_waybill
+        <set>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="problemState != null">
+                problem_state = #{problemState},
+            </if>
+        </set>
+        where waybill_id = #{waybillId} and be_signed=0
+	</update>
+	
+	<!-- 插入运单日志  create by wzq -->
+	<insert id="addWaybillLog" parameterType="com.rofour.baseball.controller.model.waybill.WaybillLogInfo">
+		insert into tb_waybill_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="waybillLogId != null">
+				waybill_log_id,
+			</if>
+			<if test="waybillNo != null">
+				waybill_no,
+			</if>
+			<if test="operation != null">
+				operation,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="logTime != null">
+				log_time,
+			</if>
+			<if test="storeId != null">
+				store_id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="expressCompanyId != null">
+				express_company_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="waybillLogId != null">
+				#{waybillLogId,jdbcType=BIGINT},
+			</if>
+			<if test="waybillNo != null">
+				#{waybillNo,jdbcType=VARCHAR},
+			</if>
+			<if test="operation != null">
+				#{operation,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="logTime != null">
+				#{logTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="storeId != null">
+				#{storeId,jdbcType=BIGINT},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=BIGINT},
+			</if>
+			<if test="expressCompanyId != null">
+				#{expressCompanyId,jdbcType=BIGINT},
+			</if>
+		</trim>
+	</insert>
+</mapper>

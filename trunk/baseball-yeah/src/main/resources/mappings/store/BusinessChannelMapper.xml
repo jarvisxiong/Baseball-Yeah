@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.store.mapper.BusinessChannelMapper">
-    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.store.bean.BusinessChannelBean">
+<mapper namespace="com.rofour.baseball.dao.store.mapper.BusinessChannelMapper">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.store.bean.BusinessChannelBean">
         <constructor>
             <idArg column="channel_id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
             <arg column="channel_code" jdbcType="VARCHAR" javaType="java.lang.String"/>
@@ -31,7 +31,7 @@
     delete from tb_business_channel
     where channel_id = #{channelId,jdbcType=INTEGER}
   </delete>
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.store.bean.BusinessChannelBean">
+    <insert id="insert" parameterType="com.rofour.baseball.dao.store.bean.BusinessChannelBean">
     insert into tb_business_channel (channel_id, channel_code, channel_name, 
       contacts, connect_phone, spread_url, 
       target_url, remark, state, 
@@ -43,7 +43,7 @@
       #{isDeleted,jdbcType=TINYINT}, #{createDate,jdbcType=TIMESTAMP}, #{createUser,jdbcType=INTEGER}
       )
   </insert>
-    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.store.bean.BusinessChannelBean">
+    <insert id="insertSelective" parameterType="com.rofour.baseball.dao.store.bean.BusinessChannelBean">
         insert into tb_business_channel
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="channelId != null">
@@ -122,7 +122,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.store.bean.BusinessChannelBean">
+    <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.store.bean.BusinessChannelBean">
         update tb_business_channel
         <set>
             <if test="channelCode != null">
@@ -161,7 +161,7 @@
         </set>
         where channel_id = #{channelId,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.store.bean.BusinessChannelBean">
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.store.bean.BusinessChannelBean">
     update tb_business_channel
     set channel_code = #{channelCode,jdbcType=VARCHAR},
       channel_name = #{channelName,jdbcType=VARCHAR},
@@ -178,8 +178,8 @@
   </update>
 
     <!--查询所有商户渠道-->
-    <select id="selectAllBusinessChl" resultType="com.zhiduan.axp.controller.model.store.BusinessChannelInfo"
-            parameterType="com.zhiduan.axp.controller.model.store.BusinessChannelInfo">
+    <select id="selectAllBusinessChl" resultType="com.rofour.baseball.controller.model.store.BusinessChannelInfo"
+            parameterType="com.rofour.baseball.controller.model.store.BusinessChannelInfo">
         SELECT
         tbbc.channel_id channelId,
         tbbc.channel_code channelCode,
@@ -226,7 +226,7 @@
 
     <!-- 查询商户渠道总数-->
     <select id="selectAllBusinessChlTotal" resultType="java.lang.Integer"
-            parameterType="com.zhiduan.axp.controller.model.store.BusinessChannelInfo">
+            parameterType="com.rofour.baseball.controller.model.store.BusinessChannelInfo">
         SELECT
         count(1)
         FROM tb_business_channel tbbc LEFT JOIN tb_user tbu ON tbbc.create_user = tbu.user_id

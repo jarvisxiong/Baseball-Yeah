@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.UserManagerMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.UserManagerMapper">
 
-    <resultMap type="com.zhiduan.axp.dao.manager.bean.UserManagerBean"
+    <resultMap type="com.rofour.baseball.dao.manager.bean.UserManagerBean"
                id="baseResult">
         <result column="user_manager_id" property="userManagerId"/>
         <result column="login_name" property="loginName"/>
@@ -23,7 +23,7 @@
 		select * from tb_user_manager where user_manager_id=#{userManagerId}
 	</select>
 
-    <select id="getUsers" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+    <select id="getUsers" parameterType="com.rofour.baseball.controller.model.UserInfo"
             resultMap="baseResult">
         select * from tb_user_manager where 1=1
         <if test="nickname != null and nickname != '' ">
@@ -41,7 +41,7 @@
     </select>
 
     <select id="loginSelect" parameterType="java.lang.String"
-            resultType="com.zhiduan.axp.dao.user.bean.UserManagerLoginBean">
+            resultType="com.rofour.baseball.dao.user.bean.UserManagerLoginBean">
 		select user_manager_id 'userManagerId',password,user_name 'userName',be_deleted
 		'beDeleted' from
 		tb_user_manager where login_name=#{loginName} and
@@ -55,8 +55,8 @@
 	</select>
 
     <!-- 查询所有 -->
-    <select id="getStoreUsers" parameterType="com.zhiduan.axp.controller.model.UserInfo"
-            resultType="com.zhiduan.axp.dao.store.bean.StoreUserManagerBean">
+    <select id="getStoreUsers" parameterType="com.rofour.baseball.controller.model.UserInfo"
+            resultType="com.rofour.baseball.dao.store.bean.StoreUserManagerBean">
         SELECT
         a.user_id userId,
         a.phone,
@@ -135,7 +135,7 @@
     </select>
 
     <select id="getStoreUserByUserId" parameterType="java.lang.Long"
-            resultType="com.zhiduan.axp.dao.store.bean.StoreUserManagerBean">
+            resultType="com.rofour.baseball.dao.store.bean.StoreUserManagerBean">
 		SELECT tb_store.store_id storeId,
 		tb_user_store_exp.be_supervisor
 		beSupervisor,
@@ -168,7 +168,7 @@
 		tb_user.user_id= #{userId,jdbcType=BIGINT}
 	</select>
 
-    <select id="getStoreUsersTotal" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+    <select id="getStoreUsersTotal" parameterType="com.rofour.baseball.controller.model.UserInfo"
             resultType="java.lang.Integer">
         select count(1) from
         (SELECT
@@ -245,16 +245,18 @@
         ) t
     </select>
 
-    <select id="getUsersTotal" resultType="java.lang.Integer">
+    <select id="getUsersTotal"  resultType="java.lang.Integer">
 		select count(1) FROM
-		(tb_store INNER JOIN
-		tb_user_store_exp ON
-		tb_store.`store_id`=tb_user_store_exp.`store_id`)
-		INNER JOIN tb_user ON
-		tb_user_store_exp.`user_id`=tb_user.`user_id`
+		tb_user
 		where
 		tb_user.be_deleted=0
 	</select>
+
+    <select id="getStoreUsersCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    SELECT COUNT(1) FROM  tb_user a INNER JOIN tb_user_store_exp b ON  a.`user_id` =b.`user_id`
+    WHERE a.`be_deleted`=0
+    AND b.`store_id`=#{storeId,jdbcType=BIGINT}
+    </select>
 
     <select id="validatePhone" resultType="Integer" parameterType="String">
 		select
@@ -264,7 +266,7 @@
 		be_deleted=0
 	</select>
 
-    <insert id="addUser" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+    <insert id="addUser" parameterType="com.rofour.baseball.controller.model.UserInfo"
             useGeneratedKeys="true" keyProperty="user_id">
         insert into tb_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -352,7 +354,7 @@
     </insert>
 
     <insert id="addManagerUser"
-            parameterType="com.zhiduan.axp.controller.model.manager.UserManagerInfo"
+            parameterType="com.rofour.baseball.controller.model.manager.UserManagerInfo"
             useGeneratedKeys="true" keyProperty="userManagerId">
         insert into tb_user_manager
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -427,7 +429,7 @@
         </trim>
     </insert>
 
-    <update id="editUser" parameterType="com.zhiduan.axp.controller.model.UserInfo">
+    <update id="editUser" parameterType="com.rofour.baseball.controller.model.UserInfo">
         update tb_user
         <set>
             <if test="nickname != null">
@@ -468,7 +470,7 @@
         where user_id = #{userId}
     </update>
 
-    <update id="editManagerUser" parameterType="com.zhiduan.axp.controller.model.manager.UserManagerInfo">
+    <update id="editManagerUser" parameterType="com.rofour.baseball.controller.model.manager.UserManagerInfo">
         update tb_user_manager
         <set>
             <if test="userName != null">
@@ -520,12 +522,12 @@
 	</update>
 
     <select id="getUserById" parameterType="java.lang.Long"
-            resultType="com.zhiduan.axp.dao.user.bean.UserBean">
+            resultType="com.rofour.baseball.dao.user.bean.UserBean">
 		select * from tb_user where user_id=#{userId}
 	</select>
 
     <!-- 动态插入数据 -->
-    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.user.bean.UserBean"
+    <insert id="insertSelective" parameterType="com.rofour.baseball.dao.user.bean.UserBean"
             useGeneratedKeys="true" keyProperty="userId">
         insert into tb_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -614,7 +616,7 @@
 
 
     <select id="validateUserPhone" resultType="Integer"
-            parameterType="com.zhiduan.axp.dao.user.bean.StoreUserManagerBean">
+            parameterType="com.rofour.baseball.dao.user.bean.StoreUserManagerBean">
 		select
 		count(1)
 		from tb_user
@@ -624,7 +626,7 @@
 	</select>
 
     <!-- 更新合作公司user信息 -->
-    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.controller.model.UserInfo">
+    <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.controller.model.UserInfo">
         update tb_user
         <set>
             <if test="nickname != null">
@@ -680,7 +682,7 @@
 	</delete>
 
     <!-- 更改密码 -->
-    <update id="changePwd" parameterType="com.zhiduan.axp.dao.user.bean.StoreUserManagerBean">
+    <update id="changePwd" parameterType="com.rofour.baseball.dao.user.bean.StoreUserManagerBean">
 		update tb_user set
 		account_pwd = #{newPwd} where
 		user_name=#{userName} and be_deleted = 0
@@ -693,7 +695,7 @@
 	</select>
 
 
-    <select id="getAllUsers" resultType="com.zhiduan.axp.dao.user.bean.UserBean">
+    <select id="getAllUsers" resultType="com.rofour.baseball.dao.user.bean.UserBean">
         select * from tb_user a ,tb_user_type b where a.user_id=b.user_id and
         b.user_type=1
         <!-- <choose> <when test="page != null and page !=''"> limit #{startRow},#{rows}
@@ -710,7 +712,7 @@
 		tb_sms WHERE submit_time BETWEEN #{0} and #{1}
 	</select>
 
-    <select id="getOderStatiscs" resultType="com.zhiduan.axp.dao.order.bean.OrderStatiscs">
+    <select id="getOderStatiscs" resultType="com.rofour.baseball.dao.order.bean.OrderStatiscs">
       select count(1) OrderCout,sum(final_money)FinalMoney from tb_order
       where create_date BETWEEN  #{0} and #{1}
     </select>
@@ -757,32 +759,32 @@
     </update>
 
     <!-- 根据ID查询用户 -->
-    <select id="findById" resultType="com.zhiduan.axp.dao.manager.bean.UserManagerBean">
+    <select id="findById" resultType="com.rofour.baseball.dao.manager.bean.UserManagerBean">
         SELECT
         <include refid="baseColumns"/>
         FROM tb_user_manager WHERE user_manager_id=#{value}
     </select>
 
     <!-- 根据登录名称查询用户 -->
-    <select id="findByLoginName" resultType="com.zhiduan.axp.dao.manager.bean.UserManagerBean">
+    <select id="findByLoginName" resultType="com.rofour.baseball.dao.manager.bean.UserManagerBean">
         SELECT
         <include refid="baseColumns"/>
         FROM tb_user_manager WHERE be_deleted=0 and login_name=#{value}
     </select>
 
     <!-- 查询活动的用户列表 -->
-    <select id="findByActiveUsers" resultType="com.zhiduan.axp.dao.manager.bean.UserManagerBean">
+    <select id="findByActiveUsers" resultType="com.rofour.baseball.dao.manager.bean.UserManagerBean">
         SELECT
         <include refid="baseColumns"/>
         FROM tb_user_manager WHERE be_enabled=1 and be_deleted=0
     </select>
 
-    <resultMap type="com.zhiduan.axp.dao.manager.bean.RoleBean"
+    <resultMap type="com.rofour.baseball.dao.manager.bean.RoleBean"
                id="roleResultMap">
         <id property="roleId" column="roleId"/>
         <result property="roleName" column="roleName"/>
     </resultMap>
-    <resultMap type="com.zhiduan.axp.dao.manager.bean.SearchUserManagerBean"
+    <resultMap type="com.rofour.baseball.dao.manager.bean.SearchUserManagerBean"
                id="userResultMap">
         <id column="userManagerId" property="userManagerId"/>
         <result column="loginName" property="loginName"/>
@@ -801,7 +803,7 @@
         <collection property="roles" resultMap="roleResultMap"/>
     </resultMap>
 
-    <resultMap type="com.zhiduan.axp.dao.manager.bean.SearchUserManagerBean"
+    <resultMap type="com.rofour.baseball.dao.manager.bean.SearchUserManagerBean"
                id="managerUserResultMap">
         <id column="userManagerId" property="userManagerId"/>
         <result column="loginName" property="loginName"/>
@@ -821,7 +823,7 @@
         <result column="roleIdStr" property="roleIdStr"/>
     </resultMap>
 
-    <resultMap type="com.zhiduan.axp.dao.manager.bean.SearchUserManagerBean"
+    <resultMap type="com.rofour.baseball.dao.manager.bean.SearchUserManagerBean"
                id="managerResultMap">
         <id column="user_manager_id" property="userManagerId"/>
         <result column="login_name" property="loginName"/>
@@ -866,7 +868,7 @@
 
     <!-- 查询用户列表 -->
     <select id="getAll" resultMap="managerUserResultMap"
-            parameterType="com.zhiduan.axp.controller.model.manager.UserManagerInfo">
+            parameterType="com.rofour.baseball.controller.model.manager.UserManagerInfo">
         SELECT
         a.user_manager_id 'userManagerId',
         a.be_deleted 'beDeleted',
@@ -968,7 +970,7 @@
     </select>
     <!-- 根据主键查询 -->
     <select id="getInfoByLoginName" parameterType="java.lang.String"
-            resultType="com.zhiduan.axp.dao.manager.bean.UserManagerLoginBean">
+            resultType="com.rofour.baseball.dao.manager.bean.UserManagerLoginBean">
 		select t1.user_manager_id,
 		t1.login_name, t1.password,
 		t1.user_name,
@@ -992,7 +994,7 @@
 	</select>
 
     <select id="getManagerTotal" resultType="java.lang.Integer"
-            parameterType="com.zhiduan.axp.controller.model.manager.UserManagerInfo">
+            parameterType="com.rofour.baseball.controller.model.manager.UserManagerInfo">
         SELECT COUNT(1) from(
         SELECT
         a.user_manager_id 'userManagerId',
@@ -1068,8 +1070,8 @@
 	</select>
 
     <!-- 查询审核列表 -->
-    <select id="userRegisterCheck" parameterType="com.zhiduan.axp.dao.user.bean.UserCheckBean"
-            resultType="com.zhiduan.axp.dao.user.bean.UserCheckBean">
+    <select id="userRegisterCheck" parameterType="com.rofour.baseball.dao.user.bean.UserCheckBean"
+            resultType="com.rofour.baseball.dao.user.bean.UserCheckBean">
         SELECT
         a.user_id,a.phone,a.real_name,a.user_name,a.age,a.nickname,a.signup_time,b.verify_status,b.be_supervisor,b.verify_time,
         f.college_id,e.store_code,e.store_name,GROUP_CONCAT(f.full_name) college_full_name
@@ -1119,7 +1121,7 @@
 
     </select>
 
-    <select id="getTenDayUser" resultType="com.zhiduan.axp.controller.model.user.UserNumber">
+    <select id="getTenDayUser" resultType="com.rofour.baseball.controller.model.user.UserNumber">
 		select COUNT(1) number,date_format(signup_time,'%Y-%m-%d') dayTime FROM
 		tb_user
 		where be_deleted=0 and

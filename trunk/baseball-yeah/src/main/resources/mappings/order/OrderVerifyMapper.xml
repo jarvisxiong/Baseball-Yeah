@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.order.mapper.OrderVerifyMapper">
+<mapper namespace="com.rofour.baseball.dao.order.mapper.OrderVerifyMapper">
 
 
-    <select id="getAuditUsers" parameterType="com.zhiduan.axp.controller.model.UserInfo"
-            resultType="com.zhiduan.axp.dao.user.bean.UserCheckBean">
+    <select id="getAuditUsers" parameterType="com.rofour.baseball.controller.model.UserInfo"
+            resultType="com.rofour.baseball.dao.user.bean.UserCheckBean">
         SELECT
         a.user_id userId,
         a.phone,
@@ -18,6 +18,7 @@
         b.dormitory_address dormitoryAddress,
         b.college_address collegeAddress,
         b.update_date verifyTime,
+        b.remark,
         c.college_id collegeId,
         c.full_name collegeFullName,
         d.city_name cityName,
@@ -26,13 +27,9 @@
         tb_user a
         inner join p_user b on a.user_id = b.user_id
         left join tb_college c on b.college_id = c.college_id
-        <if test="cityId != null and cityId != ''">
-            AND c.city_id = #{cityName}
-        </if>
         left join tb_city d on c.city_id = d.city_id
         WHERE
-        a.be_deleted = 0
-        -- AND a.gender = e.property_id
+        a.be_deleted = 0 AND b.state IN (0,1,3)
         <if test="userName != '' and userName != null">
             AND a.user_name like CONCAT('%', TRIM(#{userName}), '%')
         </if>
@@ -60,13 +57,16 @@
         <if test="verifyStatus != null">
             and b.state=#{verifyStatus}
         </if>
+        <if test="cityId != null">
+            AND c.city_id = #{cityId}
+        </if>
         ORDER BY ${sort} ${order}
         LIMIT #{offset}, #{limit}
 
     </select>
 
-    <select id="getAuditUser" parameterType="com.zhiduan.axp.controller.model.UserInfo"
-            resultType="com.zhiduan.axp.dao.user.bean.UserCheckBean">
+    <select id="getAuditUser" parameterType="com.rofour.baseball.controller.model.UserInfo"
+            resultType="com.rofour.baseball.dao.user.bean.UserCheckBean">
         SELECT
         a.user_id userId,
         a.phone,
@@ -92,7 +92,7 @@
         AND a.user_id = #{userId}
     </select>
 
-    <select id="getAuditUsersCount" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+    <select id="getAuditUsersCount" parameterType="com.rofour.baseball.controller.model.UserInfo"
             resultType="int">
         SELECT
         count(1)
@@ -100,13 +100,9 @@
         tb_user a
         inner join p_user b on a.user_id = b.user_id
         left join tb_college c on b.college_id = c.college_id
-        <if test="cityId != null and cityId != ''">
-            AND c.city_id = #{cityName}
-        </if>
         left join tb_city d on c.city_id = d.city_id
         WHERE
-        a.be_deleted = 0
-        -- AND a.gender = e.property_id
+        a.be_deleted = 0 AND b.state IN (0,1,3)
         <if test="userName != '' and userName != null">
             AND a.user_name like CONCAT('%', TRIM(#{userName}), '%')
         </if>
@@ -134,10 +130,13 @@
         <if test="verifyStatus != null">
             and b.state=#{verifyStatus}
         </if>
+        <if test="cityId != null">
+            AND c.city_id = #{cityId}
+        </if>
     </select>
 
     <!-- 根据用户编码查询用户 -->
-    <select id="selectByPrimaryKey" resultType="com.zhiduan.axp.dao.user.bean.UserStoreExpBean"
+    <select id="selectByPrimaryKey" resultType="com.rofour.baseball.dao.user.bean.UserStoreExpBean"
             parameterType="java.lang.Long">
         select user_id userId,
         college_id collegeId,
@@ -152,7 +151,7 @@
 
 
     <!-- 根据用户编码动态更新数据 -->
-    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.user.bean.UserPExpBean">
+    <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.user.bean.UserPExpBean">
         update p_user
         <set>
             <if test="collegeId != null">
@@ -184,18 +183,22 @@
     </update>
 
 
-    <update id="updateActivation" parameterType="com.zhiduan.axp.controller.model.user.UserCheckInfo">
-        update p_user
+    <update id="updateActivation" parameterType="com.rofour.baseball.controller.model.user.UserCheckInfo">
+        update tb_user_type
         <set>
             <if test="grabOrderMode != null">
-                grab_order_mode = #{grabOrderMode},
+                be_enabled = #{grabOrderMode},
             </if>
         </set>
-        where user_id = #{userId,jdbcType=BIGINT}
+        <!-- 设置众包 人状态  类型 1:货源 2门店 3众包 4收件人  -->
+        where user_id = #{userId,jdbcType=BIGINT} and user_type = 3
+    </update>
+    <update id="setLabel">
+        update p_user set remark=#{remark} where user_id=#{pUserId}
     </update>
 
-    <select id="getManageUsers" parameterType="com.zhiduan.axp.controller.model.UserInfo"
-            resultType="com.zhiduan.axp.dao.user.bean.UserCheckBean">
+    <select id="getManageUsers" parameterType="com.rofour.baseball.controller.model.UserInfo"
+            resultType="com.rofour.baseball.dao.user.bean.UserCheckBean">
         SELECT
         a.user_id userId,
         a.phone,
@@ -213,12 +216,13 @@
         c.full_name collegeFullName,
         d.city_name cityName,
         (SELECT property_value FROM tb_property_dict WHERE property_id=a.gender)gender,
-        b.grab_order_mode grabOrderMode
+        tut.be_enabled grabOrderMode
         FROM
         tb_user a
         INNER join p_user b on a.user_id = b.user_id
         LEFT JOIN tb_college c on b.college_id = c.college_id
         LEFT join tb_city d on c.city_id = d.city_id
+        LEFT join tb_user_type tut on tut.user_id = a.user_id AND tut.user_type = 3
         WHERE a.be_deleted = 0
         <if test="userName != '' and userName != null">
             AND a.user_name like CONCAT('%', TRIM(#{userName}), '%')
@@ -258,7 +262,7 @@
 
     </select>
 
-    <select id="getManageUsersCount" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+    <select id="getManageUsersCount" parameterType="com.rofour.baseball.controller.model.UserInfo"
             resultType="int">
 
         SELECT COUNT(*) FROM (
@@ -279,12 +283,13 @@
         c.full_name collegeFullName,
         d.city_name cityName,
         (SELECT property_value FROM tb_property_dict WHERE property_id=a.gender)gender,
-        b.grab_order_mode grabOrderMode
+        tut.be_enabled grabOrderMode
         FROM
         tb_user a
         INNER join p_user b on a.user_id = b.user_id
         LEFT JOIN tb_college c on b.college_id = c.college_id
         LEFT join tb_city d on c.city_id = d.city_id
+        LEFT join tb_user_type tut on tut.user_id = a.user_id AND tut.user_type = 3
         WHERE a.be_deleted = 0
         <if test="userName != '' and userName != null">
             AND a.user_name like CONCAT('%', TRIM(#{userName}), '%')

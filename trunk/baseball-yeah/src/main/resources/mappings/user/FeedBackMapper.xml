@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.user.mapper.FeedBackMapper">
-	<resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.user.bean.FeedBackBean">
+<mapper namespace="com.rofour.baseball.dao.user.mapper.FeedBackMapper">
+	<resultMap id="BaseResultMap" type="com.rofour.baseball.dao.user.bean.FeedBackBean">
 		<constructor>
 			<idArg column="feedback_id" jdbcType="BIGINT" javaType="java.lang.Long" />
 			<arg column="user_id" jdbcType="BIGINT" javaType="java.lang.Long" />
@@ -23,12 +23,12 @@
 		from tb_feedback
 		where feedback_id = #{feedbackId,jdbcType=BIGINT}
 	</select>
-	<delete id="deleteBatch" parameterType="com.zhiduan.axp.controller.model.user.FeedBackInfo">
+	<delete id="deleteBatch" parameterType="com.rofour.baseball.controller.model.user.FeedBackInfo">
 	 <foreach collection="feedbackIds" item="feedbackId" index="index">delete from tb_feedback
 		where feedback_id = #{feedbackId,jdbcType=BIGINT}</foreach>
 
 	</delete>
-	<insert id="insert" parameterType="com.zhiduan.axp.dao.user.bean.FeedBackBean">
+	<insert id="insert" parameterType="com.rofour.baseball.dao.user.bean.FeedBackBean">
 		insert into tb_feedback ( user_id, name,
 		phone, content, ip,
 		submitted_time)
@@ -37,7 +37,7 @@
 		#{ip,jdbcType=VARCHAR},
 		NOW())
 	</insert>
-	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.user.bean.FeedBackBean">
+	<insert id="insertSelective" parameterType="com.rofour.baseball.dao.user.bean.FeedBackBean">
 		insert into tb_feedback
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="feedbackId != null">
@@ -86,7 +86,7 @@
 			</if>
 		</trim>
 	</insert>
-	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.user.bean.FeedBackBean">
+	<update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.user.bean.FeedBackBean">
 		update tb_feedback
 		<set>
 			<if test="userId != null">
@@ -110,7 +110,7 @@
 		</set>
 		where feedback_id = #{feedbackId,jdbcType=BIGINT}
 	</update>
-	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.user.bean.FeedBackBean">
+	<update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.user.bean.FeedBackBean">
 		update tb_feedback
 		set user_id = #{userId,jdbcType=BIGINT},
 		name = #{name,jdbcType=VARCHAR},
@@ -121,8 +121,8 @@
 		where feedback_id = #{feedbackId,jdbcType=BIGINT}
 	</update>
 
-	<select id="selectAll" parameterType="com.zhiduan.axp.controller.model.user.FeedBackInfo"
-		resultType="com.zhiduan.axp.controller.model.user.FeedBackInfo">
+	<select id="selectAll" parameterType="com.rofour.baseball.controller.model.user.FeedBackInfo"
+		resultType="com.rofour.baseball.controller.model.user.FeedBackInfo">
 		SELECT
 		<include refid="Base_Column_List" />
 		FROM tb_feedback
@@ -133,7 +133,7 @@
 		${sort} ${order}
 		LIMIT #{offset}, #{limit}
 	</select>
-	<select id="getfeedBackTotal" resultType="int" parameterType="com.zhiduan.axp.controller.model.user.FeedBackInfo">
+	<select id="getfeedBackTotal" resultType="int" parameterType="com.rofour.baseball.controller.model.user.FeedBackInfo">
 		select
 		count(1)
 		FROM tb_feedback

@@ -16,20 +16,26 @@ define(['base'], function (base) {
         return Object.prototype.toString.call(obj) === '[object Function]'
     }
 
+    function refParentPage(panel) {
+        panel = panel || $('#indextab').tabs('getSelected');
+        $("#userTable", panel).bootstrapTable('refresh', {"query": {"offset": 0}});
+    }
+
     var times = 0
 
-    function show() {
-        $("#activitySave").removeAttr("disabled");
+    function show(panel) {
+        $("#activitySave", panel).removeAttr("disabled");
     }
 
     function totalCalculation() {
+        var panel = $('#indextab').tabs('getSelected');
         var total = 0;
-        $(".btn_delivery_add").each(function () {
+        $(".btn_delivery_add", panel).each(function () {
             $(this).parent().find(".row").each(function () {
                 total += $(this).find(".faceValue").val() * $(this).find(".totalAmount").val();
             })
         })
-        $("#reckon").text(total);
+        $("#reckon", panel).text(total);
     }
 
     //根据数据 遍历给opertion 赋值
@@ -277,11 +283,12 @@ define(['base'], function (base) {
         self.totalAmount = ko.observable();
         //面额
         self.faceValue.subscribe(function (val) {
+            var panel = $('#indextab').tabs('getSelected');
             if (window.dosubscribe) {
                 if (window.isEdit) {
                     return;
                 }
-                var amount = $("#putAmount").val();
+                var amount = $("#putAmount", panel).val();
                 if (self.scale()) {
                     var tta = amount * self.scale() / 100 / self.faceValue();
                     var re = /^[0-9]*$/;
@@ -300,16 +307,17 @@ define(['base'], function (base) {
         })
         //输入百分比触发的事件 计算金额和相关校验
         self.scale.subscribe(function (val) {
+            var panel = $('#indextab').tabs('getSelected');
             if (window.dosubscribe) {
                 if (window.isEdit) {
                     return;
                 }
-                if (!$("#putAmount").val()) {
+                if (!$("#putAmount", panel).val()) {
                     base.error("请输入投放总金额!");
                     self.scale(0);
                     return;
                 }
-                var amount = $("#putAmount").val();
+                var amount = $("#putAmount", panel).val();
                 var tta = amount * val / 100 / self.faceValue();
                 var re = /^[0-9]*$/;
                 if (!re.test(tta)) {
@@ -325,15 +333,16 @@ define(['base'], function (base) {
         });
         //张数
         self.totalAmount.subscribe(function (val) {
+            var panel = $('#indextab').tabs('getSelected');
             if (window.dosubscribe) {
                 if (window.isEdit) {
                     return;
                 }
-                if (!$("#putAmount").val()) {
+                if (!$("#putAmount", panel).val()) {
                     base.error("请输入投放总金额!");
                     return;
                 }
-                var amount = $("#putAmount").val();
+                var amount = $("#putAmount", panel).val();
                 if (!self.faceValue()) {
                     base.error("请输入面额!");
                     return;
@@ -488,10 +497,10 @@ define(['base'], function (base) {
             })
         };
 
-        self.save = function () {
+        self.save = function (panel) {
             //多选时下拉控件配合ko使用获取不到值 先临时用$获取
-            $("#activitySave").attr("disabled", "disabled");//设置button不可用
-            var t = setTimeout(show(), 3000);
+            $("#activitySave", panel).attr("disabled", "disabled");//设置button不可用
+            var t = setTimeout(show(panel), 3000);
             var postDate = JSON.stringify(ko.toJS(self), null, 2);
             $.ajax({
                 type: "POST",
@@ -500,7 +509,8 @@ define(['base'], function (base) {
                 contentType: "application/json",
                 success: function (data) {
                     if (data.success == 0) {
-                        window.location.href = "/wallet/gotoWalletAcctActivityManager";
+                        // window.location.href = "/wallet/gotoWalletAcctActivityManager";
+                        base.colseTab("添加营销活动", "营销活动管理管理", refParentPage);
                     } else {
                         base.error(data.message);
                     }
@@ -516,7 +526,8 @@ define(['base'], function (base) {
                 contentType: "application/json",
                 success: function (data) {
                     if (data.success == 0) {
-                        window.location.href = "/wallet/gotoWalletAcctActivityManager";
+                        // window.location.href = "/wallet/gotoWalletAcctActivityManager";
+                        base.colseTab("修改营销活动", "营销活动管理管理", refParentPage);
                     } else {
                         base.error(data.message);
                     }
@@ -527,6 +538,7 @@ define(['base'], function (base) {
     };
 
     window.progress = function () {
+
         window.protime += 10;
         if (window.protime > 90) {
             window.clearInterval(window.intervalpro);//停止循环
@@ -535,20 +547,88 @@ define(['base'], function (base) {
         }
     }
     window.laterfunction = function () {
-
+        var panel = $('#indextab').tabs('getSelected');
         $("#progressActivity").remove();
         base.success("生成成功");
         $(".confirm").removeAttr("disabled");
-        $("#userTable").bootstrapTable('refresh');
+        $("#userTable", panel).bootstrapTable('refresh');
     }
 
     return {
-        init: function (args) {
+        init: function (panel) {
             // / <summary>
             // / 模块初始化方法
             // / </summary>
             // / <param name="args">初始化时传入的参数</param>
             var self = this;
+
+            ko.bindingHandlers.selProvince = {
+                init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                    var valuWe = valueAccessor()
+                    $(element).select2({
+                        data: window.provinceData
+                    }).on("change", function () {
+                        var value = valueAccessor(), allBindings = allBindingsAccessor();
+//                    官方demo用的是valueAccessor 这里为什么不行？
+                        if ($(element).val()) {
+                            viewModel.quotaProvinceField = $(element).val().join(",");
+                        }
+
+                    });
+                    ;
+                },
+                update: function (element, valueAccessor) {
+                    $(element).val(valueAccessor().split(",")).trigger("change");
+                }
+            };
+            ko.bindingHandlers.selCity = {
+                init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                    var valuWe = valueAccessor()
+                    $(element).select2({
+                        data: window.cityData
+                    }).on("change", function () {
+                        var value = valueAccessor(), allBindings = allBindingsAccessor();
+                        if ($(element).val()) {
+                            viewModel.quotaCityField = $(element).val().join(",");
+                        }
+                    });
+                },
+                update: function (element, valueAccessor) {
+                    $(element).val(valueAccessor().split(",")).trigger("change");
+                }
+            };
+            ko.bindingHandlers.selCollege = {
+                init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                    var valuWe = valueAccessor()
+                    $(element).select2({
+                        data: window.collegeData
+                    }).on("change", function () {
+                        var value = valueAccessor(), allBindings = allBindingsAccessor();
+                        if ($(element).val()) {
+                            viewModel.quotaCollegeField = $(element).val().join(",");
+                        }
+                    });
+                },
+                update: function (element, valueAccessor) {
+                    $(element).val(valueAccessor().split(",")).trigger("change");
+                }
+            };
+            ko.bindingHandlers.selOrderType = {
+                init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                    var valuWe = valueAccessor()
+                    $(element).select2({
+                        data: [{"id": "1", "text": "派件"}, {"id": "2", "text": "代取件"}, {"id": "3", "text": "寄件"}, {"id": "4", "text": "跑腿"}]
+                    }).on("change", function () {
+                        var value = valueAccessor(), allBindings = allBindingsAccessor();
+                        if ($(element).val()) {
+                            viewModel.quotaDivOrderTypeValue = $(element).val().join(",");
+                        }
+                    });
+                },
+                update: function (element, valueAccessor) {
+                    $(element).val(valueAccessor().split(",")).trigger("change");
+                }
+            };
 
 
             $.ajax({
@@ -556,17 +636,17 @@ define(['base'], function (base) {
                 url: "/manage/province/getprovinces",
                 dataType: "json",
                 success: function (data) {
-                    $("#provinceId").select2({
+                    $("#provinceId", panel).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#provinceId').select2("val", null);
+                    $('#provinceId', panel).select2("val", null);
                 }
             });
             window.isEdit = false;
             //开始时间
-            $('#starttimePicker').datetimepicker({
+            $('#starttimePicker', panel).datetimepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 pickTime: false,
@@ -574,7 +654,7 @@ define(['base'], function (base) {
             })
 
             //结束时间
-            $('#endtimePicker').datetimepicker(
+            $('#endtimePicker', panel).datetimepicker(
                 {
                     format: 'yyyy-mm-dd',
                     autoclose: true,
@@ -582,17 +662,16 @@ define(['base'], function (base) {
                     minView: 2
                 });
 
-
             base.datagrid({
                 url: '/wallet/activity/getall',
                 method: 'post',
                 queryParams: function (params) {
                     return $.extend(params,
                         {
-                            activityName: $("#activityName").val(),
-                            provinceId: $("#provinceId").val(),
-                            startStartTime: $('#submit_startdate').val(),
-                            endStartTime: $('#submit_enddate').val() == "" ? "" : $('#submit_enddate').val() + " 23:59:59"
+                            activityName: $("#activityName", panel).val(),
+                            provinceId: $("#provinceId", panel).val(),
+                            startStartTime: $('#submit_startdate', panel).val(),
+                            endStartTime: $('#submit_enddate', panel).val() == "" ? "" : $('#submit_enddate', panel).val() + " 23:59:59"
                         });
                 },
                 columns: [
@@ -689,40 +768,64 @@ define(['base'], function (base) {
                         visible: false
                     }
                 ]
-            }, '#userTable');
+            }, '#userTable', panel);
 
-            $("#btn_edit").click(function () {
-                self.edit();
+            $("#btn_edit", panel).click(function () {
+
+                var arrselections = $("#userTable", panel).bootstrapTable('getSelections');
+                if (arrselections.length > 1) {
+                    sweetAlert("Oops...", "只能选择一行进行编辑!", "error");
+                    return;
+                }
+                if (arrselections.length <= 0) {
+                    sweetAlert("Oops...", "请选择有效数据!", "error");
+                    return;
+                }
+                base.openTab("修改营销活动", "/wallet/gotoEditWalletAcctActivityManager?activityId=" + arrselections[0].activityId, self.editInit, self);
             });
-            $("#btn_delete").click(function () {
-                self.remove();
+            $("#btn_add", panel).click(function () {
+                base.openTab("添加营销活动", "/wallet/gotoAddWalletAcctActivityManager", self.addInit, self);
             });
-            $("#btn_query").click(function () {
-                $("#userTable").bootstrapTable('refresh');
+            $("#btn_delete", panel).click(function () {
+                self.remove(panel);
             });
-            $("#btn_generate").click(function () {
-                self.generate();
+            $("#btn_query", panel).click(function () {
+                $("#userTable", panel).bootstrapTable('refresh');
             });
-            $("#btn_enable").click(function () {
-                self.benable();
+            $("#btn_generate", panel).click(function () {
+                self.generate(panel);
             });
-            $("#btn_frozen").click(function () {
-                self.frozen();
+            $("#btn_enable", panel).click(function () {
+                self.benable(panel);
+            });
+            $("#btn_frozen", panel).click(function () {
+                self.frozen(panel);
             });
 
-            $("#clearSearch").click(function () {
+            $("#clearSearch", panel).click(function () {
                 base.reset(".main-box-header");
-                $('#provinceId').select2("val", null);
+                $('#provinceId', panel).select2("val", null);
             });
 
 
         },
-        addInit: function () {
-            ko.applyBindings(new ContactsModel(initialData));
-            this.initData();
+        addInit: function (panel) {
+            panel = panel || $('#indextab').tabs('getSelected');
+            initialData = [
+                {
+                    policyName: "", policyPriority: "", policyType: "", effectDays: "", remark: "", deliverys: [], receives: [], uses: []
+                }
+            ];
+
+            ko.applyBindings(new ContactsModel(initialData), panel[0]);
+            this.initData(panel);
         },
-        editInit: function (activityId) {
+        editInit: function (activityId, panel) {
+
+
             var self = this;
+            panel = panel || $('#indextab').tabs('getSelected');
+            activityId = activityId || $("#activityId", panel).val();
             window.isEdit = true;
             $.ajax({
                 type: "POST",
@@ -751,7 +854,7 @@ define(['base'], function (base) {
                     window.boolData = [{id: "0", text: "否"}, {id: "1", text: "是"}];
                     //只有新生成状态可以编辑
                     if (data.state == 1 || data.state == 2) {
-                        $("#btnUpdate").hide();
+                        $("#btnUpdate", panel).hide();
                     }
 
                     $.when(
@@ -761,7 +864,7 @@ define(['base'], function (base) {
                             dataType: "json",
                             success: function (data) {
                                 window.provinceData = data;//放到全局变量
-                                $("#provinceId").select2({
+                                $("#provinceId", panel).select2({
                                     data: data,
                                     placeholder: '请选择',
                                     allowClear: true
@@ -786,26 +889,26 @@ define(['base'], function (base) {
                         })
                     ).then(function (a, b) {  // 或者也可以使用 ".done" 等待异步都加载完成
 
-                        ko.applyBindings(koModel);
+                        ko.applyBindings(koModel, panel[0]);
 
-                        $("#provinceId").val(koModel.provinceId()).trigger("change");
+                        $("#provinceId", panel).val(koModel.provinceId()).trigger("change");
                         //开始时间
-                        $('#starttimePicker').datetimepicker({
+                        $('#starttimePicker', panel).datetimepicker({
                             format: 'yyyy-mm-dd',
                             autoclose: true,
                             pickTime: false,
                             minView: 2
                         })
-                        $('#starttimePicker').click();
+                        $('#starttimePicker', panel).click();
                         //结束时间
-                        $('#endtimePicker').datetimepicker(
+                        $('#endtimePicker', panel).datetimepicker(
                             {
                                 format: 'yyyy-mm-dd',
                                 autoclose: true,
                                 pickTime: false,
                                 minView: 2
                             });
-                        $('#starttimePicker').click();
+                        $('#starttimePicker', panel).click();
                         $(".selpolicy").each(function () {
                             selectfunction(this);
                             var that = this;
@@ -819,22 +922,22 @@ define(['base'], function (base) {
 
                         // 冻结状态下可以修改 领取规则 使用规则
                         if (data.state == 3) {
-                            $("#btn_add").hide();
-                            $("#btnUpdate").show();
-                            $("#mainActivity").find("select").attr("disabled", "disabled");
-                            $("#mainActivity").find("input").attr("readonly", "readonly");
-                            $("#mainActivity").find("textarea").attr("readonly", "readonly");
-                            $(".editActivityEnable").find("input").attr("readonly", "readonly");
-                            $(".editDeliveryEnable").find("input").attr("readonly", "readonly");
-                            $(".editDeliveryEnable").find("#btn_delivery_add").hide();
-                            $(".editActivityEnable").find("select").attr("disabled", "disabled");
-                            $(".editDeliveryEnable").find("select").attr("disabled", "disabled");
+                            $("#btn_add", panel).hide();
+                            $("#btnUpdate", panel).show();
+                            $("#mainActivity", panel).find("select").attr("disabled", "disabled");
+                            $("#mainActivity", panel).find("input").attr("readonly", "readonly");
+                            $("#mainActivity", panel).find("textarea").attr("readonly", "readonly");
+                            $(".editActivityEnable", panel).find("input").attr("readonly", "readonly");
+                            $(".editDeliveryEnable", panel).find("input").attr("readonly", "readonly");
+                            $(".editDeliveryEnable", panel).find("#btn_delivery_add").hide();
+                            $(".editActivityEnable", panel).find("select").attr("disabled", "disabled");
+                            $(".editDeliveryEnable", panel).find("select").attr("disabled", "disabled");
                         }
                     });
                 }
             });
         },
-        initData: function () {
+        initData: function (panel) {
             window.boolData = [{id: "0", text: "否"}, {id: "1", text: "是"}];
             $.ajax({
                 type: "POST",
@@ -842,12 +945,12 @@ define(['base'], function (base) {
                 dataType: "json",
                 success: function (data) {
                     window.provinceData = data;//放到全局变量
-                    $("#provinceId").select2({
+                    $("#provinceId", panel).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#provinceId').select2("val", null);
+                    $('#provinceId', panel).select2("val", null);
                 }
             });
             $.ajax({
@@ -867,14 +970,14 @@ define(['base'], function (base) {
                 }
             });
             //开始时间
-            $('#starttimePicker').datetimepicker({
+            $('#starttimePicker', panel).datetimepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 pickTime: false,
                 minView: 2
             })
             //结束时间
-            $('#endtimePicker').datetimepicker(
+            $('#endtimePicker', panel).datetimepicker(
                 {
                     format: 'yyyy-mm-dd',
                     autoclose: true,
@@ -882,9 +985,9 @@ define(['base'], function (base) {
                     minView: 2
                 });
         },
-        edit: function () {
+        edit: function (panel) {
             var self = this;
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+            var arrselections = $("#userTable", panel).bootstrapTable('getSelections');
             if (arrselections.length > 1) {
                 sweetAlert("Oops...", "只能选择一行进行编辑!", "error");
                 return;
@@ -895,8 +998,8 @@ define(['base'], function (base) {
             }
             window.location.href = "/wallet/gotoEditWalletAcctActivityManager?activityId=" + arrselections[0].activityId;
         },
-        remove: function () {
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+        remove: function (panel) {
+            var arrselections = $("#userTable", panel).bootstrapTable('getSelections');
             if (arrselections.length <= 0) {
                 base.error("请选择有效数据!");
                 return;
@@ -911,15 +1014,15 @@ define(['base'], function (base) {
                 $.post("/wallet/activity/del", {"activityId": activityId}, function (data) {
                     if (data.success == 0) {
                         base.success("删除成功");
-                        $("#userTable").bootstrapTable('refresh');
+                        $("#userTable", panel).bootstrapTable('refresh');
                     } else {
                         base.error(data.message);
                     }
                 });
             });
         },
-        generate: function () {
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+        generate: function (panel) {
+            var arrselections = $("#userTable", panel).bootstrapTable('getSelections');
             if (arrselections.length <= 0) {
                 base.error("请选择有效数据!");
                 return;
@@ -947,8 +1050,8 @@ define(['base'], function (base) {
                 });
             });
         },
-        benable: function () {
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+        benable: function (panel) {
+            var arrselections = $("#userTable", panel).bootstrapTable('getSelections');
             if (arrselections.length <= 0) {
                 base.error("请选择有效数据!");
                 return;
@@ -960,7 +1063,7 @@ define(['base'], function (base) {
                     $.post("/wallet/activity/setstate", {"activityId": activityId, "state": 2}, function (data) {
                         if (data.success == 0) {
                             base.success("启用成功");
-                            $("#userTable").bootstrapTable('refresh');
+                            $("#userTable", panel).bootstrapTable('refresh');
                         } else {
                             base.error(data.message);
                         }
@@ -971,8 +1074,8 @@ define(['base'], function (base) {
                 return;
             }
         },
-        frozen: function () {
-            var arrselections = $("#userTable").bootstrapTable('getSelections');
+        frozen: function (panel) {
+            var arrselections = $("#userTable", panel).bootstrapTable('getSelections');
             if (arrselections.length <= 0) {
                 base.error("请选择有效数据!");
                 return;
@@ -984,7 +1087,7 @@ define(['base'], function (base) {
                     $.post("/wallet/activity/setstate", {"activityId": activityId, "state": 3}, function (data) {
                         if (data.success == 0) {
                             base.success("冻结成功");
-                            $("#userTable").bootstrapTable('refresh');
+                            $("#userTable", panel).bootstrapTable('refresh');
                         } else {
                             base.error(data.message);
                         }
@@ -998,4 +1101,5 @@ define(['base'], function (base) {
 
         }
     };
+
 });

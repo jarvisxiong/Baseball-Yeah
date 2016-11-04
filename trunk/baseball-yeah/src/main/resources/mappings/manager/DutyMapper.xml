@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.DutyBeanMapper">
-	<resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.DutyBean">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.DutyBeanMapper">
+	<resultMap id="BaseResultMap" type="com.rofour.baseball.dao.manager.bean.DutyBean">
 		<constructor>
 			<idArg column="duty_id" jdbcType="BIGINT" javaType="java.lang.Long" />
 			<arg column="duty_name" jdbcType="VARCHAR" javaType="java.lang.String" />
-			<arg column="rank_no" jdbcType="TINYINT" javaType="java.lang.Byte" />
+			<arg column="rank_no" jdbcType="TINYINT" javaType="java.lang.String" />
 			<arg column="be_deleted" jdbcType="TINYINT" javaType="java.lang.Byte" />
 		</constructor>
 	</resultMap>
@@ -33,14 +33,14 @@
 		be_deleted=1
 		where be_deleted=0 and duty_id = #{dutyId,jdbcType=BIGINT}
 	</delete>
-	<insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.DutyBean">
+	<insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.DutyBean">
 		insert into tb_duty
 		(duty_name, rank_no,
 		be_deleted)
 		values (#{dutyName,jdbcType=VARCHAR},
 		#{rankNo,jdbcType=TINYINT},0)
 	</insert>
-	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.DutyBean">
+	<insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.DutyBean">
 		insert into tb_duty
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 
@@ -63,7 +63,7 @@
 			0
 		</trim>
 	</insert>
-	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.DutyBean">
+	<update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.DutyBean">
 		update tb_duty
 		<set>
 			<if test="dutyName != null">
@@ -75,7 +75,7 @@
 		</set>
 		where be_deleted=0 and duty_id = #{dutyId,jdbcType=BIGINT}
 	</update>
-	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.DutyBean">
+	<update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.DutyBean">
 		update tb_duty
 		set
 		duty_name = #{dutyName,jdbcType=VARCHAR},

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ include file="/common/comm.jsp"%>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%--<%@ include file="/common/comm.jsp"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -55,26 +56,26 @@
 <body>
 	<div id="page-wrapper" class="container">
 		<div class="row">
-			<form action="">
+			<form action="">--%>
 
 				<%-- <a href="<%=request.getContextPath()%>/user/testExcl">testExcl</a> --%>
-
+				<input type="hidden" class="inmodule" value="employeeManagerModules">
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="main-box clearfix">
 							<div class="main-box-body clearfix">
-								<div class="row">
-									<div class="row">
-										<div class="col-lg-12">
-											<ol class="breadcrumb">
-												<li><a
-													href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>
-												<li class="active"><span>系统权限</span></li>
-											</ol>
-											<h1>系统用户管理</h1>
-										</div>
-									</div>
-								</div>
+								<%--<div class="row">--%>
+									<%--<div class="row">--%>
+										<%--<div class="col-lg-12">--%>
+											<%--<ol class="breadcrumb">--%>
+												<%--<li><a--%>
+													<%--href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>--%>
+												<%--<li class="active"><span>系统权限</span></li>--%>
+											<%--</ol>--%>
+											<%--<h1>系统用户管理</h1>--%>
+										<%--</div>--%>
+									<%--</div>--%>
+								<%--</div>--%>
 								<div class="table-responsive">
 
 									<div class="panel-body" style="padding-bottom: 0px;">
@@ -85,11 +86,11 @@
 														<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
 													</a>
 													<a class="accordion-toggle a-search" data-toggle="collapse"
-													   data-parent="#accordion" href="#collapseOne"> 查询条件
+													   data-parent="#accordion" href="#employeeManagercollapseOne"> 查询条件
 													</a>
 												</h4>
 											</div>
-											<div id="collapseOne" class="panel-collapse collapse in">
+											<div id="employeeManagercollapseOne" class="panel-collapse collapse in">
 											<div class="panel-body" style="width: 100%;">
 												<form id="formSearch" class="form-horizontal">
 													<div class="row">
@@ -205,13 +206,13 @@
 						</div>
 					</div>
 				</div>
-			</form>
+			<%--</form>
 
 		</div>
 	</div>
-	</div>
+	</div>--%>
 	<jsp:include page="addManager.jsp"></jsp:include>
 	<jsp:include page="editManager.jsp"></jsp:include>
-	<script src="<%=request.getContextPath()%>/js/demo-skin-changer.js"></script>
+<%--	<script src="<%=request.getContextPath()%>/js/demo-skin-changer.js"></script>
 </body>
-</html>
+</html>--%>

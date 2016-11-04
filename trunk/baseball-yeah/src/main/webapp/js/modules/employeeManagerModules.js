@@ -19,14 +19,14 @@ define(
 										queryParams : function(params) {
 											return $.extend(params,
 															{
-																loginName : $.trim($("#loginName").val()),
-																contactTel : $.trim($("#contactTel").val()),
-																address : $.trim($("#address").val()),
-																deptId : $("#deptId").val()=="请选择"?"":$("#deptId").val(),
-																dutyId : $("#dutyId").val()=="请选择"?"":$("#dutyId").val(),
-																beEnabled : $("#beEnabled").val(),
-																roleId : $("#role").val(),
-																userName:$.trim($("#userName").val())
+																loginName : $.trim($("#loginName",args).val()),
+																contactTel : $.trim($("#contactTel",args).val()),
+																address : $.trim($("#address",args).val()),
+																deptId : $("#deptId",args).val()=="请选择"?"":$("#deptId",args).val(),
+																dutyId : $("#dutyId",args).val()=="请选择"?"":$("#dutyId",args).val(),
+																beEnabled : $("#beEnabled",args).val(),
+																roleId : $("#role",args).val(),
+																userName:$.trim($("#userName",args).val())
 															});
 										},
 										columns : [
@@ -138,7 +138,7 @@ define(
 													sortable : false,
 													width:150
 												}]
-									}, '#userTable');
+									}, '#userTable',args);
 
 					$.ajax({
 						type : "POST",
@@ -146,13 +146,13 @@ define(
 						dataType : "json",
 						success : function(data) {
 
-							$("#dutyId").select2({
+							$("#dutyId",args).select2({
 								data : data
 							});
-							$("#addDutyId").select2({
+							$("#addDutyId",args).select2({
 								data : data
 							});
-							$("#editDutyId").select2({
+							$("#editDutyId",args).select2({
 								data : data
 							});
 						}
@@ -164,13 +164,13 @@ define(
 						dataType : "json",
 						success : function(data) {
 
-							$("#deptId").select2({
+							$("#deptId",args).select2({
 								data : data
 							});
-							$("#addDeptId").select2({
+							$("#addDeptId",args).select2({
 								data : data
 							});
-							$("#editDeptId").select2({
+							$("#editDeptId",args).select2({
 								data : data
 							});
 						}
@@ -181,60 +181,63 @@ define(
 						url : "/manage/role/getRoleSelect",
 						dataType : "json",
 						success : function(DATA) {
-							$("#role").select2({
+							$("#role",args).select2({
 								data : DATA
 							});
-							$("#addRole").select2({
+							$("#addRole",args).select2({
 								data : DATA
 							});
-							$("#editRole").select2({
+							$("#editRole",args).select2({
 								data : DATA
 							});
 						}
 					});
 
-					$("#btn_add").click(function() {
-						self.add();
+					$("#btn_add",args).click(function() {
+						self.add(args);
 					});
-					$("#btn_edit").click(function() {
-						self.edit();
+					$("#btn_edit",args).click(function() {
+						self.edit(args);
 					});
-					$("#btn_delete").click(function() {
-						self.remove();
+					$("#btn_delete",args).click(function() {
+						self.remove(args);
 					});
-					$("#btn_initPwd").click(function() {
-						self.initPwd();
+					$("#btn_initPwd",args).click(function() {
+						self.initPwd(args);
 					});
-					$("#btn_query").click(function() {
-						$("#userTable").bootstrapTable('refresh');
+					$("#btn_query",args).click(function() {
+						// $("#userTable",args).bootstrapTable('refresh');
+						$("#userTable", args).bootstrapTable('selectPage', 1);
 					});
 					
-					$("#clearSearch").click(function () {
+					$("#clearSearch",args).click(function () {
 		                base.reset(".main-box-body");
-		                $('#deptId').select2("val", "");
-		                $('#dutyId').select2("val", "");
+		                $('#deptId',args).select2("val", "");
+		                $('#dutyId',args).select2("val", "");
 		            });
 					
-					$('#addRole').select2({
+					$('#addRole',args).select2({
 						placeholder : '请选择角色'
 					});
 					
-					$('#addModal').on('shown.bs.modal', function () {
-		                $('#addForm').data('bootstrapValidator').resetForm(true);
+					$('#addModal',args).on('shown.bs.modal', function () {
+		                $('#addForm',args).data('bootstrapValidator').resetForm(true);
 		         })
 				},
-				add : function() {
+				add : function(args) {
 					var self = this;
-					$('#addLoginName').val('');
-					$('#addUserName').val('');
-					$('#addUserCode').val('');
-					$('#addPassword').val('');
-					$('#addRePassword').val('');
-					$('#addDutyId').val('');
-					$('.addGender').val('');
-					$('#addPhone').val('');
-					$('#addAddress').val('');
-					$('#addModal').modal({
+					$('#addLoginName',args).val('');
+					$('#addUserName',args).val('');
+					$('#addUserCode',args).val('');
+					$('#addDeptId',args).val('').trigger("change");
+					$('#addPassword',args).val('');
+					$('#addRePassword',args).val('');
+					$('#addDutyId',args).val('').trigger("change");
+					$('#addRole',args).val('').trigger("change");
+					$('.addGender',args).val('');
+					$('#addPhone',args).val('');
+					$('#addAddress',args).val('');
+					$('#addModal',args).modal({
 					    keyboard: false,
 					    backdrop:'static'
 					});
@@ -309,10 +312,10 @@ define(
 																value,
 																validator) {
 															var password = $(
-																	'#addPassword')
+																	'#addPassword',args)
 																	.val();
 															var rePassword = $(
-																	'#addRePassword')
+																	'#addRePassword',args)
 																	.val();
 															return password == rePassword;
 														}
@@ -320,30 +323,31 @@ define(
 												}
 											}
 										}
-									}, "#addForm", self.create)
+									}, "#addForm", self.create,args)
 				},
-				create : function() {
+				create : function(args) {
 					$.post("/user/managers/add",
 									{
-										"loginName" : $("#addLoginName").val(),
-										"userName" : $("#addUserName").val(),
-										"contactTel" : $("#addPhone").val(),
-										"password" : $("#addPassword").val(),
-										"address" : $("#addAddress").val(),
-										"gender" : $("#addMan").prop('checked') ? "p_gender_male"
+										"loginName" : $("#addLoginName",args).val(),
+										"userName" : $("#addUserName",args).val(),
+										"contactTel" : $("#addPhone",args).val(),
+										"password" : $("#addPassword",args).val(),
+										"address" : $("#addAddress",args).val(),
+										"gender" : $("#addMan",args).prop('checked') ? "p_gender_male"
 												: "p_gender_female",
-										"roleIds" : $("#addRole").val()==null?"":$("#addRole").val().join(","),
-										"userCode" : $("#addUserCode").val(),
-										"dutyId" : $("#addDutyId").val() == "请选择" ? ""
-												: $("#addDutyId").val(),
-										"deptId" : $("#addDeptId").val() == "请选择" ? ""
-												: $("#addDeptId").val()
+										"roleIds" : $("#addRole",args).val()==null?"":$("#addRole").val().join(","),
+										"userCode" : $("#addUserCode",args).val(),
+										"dutyId" : $("#addDutyId",args).val() == "请选择" ? ""
+												: $("#addDutyId",args).val(),
+										"deptId" : $("#addDeptId",args).val() == "请选择" ? ""
+												: $("#addDeptId",args).val()
 									}, function(data, status) {
 										if (status == "success") {
 											if (data.success == 0) {
 												base.success("增加成功");
-												$("#userTable").bootstrapTable('refresh');
-												$('#addModal').modal('hide');
+												// $("#userTable",args).bootstrapTable('refresh');
+												$("#userTable", args).bootstrapTable('selectPage', 1);
+												$('#addModal',args).modal('hide');
 											} else {
 												base.error(data.message);
 											}
@@ -352,9 +356,9 @@ define(
 										}
 									});
 				},
-				edit : function() {
+				edit : function(args) {
 					var self = this;
-					var arrselections = $("#userTable").bootstrapTable(
+					var arrselections = $("#userTable",args).bootstrapTable(
 							'getSelections');
 					if (arrselections.length > 1) {
 						sweetAlert("Oops...", "只能选择一行进行编辑!", "error");
@@ -364,25 +368,25 @@ define(
 						sweetAlert("Oops...", "请选择有效数据!", "error");
 						return;
 					}
-					$('#editUserManagerId').val(arrselections[0].userManagerId);
-					$("#editLoginName").val(arrselections[0].loginName);
-					$("#editUserName").val(arrselections[0].userName);
-					$("#editAddress").val(arrselections[0].address);
-					$("#editUserCode").val(arrselections[0].userCode);
-					$("#editDeptId").val(arrselections[0].deptId).trigger("change");
-					$("#editDutyId").val(arrselections[0].dutyId).trigger("change");
-					$("#editPhone").val(arrselections[0].contactTel);
-					$("#editBeEnabled").val(arrselections[0].beEnabled);
-					$("#editRole").val(arrselections[0].roleIds).trigger("change");
-					$('#editPassword').val('');
-					$('#editRePassword').val('');
+					$('#editUserManagerId',args).val(arrselections[0].userManagerId);
+					$("#editLoginName",args).val(arrselections[0].loginName);
+					$("#editUserName",args).val(arrselections[0].userName);
+					$("#editAddress",args).val(arrselections[0].address);
+					$("#editUserCode",args).val(arrselections[0].userCode);
+					$("#editDeptId",args).val(arrselections[0].deptId).trigger("change");
+					$("#editDutyId",args).val(arrselections[0].dutyId).trigger("change");
+					$("#editPhone",args).val(arrselections[0].contactTel);
+					$("#editBeEnabled",args).val(arrselections[0].beEnabled);
+					$("#editRole",args).val(arrselections[0].roleIds).trigger("change");
+					$('#editPassword',args).val('');
+					$('#editRePassword',args).val('');
 					
 					if(arrselections[0].gender == "男"){
-						$("#editMan").prop("checked","checked");
+						$("#editMan",args).prop("checked","checked");
 					}else{
-						$("#editWoman").prop("checked","checked");
+						$("#editWoman",args).prop("checked","checked");
 					}
-					$('#editModal').modal({
+					$('#editModal',args).modal({
 					    keyboard: false,
 					    backdrop:'static'
 					});
@@ -429,7 +433,7 @@ define(
 							editRePassword : {
 								validators : {
 									required :function(){
-										if($('#editPassword').val()==null || $('#editPassword').val()==''){
+										if($('#editPassword',args).val()==null || $('#editPassword',args).val()==''){
 											return false;
 										}else{
 											return true;
@@ -440,51 +444,52 @@ define(
 										callback : function(
 												value,
 												validator) {
-											var password = $('#editPassword').val();
-											var rePassword = $('#editRePassword').val();
+											var password = $('#editPassword',args).val();
+											var rePassword = $('#editRePassword',args).val();
 											return password == rePassword;
 										}
 									}
 								}
 							}
 						}
-					}, "#editForm", self.update)
+					}, "#editForm", self.update,args)
 				},
-				update : function() {
+				update : function(args) {
 					$.post("/user/managers/updateManager",
 									{
-										"userManagerId" : $("#editUserManagerId").val(),
-										"userName" : $("#editUserName").val(),
-										"userCode" : $("#editUserCode").val(),
-										"address" : $("#editAddress").val(),
-										"beEnabled":$("#editBeEnabled").val(),
-										"roleIds" : $("#editRole").val()==null?"":$("#editRole").val().join(","),
-										"password" : $("#editPassword").val(),
-										"contactTel" : $("#editPhone").val(),
-										"dutyId" : $("#editDutyId").val() == "请选择" ? ""
-												: $("#editDutyId").val(),
-										"deptId" : $("#editDeptId").val() == "请选择" ? ""
-												: $("#editDeptId").val(),
-										"gender" : $("#editMan").prop('checked') ? "p_gender_male": "p_gender_female"
+										"userManagerId" : $("#editUserManagerId",args).val(),
+										"userName" : $("#editUserName",args).val(),
+										"userCode" : $("#editUserCode",args).val(),
+										"address" : $("#editAddress",args).val(),
+										"beEnabled":$("#editBeEnabled",args).val(),
+										"roleIds" : $("#editRole",args).val()==null?"":$("#editRole",args).val().join(","),
+										"password" : $("#editPassword",args).val(),
+										"contactTel" : $("#editPhone",args).val(),
+										"dutyId" : $("#editDutyId",args).val() == "请选择" ? ""
+												: $("#editDutyId",args).val(),
+										"deptId" : $("#editDeptId",args).val() == "请选择" ? ""
+												: $("#editDeptId",args).val(),
+										"gender" : $("#editMan",args).prop('checked') ? "p_gender_male": "p_gender_female"
 									}, function(data, status) {
 										if (status == "success") {
 											if (data.success == 0) {
 												base.success("编辑成功");
-												$("#userTable").bootstrapTable('refresh');
-												$('#editModal').modal('hide');
-												 $('#editForm').data('bootstrapValidator').resetForm(true);
-												$('#addForm').data('bootstrapValidator').resetForm(true);
+												// $("#userTable",args).bootstrapTable('refresh');
+												$("#userTable", args).bootstrapTable('selectPage', 1);
+												$('#editModal',args).modal('hide');
+												 $('#editForm',args).data('bootstrapValidator').resetForm(true);
+												$('#addForm',args).data('bootstrapValidator').resetForm(true);
 											} else {
 												base.error(data.message);
-												$('#editForm').find(".btn-primary").removeAttr("disabled");
+												$('#editForm',args).find(".btn-primary").removeAttr("disabled");
 											}
 										} else {
 											base.error("更新失败!");
 										}
 									});
 				},
-				remove : function() {
-					var arrselections = $("#userTable").bootstrapTable(
+				remove : function(args) {
+					var arrselections = $("#userTable",args).bootstrapTable(
 							'getSelections');
 					if (arrselections.length > 1) {
 						base.error("只能选择一行进行编辑!");
@@ -510,7 +515,8 @@ define(
 																var obj = JSON.parse(data);
 																if (obj.success == 0) {
 																	base.success("删除成功");
-																	$("#userTable").bootstrapTable('refresh');
+																	// $("#userTable",args).bootstrapTable('refresh');
+																	$("#userTable", args).bootstrapTable('selectPage', 1);
 																} else {
 																	base.error(obj.message);
 																}
@@ -520,8 +526,8 @@ define(
 														});
 									});
 				},
-				initPwd : function() {
-					var arrselections = $("#userTable").bootstrapTable(
+				initPwd : function(args) {
+					var arrselections = $("#userTable",args).bootstrapTable(
 							'getSelections');
 					if (arrselections.length > 1) {
 						base.error("只能选择一行进行编辑!");
@@ -543,7 +549,8 @@ define(
 								var obj = JSON.parse(data);
 								if (obj.success == 0) {
 									base.success("初始化密码为：111111，成功");
-									$("#userTable").bootstrapTable('refresh');
+									// $("#userTable",args).bootstrapTable('refresh');
+									$("#userTable", args).bootstrapTable('selectPage', 1);
 								} else {
 									base.error(obj.message);
 								}

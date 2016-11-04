@@ -5,7 +5,7 @@ define(['base'], function (base) {
     var datatable;
 
     return {
-        init: function (args) {
+        init: function (panel) {
             // / <summary>
             // / 模块初始化方法
             // / </summary>
@@ -18,12 +18,29 @@ define(['base'], function (base) {
                     return $.extend(params,
                         {
                             realName: $(
-                                "#realName")
+                                "#realName",panel)
                                 .val(),
-                            phone: $("#phone")
+                            phone: $("#phone",panel)
                                 .val(),
-                            collegeId: $("#selcollage").val() == "请选择" ? "" : $("#selcollage").val()
+                            collegeId: $("#selcollage",panel).val() == "请选择" ? "" : $("#selcollage",panel).val()
                         });
+                },
+                onLoadSuccess : function(data) {
+					// 表格控件不支持高度自适应
+					var tableHeight = 105
+							+ $("#userTable", panel).find("thead")
+									.height()
+							+ $("#userTable", panel).find("tbody")
+									.height()
+							+ $("#userTable", panel).parent().parent()
+									.parent().parent().find(".clearfix")
+									.height();
+					if (!data || data.length == 0) {// 如果没有数据 给固定文字的高度
+						tableHeight = 105;
+					}
+					$("#userTable", panel).bootstrapTable('resetView', {
+						"height" : tableHeight
+					});
                 },
                 columns: [
                     {
@@ -106,9 +123,9 @@ define(['base'], function (base) {
                         title: 'userId',
                         visible: false
                     }]
-            }, '#userTable');
+            }, '#userTable',panel);
 
-            $('#auditcollage').bootstrapTable({
+            $('#auditcollage',panel).bootstrapTable({
                 data:[],
                 height: 200
             });
@@ -119,35 +136,33 @@ define(['base'], function (base) {
                 dataType: "json",
                 success: function (data) {
                   
-                    $("#selcollage").select2({
+                    $("#selcollage",panel).select2({
                         data: data.data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#selcollage').select2("val", null);
+                    $('#selcollage',panel).select2("val", null);
                 }
             });
 
-            $("#auditPost").click(function () {
-                self.auditPost();
+            $("#auditPost",panel).click(function () {
+                self.auditPost(panel);
             })
-            $("#btn_query").click(function () {
-                $("#userTable").bootstrapTable('refresh');
+            $("#btn_query",panel).click(function () {
+                //$("#userTable",panel).bootstrapTable('refresh',{"query": {"offset": 0}});
+                $("#userTable", panel).bootstrapTable('selectPage', 1);
             });
-            $("#btn_audit").click(function () {
-                self.audit();
+            $("#btn_audit",panel).click(function () {
+                self.audit(panel);
             });
-            $("#clearSearch").click(function () {
-                base.reset(".main-box-header");
-                $('#selcollage').select2("val", null);
-                // $('#selcity').select2("val", null);
-                // $("#selstore").val(" ").trigger("change");
+            $("#clearSearch",panel).click(function () {
+                base.reset($(".main-box-header",panel));
+                $('#selcollage',panel).select2("val", null);
             });
-
         },
-        audit: function () {
+        audit: function (panel) {
             var self = this;
-            var arrselections = $("#userTable")
+            var arrselections = $("#userTable",panel)
                 .bootstrapTable('getSelections');
             if (arrselections.length > 1) {
                 base.error("只能选择一行进行编辑!");
@@ -170,93 +185,93 @@ define(['base'], function (base) {
                 "userId": arrselections[0].userId
             }, function (data) {
                 if (data.success == 0) {
-                    self.getUserInfo(data.data)
+                    self.getUserInfo(data.data,panel)
                 }
                 else {
                     base.error(data.message);
                 }
             });
         },
-        getUserInfo: function (model) {
+        getUserInfo: function (model,panel) {
             var self = this;
-            $("#userId").val(model.userId);
-            $("#lableUserName").html(model.userName);
+            $("#userId",panel).val(model.userId);
+            $("#lableUserName",panel).html(model.userName);
             switch (model.verifyStatus) {
                 case    0:
-                    $("#lableVerifyStatus").html("未完善");
+                    $("#lableVerifyStatus",panel).html("未完善");
                     break;
                 case   1:
-                    $("#lableVerifyStatus").html("审核中");
+                    $("#lableVerifyStatus",panel).html("审核中");
                     break;
                 case    2:
-                    $("#lableVerifyStatus").html("审核通过");
+                    $("#lableVerifyStatus",panel).html("审核通过");
                     break;
                 case    3:
-                    $("#lableVerifyStatus").html("审核失败");
+                    $("#lableVerifyStatus",panel).html("审核失败");
                     break;
             }
             if (model.auditResultInfo) {
-                $("#f1").prop("checked", model.auditResultInfo.f1 == "0" ? true : false);
-                $("#fe1").prop("checked", model.auditResultInfo.f1 == "0" ? false : true);
-                $("#f2").prop("checked", model.auditResultInfo.f2 == "0" ? true : false);
-                $("#fe2").prop("checked", model.auditResultInfo.f2 == "0" ? false : true);
-                $("#f3").prop("checked", model.auditResultInfo.f3 == "0" ? true : false);
-                $("#fe3").prop("checked", model.auditResultInfo.f3 == "0" ? false : true);
-                $("#f4").prop("checked", model.auditResultInfo.f4 == "0" ? true : false);
-                $("#fe4").prop("checked", model.auditResultInfo.f4 == "0" ? false : true);
-                $("#f5").prop("checked", model.auditResultInfo.f5 == "0" ? true : false);
-                $("#fe5").prop("checked", model.auditResultInfo.f5 == "0" ? false : true);
-                $("#f6").prop("checked", model.auditResultInfo.f6 == "0" ? true : false);
-                $("#fe6").prop("checked", model.auditResultInfo.f6 == "0" ? false : true);
-                $("#f7").prop("checked", model.auditResultInfo.f7 == "0" ? true : false);
-                $("#fe7").prop("checked", model.auditResultInfo.f7 == "0" ? false : true);
-                $("#f8").prop("checked", model.auditResultInfo.f8 == "0" ? true : false);
-                $("#fe8").prop("checked", model.auditResultInfo.f8 == "0" ? false : true);
-                $("#f9").prop("checked", model.auditResultInfo.f9 == "0" ? true : false);
-                $("#fe9").prop("checked", model.auditResultInfo.f9 == "0" ? false : true);
-                $("#f10").prop("checked", model.auditResultInfo.f10 == "0" ? true : false);
-                $("#fe10").prop("checked", model.auditResultInfo.f10 == "0" ? false : true);
+                $("#auditStoref1",panel).prop("checked", model.auditResultInfo.f1 == "0" ? true : false);
+                $("#auditStorefe1",panel).prop("checked", model.auditResultInfo.f1 == "0" ? false : true);
+                $("#auditStoref2",panel).prop("checked", model.auditResultInfo.f2 == "0" ? true : false);
+                $("#auditStorefe2",panel).prop("checked", model.auditResultInfo.f2 == "0" ? false : true);
+                $("#auditStoref3",panel).prop("checked", model.auditResultInfo.f3 == "0" ? true : false);
+                $("#auditStorefe3",panel).prop("checked", model.auditResultInfo.f3 == "0" ? false : true);
+                $("#auditStoref4",panel).prop("checked", model.auditResultInfo.f4 == "0" ? true : false);
+                $("#auditStorefe4",panel).prop("checked", model.auditResultInfo.f4 == "0" ? false : true);
+                $("#auditStoref5",panel).prop("checked", model.auditResultInfo.f5 == "0" ? true : false);
+                $("#auditStorefe5",panel).prop("checked", model.auditResultInfo.f5 == "0" ? false : true);
+                $("#auditStoref6",panel).prop("checked", model.auditResultInfo.f6 == "0" ? true : false);
+                $("#auditStorefe6",panel).prop("checked", model.auditResultInfo.f6 == "0" ? false : true);
+                $("#auditStoref7",panel).prop("checked", model.auditResultInfo.f7 == "0" ? true : false);
+                $("#auditStorefe7",panel).prop("checked", model.auditResultInfo.f7 == "0" ? false : true);
+                $("#auditStoref8",panel).prop("checked", model.auditResultInfo.f8 == "0" ? true : false);
+                $("#auditStorefe8",panel).prop("checked", model.auditResultInfo.f8 == "0" ? false : true);
+                //$("#auditStoref9",panel).prop("checked", model.auditResultInfo.f9 == "0" ? true : false);
+                //$("#auditStorefe9",panel).prop("checked", model.auditResultInfo.f9 == "0" ? false : true);
+                $("#auditStoref10",panel).prop("checked", model.auditResultInfo.f10 == "0" ? true : false);
+                $("#auditStorefe10",panel).prop("checked", model.auditResultInfo.f10 == "0" ? false : true);
             }else {
-                $("#f1").prop("checked", true );
-                $("#fe1").prop("checked", false);
-                $("#f2").prop("checked", true);
-                $("#fe2").prop("checked", false);
-                $("#f3").prop("checked", true);
-                $("#fe3").prop("checked", false);
-                $("#f4").prop("checked", true);
-                $("#fe4").prop("checked",false);
-                $("#f5").prop("checked",true);
-                $("#fe5").prop("checked", false);
-                $("#f6").prop("checked", true);
-                $("#fe6").prop("checked", false);
-                $("#f7").prop("checked", true);
-                $("#fe7").prop("checked",false);
-                $("#f8").prop("checked",true);
-                $("#fe8").prop("checked", false);
-                $("#f9").prop("checked",true);
-                $("#fe9").prop("checked", false);
-                $("#f10").prop("checked", true);
-                $("#fe10").prop("checked", false);
+                $("#auditStoref1",panel).prop("checked", true );
+                $("#auditStorefe1",panel).prop("checked", false);
+                $("#auditStoref2",panel).prop("checked", true);
+                $("#auditStorefe2",panel).prop("checked", false);
+                $("#auditStoref3",panel).prop("checked", true);
+                $("#auditStorefe3",panel).prop("checked", false);
+                $("#auditStoref4",panel).prop("checked", true);
+                $("#auditStorefe4",panel).prop("checked",false);
+                $("#auditStoref5",panel).prop("checked",true);
+                $("#auditStorefe5",panel).prop("checked", false);
+                $("#auditStoref6",panel).prop("checked", true);
+                $("#auditStorefe6",panel).prop("checked", false);
+                $("#auditStoref7",panel).prop("checked", true);
+                $("#auditStorefe7",panel).prop("checked",false);
+                $("#auditStoref8",panel).prop("checked",true);
+                $("#auditStorefe8",panel).prop("checked", false);
+                //$("#auditStoref9",panel).prop("checked",true);
+                //$("#auditStorefe9",panel).prop("checked", false);
+                $("#auditStoref10",panel).prop("checked", true);
+                $("#auditStorefe10",panel).prop("checked", false);
             }
 
-            $("#aduitrealName").val(model.realName);
-            $("#aduitidentityNumber").val(model.identityNumber);
-            $("#aduitCompanyName").val(model.expressCompanyName);
-            $("#aduitStoreCode").val(model.storeCode);
-            $("#aduitStoreName").val(model.storeName);
-            $("#aduitLocation").val(model.location);
-            $("#verifyRemark").val(model.verifyRemark);
-            $("#labelimg1").unbind("click");
-            $("#labelimg2").unbind("click");
-            $("#labelimg3").unbind("click");
+            $("#aduitrealName",panel).val(model.realName);
+            $("#aduitidentityNumber",panel).val(model.identityNumber);
+            $("#aduitCompanyName",panel).val(model.expressCompanyName);
+            $("#aduitStoreCode",panel).val(model.storeCode);
+            $("#aduitStoreName",panel).val(model.storeName);
+            $("#aduitLocation",panel).val(model.location);
+            $("#verifyRemark",panel).val(model.verifyRemark);
+            $("#labelimg1",panel).unbind("click");
+            $("#labelimg2",panel).unbind("click");
+            $("#labelimg3",panel).unbind("click");
             if (model.photoList) {
                 for (var i = 0; i < model.photoList.length; i++) {
 
                     if (model.photoList[i].fileUrl.indexOf("handheld") > 0) {
                         (function () {
                             var url = model.photoList[i].fileUrl;
-                            $("#labelimg1").unbind("click");
-                            $("#labelimg1").click(function () {
+                            $("#labelimg1",panel).unbind("click");
+                            $("#labelimg1",panel).click(function () {
                                 self.dialogImg("手持身份证正面照片", url)
                             });
                         })();
@@ -264,8 +279,8 @@ define(['base'], function (base) {
                     if (model.photoList[i].fileUrl.indexOf("idcard") > 0) {
                         (function () {
                             var url = model.photoList[i].fileUrl;
-                            $("#labelimg2").unbind("click");
-                            $("#labelimg2").click(function () {
+                            $("#labelimg2",panel).unbind("click");
+                            $("#labelimg2",panel).click(function () {
                                 self.dialogImg("身份证正面照片", url);
                             });
                         })();
@@ -273,8 +288,8 @@ define(['base'], function (base) {
                     if (model.photoList[i].fileUrl.indexOf("other") > 0) {
                         (function () {
                             var url = model.photoList[i].fileUrl;
-                            $("#labelimg3").unbind("click");
-                            $("#labelimg3").click(function () {
+                            $("#labelimg3",panel).unbind("click");
+                            $("#labelimg3",panel).click(function () {
                                 self.dialogImg("许可证正面照片", url);
                             });
                         })();
@@ -282,23 +297,23 @@ define(['base'], function (base) {
                 }
             }
 
-            $('#auditcollage').bootstrapTable('load', model.collegeList);
+            $('#auditcollage',panel).bootstrapTable('load', model.collegeList);
 
 
-            $('#auditModal').modal();
+            $('#auditModal',panel).modal();
         },
-        auditPost: function () {
+        auditPost: function (panel) {
             $.post("/user/exp/audit", {
-                "userId": $("#userId").val(),
-                "verifyRemark": $("#verifyRemark").val(),
-                "verifyStatus": ($("#fe1").prop('checked') && "3") || ($("#fe2").prop('checked') && "3") || ($("#fe3").prop('checked') && "3")
-                || ($("#fe4").prop('checked') && "3") || ($("#fe5").prop('checked') && "3") || ($("#fe6").prop('checked') && "3")
-                || ($("#fe7").prop('checked') && "3") || ($("#fe8").prop('checked') && "3") || ($("#fe9").prop('checked') && "3") || ($("#fe10").prop('checked') && "3") || "2",
-                "verifyInfoString": '{"f1":' + ($("#f1").prop('checked') ? '"0"' : '"-1"' ) + ',"f2":' + ($("#f2").prop('checked') ? '"0"' : '"-1"') + ',"f3":' + ($("#f3").prop('checked') ? '"0"' : '"-1"') + ',"f4":' + ( $("#f4").prop('checked') ? '"0"' : '"-1"' ) + ',"f5":' + ( $("#f5").prop('checked') ? '"0"' : '"-1"') + ',"f6":' + ($("#f6").prop('checked') ? '"0"' : '"-1"') + ',"f7":' + ($("#f7").prop('checked') ? '"0"' : '"-1"') + ',"f8":' + ($("#f8").prop('checked') ? '"0"' : '"-1"') + ',"f9":' + ( $("#f9").prop('checked') ? '"0"' : '"-1"') + ',"f10":' + ($("#f10").prop('checked') ? '"0"' : '"-1"') + '}'
+                "userId": $("#userId",panel).val(),
+                "verifyRemark": $("#verifyRemark",panel).val(),
+                "verifyStatus": ($("#auditStorefe1",panel).prop('checked') && "3") || ($("#auditStorefe2",panel).prop('checked') && "3") || ($("#auditStorefe3",panel).prop('checked') && "3")
+                || ($("#auditStorefe4",panel).prop('checked') && "3") || ($("#auditStorefe5",panel).prop('checked') && "3") || ($("#auditStorefe6",panel).prop('checked') && "3")
+                || ($("#auditStorefe7",panel).prop('checked') && "3") || ($("#auditStorefe8",panel).prop('checked') && "3") || ($("#auditStorefe9",panel).prop('checked') && "3") || ($("#auditStorefe10",panel).prop('checked') && "3") || "2",
+                "verifyInfoString": '{"f1":' + ($("#auditStoref1",panel).prop('checked') ? '"0"' : '"-1"' ) + ',"f2":' + ($("#auditStoref2",panel).prop('checked') ? '"0"' : '"-1"') + ',"f3":' + ($("#auditStoref3",panel).prop('checked') ? '"0"' : '"-1"') + ',"f4":' + ( $("#auditStoref4",panel).prop('checked') ? '"0"' : '"-1"' ) + ',"f5":' + ( $("#auditStoref5",panel).prop('checked') ? '"0"' : '"-1"') + ',"f6":' + ($("#auditStoref6",panel).prop('checked') ? '"0"' : '"-1"') + ',"f7":' + ($("#auditStoref7",panel).prop('checked') ? '"0"' : '"-1"') + ',"f8":' + ($("#auditStoref8",panel).prop('checked') ? '"0"' : '"-1"') + ',"f10":' + ($("#auditStoref10",panel).prop('checked') ? '"0"' : '"-1"') + '}'
             }, function (data) {
                 if (data.success == 0) {
-                    $("#userTable").bootstrapTable('refresh');
-                    $('#auditModal').modal('hide');
+                    $("#userTable",panel).bootstrapTable('refresh');
+                    $('#auditModal',panel).modal('hide');
                     base.success("操作成功！")
                 } else {
                     base.error(data.message);
@@ -309,7 +324,7 @@ define(['base'], function (base) {
             BootstrapDialog.show({
                 cssClass: 'img-dialog',
                 title: title,
-                message: '<div style="text-align: center;"><img src="' + url + '" style="width: 670;height: 500;"></div>'
+                message: '<div style="text-align: center;"><img src="' + url + '" style="width: 670px;height: 500px;"></div>'
             });
         }
     };

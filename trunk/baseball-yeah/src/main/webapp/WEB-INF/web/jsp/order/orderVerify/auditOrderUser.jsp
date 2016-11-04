@@ -96,7 +96,7 @@
                          </div>
 
                     <div class="form-group">
-                        <label class="col-lg-3 control-label label-operation">备注：</label>
+                        <label class="col-lg-3 control-label label-operation">标签：</label>
                         <div class="col-lg-8">
                             <textarea class="form-control" id="verifyRemark" rows="5"></textarea>
                         </div>

@@ -1,11 +1,11 @@
 define([ 'base' ], function(base) {
 	var datatable;
 	return {
-		init : function(args) {
+		init : function(panel) {
 			var self = this;
-		$("#btn_query").click(function() {
-			 if ($("#wayBillNo").val()) {
-				 datatable = base.datagrid({
+		    $("#btn_query",panel).click(function() {
+		    	 if ($("#wayBillNo",panel).val()) {
+		    		 datatable = base.datagrid({
 						url : '/report/waybill/waybilllog',
 						method : 'get',
 						sidePagination : "server", // 分页方式：client客户端分页，server服务端分页（*）
@@ -17,23 +17,23 @@ define([ 'base' ], function(base) {
 						height : 800,
 						queryParams : function(params) {
 							return $.extend(params, {
-									data:'{"operation":"'+$("#operation").val()+'","wayBillNo":"'+$("#wayBillNo").val()+'","expressCompanyId":"'+$("#expressId").val()+'"}'			
+									data:'{"operation":"'+$("#operation",panel).val()+'","wayBillNo":"'+$("#wayBillNo",panel).val()+'","expressCompanyId":"'+$("#expressId",panel).val()+'"}'			
 							});
 						},
 		                onLoadSuccess: function (data) {
 							//表格控件不支持高度自适应
-		                    var tableHeight = $('#wayBillLogTable').find("thead").height() + $('#wayBillLogTable').find("tbody").height()
+		                    var tableHeight = $('#wayBillLogTable',panel).find("thead").height() + $('#wayBillLogTable',panel).find("tbody").height()
 		                        + 3; 
-		                    var dataCount = $('#wayBillLogTable').bootstrapTable('getData').length;
-		                    if ($('#wayBillLogTable').parent().parent().parent().parent().find(".clearfix").height()<
-									$('#wayBillLogTable').parent().parent().find(".fixed-table-footer").height()) {
+		                    var dataCount = $('#wayBillLogTable',panel).bootstrapTable('getData').length;
+		                    if ($('#wayBillLogTable',panel).parent().parent().parent().parent().find(".clearfix").height()<
+									$('#wayBillLogTable',panel).parent().parent().find(".fixed-table-footer").height()) {
 		                    	if(dataCount<10){
 		                    		tableHeight += 53;
 		                    	} else {
 		                    		tableHeight += 55;
 		                    	}
 							} else {
-								tableHeight += $('#wayBillLogTable').parent().parent().parent().parent().find(".clearfix").height();
+								tableHeight += $('#wayBillLogTable',panel).parent().parent().parent().parent().find(".clearfix").height();
 							}
 		                    var showFooter = true;
 		                    if(dataCount==0){//如果没有数据 给固定文字的高度
@@ -41,19 +41,16 @@ define([ 'base' ], function(base) {
 						        showFooter = false;
 						    }
 		                   //如果有自带的功能 把自带功能的元素高度加上
-		                        tableHeight += ($('#wayBillLogTable').parent().parent().parent().parent().find(".pull-right").height() + 20);
+		                        tableHeight += ($('#wayBillLogTable',panel).parent().parent().parent().parent().find(".pull-right").height() + 20);
 		                   
 							tableHeight+=43;
 							if(showFooter){
-		                    	$('#wayBillLogTable').parent().parent().find('.fixed-table-footer').show();
+		                    	$('#wayBillLogTable',panel).parent().parent().find('.fixed-table-footer').show();
 		                    } else {
-		                    	$('#wayBillLogTable').parent().parent().find('.fixed-table-footer').hide();
+		                    	$('#wayBillLogTable',panel).parent().parent().find('.fixed-table-footer').hide();
 		                    }
-		                    $('#wayBillLogTable').bootstrapTable('resetView', {"height": tableHeight});
-		                    if( tableHeight > 900){//当高度过高 刷新外面iframe高度
-		                        $(parent.document).find("#mainFrame").height(document.body.scrollHeight);
-		                    }
-		                    $("#toolbar").css("margin","0px");
+		                    $('#wayBillLogTable',panel).bootstrapTable('resetView', {"height": tableHeight});
+		                    $("#toolbar",panel).css("margin","0px");
 		                },
 								columns : [ {
 									field : 'wayBillNo',
@@ -87,21 +84,38 @@ define([ 'base' ], function(base) {
 									field : 'logTime',
 									title : '记录时间',
 								} ]
-					}, '#wayBillLogTable');
-				datatable.bootstrapTable('refresh');
+					}, '#wayBillLogTable',panel);
+				//datatable.bootstrapTable('refresh');
+				datatable.bootstrapTable('selectPage', 1);
 				$(window).resize(function() {
-					$('#wayBillLogTable').bootstrapTable('resetView');
+					$('#wayBillLogTable',panel).bootstrapTable('resetView');
 				});	
 			 }
 			 else
        	     {
-       	      sweetAlert("", "快递公司或运单号不能为空", "info");
+       	      sweetAlert("", "运单号不能为空", "info");
        	     }
 			});
-			 $("#clearSearch").click(function () {
-	                base.reset(".main-box-header");
-	                $('#expressId').select2("val", null);
-	            });
+			$("#clearSearch",panel).click(function () {
+                base.reset($(".main-box-header",panel));
+                $('#expressId',panel).select2("val", null);
+            });
+			/**
+		    加载合作公司
+		    */
+		    $.ajax({
+	          url: "/manage/express/queryenabledforsel",
+	          dataType: 'json',
+	          type: 'post',
+	          success: function (data) {
+	              $("#expressId",panel).select2({
+	                  data: data,
+	                  placeholder: '请选择',
+	                  allowClear: true
+	              });
+	              $('#expressId',panel).select2("val", null);
+	          }
+	      });
 		}
 	};
 });

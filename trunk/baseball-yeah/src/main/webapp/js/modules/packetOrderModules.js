@@ -1,9 +1,13 @@
 ﻿define(
-    ['base'],
-    function (base) {
+    ['base','packetStuManagerModules'],
+    function (base,packetStuManager) {
         /**
          * 私有成员定义区域
          */
+        var packetStuinit=function (){
+
+            packetStuManager.init();
+        }
 
         return {
             init: function (args) {
@@ -14,7 +18,7 @@
                 var self = this;
                 var date = new Date();
                 // 开始时间
-                $('#createStartDatePicker').datetimepicker({
+                $('#createStartDatePicker',args).datetimepicker({
                     format: 'yyyy-mm-dd hh:ii:ss',
                     autoclose: true,
                     startView: 2,
@@ -24,10 +28,10 @@
                         date.getDate(), 23, 59, 59)
                 }).on('changeDate', function (e) {
                     var startTime = e.date;
-                    $('#createEndDatePicker').datetimepicker('setStartDate', startTime);
+                    $('#createEndDatePicker',args).datetimepicker('setStartDate', startTime);
                 });
 
-                $('#createEndDatePicker').datetimepicker({
+                $('#createEndDatePicker',args).datetimepicker({
                     format: 'yyyy-mm-dd hh:ii:ss',
                     autoclose: true,
                     startView: 2,
@@ -37,25 +41,11 @@
                         date.getDate(), 23, 59, 59)
                 }).on('changeDate', function (e) {
                     var startTime = e.date;
-                    $('#createStartDatePicker').datetimepicker('setEndDate', startTime);
-                });
-
-                // 结束时间
-                $('#deliveryStartDatePicker').datetimepicker({
-                    format: 'yyyy-mm-dd hh:ii:ss',
-                    autoclose: true,
-                    startView: 2,
-                    minView: 0,
-                    todayHighlight: true,
-                    endDate: new Date(date.getFullYear(), date.getMonth(),
-                        date.getDate(), 23, 59, 59)
-                }).on('changeDate', function (e) {
-                    var startTime = e.date;
-                    $('#deliveryEndDatePicker').datetimepicker('setStartDate', startTime);
+                    $('#createStartDatePicker',args).datetimepicker('setEndDate', startTime);
                 });
 
                 // 结束时间
-                $('#deliveryEndDatePicker').datetimepicker({
+                $('#deliveryStartDatePicker',args).datetimepicker({
                     format: 'yyyy-mm-dd hh:ii:ss',
                     autoclose: true,
                     startView: 2,
@@ -65,11 +55,11 @@
                         date.getDate(), 23, 59, 59)
                 }).on('changeDate', function (e) {
                     var startTime = e.date;
-                    $('#deliveryStartDatePicker').datetimepicker('setEndDate', startTime);
+                    $('#deliveryEndDatePicker',args).datetimepicker('setStartDate', startTime);
                 });
 
                 // 结束时间
-                $('#deliverySStartDatePicker').datetimepicker({
+                $('#deliveryEndDatePicker',args).datetimepicker({
                     format: 'yyyy-mm-dd hh:ii:ss',
                     autoclose: true,
                     startView: 2,
@@ -79,11 +69,11 @@
                         date.getDate(), 23, 59, 59)
                 }).on('changeDate', function (e) {
                     var startTime = e.date;
-                    $('#deliverySEndDatePicker').datetimepicker('setStartDate', startTime);
+                    $('#deliveryStartDatePicker',args).datetimepicker('setEndDate', startTime);
                 });
 
                 // 结束时间
-                $('#deliverySEndDatePicker').datetimepicker({
+                $('#deliverySStartDatePicker',args).datetimepicker({
                     format: 'yyyy-mm-dd hh:ii:ss',
                     autoclose: true,
                     startView: 2,
@@ -93,7 +83,21 @@
                         date.getDate(), 23, 59, 59)
                 }).on('changeDate', function (e) {
                     var startTime = e.date;
-                    $('#deliverySStartDatePicker').datetimepicker('setEndDate', startTime);
+                    $('#deliverySEndDatePicker',args).datetimepicker('setStartDate', startTime);
+                });
+
+                // 结束时间
+                $('#deliverySEndDatePicker',args).datetimepicker({
+                    format: 'yyyy-mm-dd hh:ii:ss',
+                    autoclose: true,
+                    startView: 2,
+                    minView: 0,
+                    todayHighlight: true,
+                    endDate: new Date(date.getFullYear(), date.getMonth(),
+                        date.getDate(), 23, 59, 59)
+                }).on('changeDate', function (e) {
+                    var startTime = e.date;
+                    $('#deliverySStartDatePicker',args).datetimepicker('setEndDate', startTime);
                 });
 
                 base.datagrid(
@@ -101,35 +105,43 @@
                         url: '/order/user/getPacketOrder',
                         queryParams: function (params) {
                             return $.extend(params, {
-                                createStartDate: $('#createStartDate')
+                                createStartDate: $('#createStartDate',args)
                                     .val(),
-                                createEndDate: $('#createEndDate')
+                                createEndDate: $('#createEndDate',args)
                                     .val(),
                                 deliveryStartDate: $(
-                                    '#deliveryStartDate')
+                                    '#deliveryStartDate',args)
                                     .val(),
                                 deliveryEndDate: $(
-                                    '#deliveryEndDate')
+                                    '#deliveryEndDate',args)
                                     .val(),
                                 deliverySStartDate: $(
-                                    '#deliverySStartDate')
+                                    '#deliverySStartDate',args)
                                     .val(),
                                 deliverySEndDate: $(
-                                    '#deliverySEndDate')
+                                    '#deliverySEndDate',args)
                                     .val(),
-                                orderId: $.trim($("#orderId")
+                                orderId: $.trim($("#orderId",args)
                                     .val()),
-                                state: $.trim($("#state")
+                                state: $.trim($("#state",args)
                                     .val()),
-                                payType: $.trim($("#payType")
+                                payType: $.trim($("#payType",args)
                                     .val()),
-                                payId: $.trim($("#payId")
+                                payId: $.trim($("#payId",args)
                                     .val()),
-                                phone: $.trim($("#phone")
+                                phone: $.trim($("#phone",args)
                                     .val()),
-                                collegeId: $.trim($("#collegeId")
+                                collegeId: $.trim($("#collegeId",args)
                                     .val()),
-                                mobile: $("#mobile").val()
+                                mobile: $("#mobile",args).val()
+                            });
+                        },
+                        onLoadSuccess : function(data){
+                            $('.zbUserPhoneManager',args).click(function(){
+                                var phone = $.trim($(this).text());
+                                var title = $(this).attr('title');
+                                var href = '/order/gotoPacketStuManager?phone='+phone;
+                                base.openTab(title,href,packetStuinit);
                             });
                         },
                         columns: [
@@ -168,6 +180,27 @@
                                 },
                                 sortable: true,
                                 width: 400
+                            },
+                            {
+                                field: 'lockState',
+                                title: '是否锁定',
+                                formatter: function (value, row, index) {
+                                    switch (value) {
+                                        case 0:
+                                            return "否";
+                                        case 1:
+                                            return "收件人分单锁定";
+                                        case 2:
+                                            return "货源分单锁定";
+                                        case 3:
+                                            return "众包分单锁定";
+                                        case 4:
+                                            return "系统分单锁定";
+                                        case 5:
+                                            return "预支付未付款锁定";
+                                    }
+                                },
+                                width: 80
                             },
                             {
                                 field: 'payType',
@@ -218,9 +251,12 @@
                             }, {
                                 field: 'phone',
                                 title: '众包人手机号码',
-                                formatter: function (value, row, index) {
-                                    return "<a title='管理此用户' href='/order/gotoPacketStuManager?phone=" + value + "'>" + value + "</a>";
+                                formatter : function(value,row, index) {
+                                    return "<a title='众包用户管理' href='#' class='zbUserPhoneManager'>"+value+"</a>";
                                 },
+                                /*formatter: function (value, row, index) {
+                                    return "<a title='管理此用户' href='/order/gotoPacketStuManager?phone=" + value + "'>" + value + "</a>";
+                                },*/
                                 align: 'center',
                                 sortable: true,
                                 width: 400
@@ -285,17 +321,17 @@
                              * sortable : true, width:100 }
                              */
                         ]
-                    }, '#userTable');
+                    }, '#userTable',args);
 
                 $.ajax({
                     type: "POST",
                     url: "/order/user/selectAllPayType",
                     dataType: "json",
                     success: function (data) {
-                        $("#payType").select2({
+                        $("#payType",args).select2({
                             data: data
                         });
-                        $('#collegeId').select2("val", "");
+                        $('#collegeId',args).select2("val", "");
                     }
                 });
 
@@ -304,57 +340,58 @@
                     url: "/manage/college/getCollageForSel",
                     dataType: "json",
                     success: function (data) {
-                        $("#collegeId").select2({
+                        $("#collegeId",args).select2({
                             data: data.data
                         });
                     }
                 });
 
-                $("#btn_add").click(function () {
-                    self.add();
+                $("#btn_add",args).click(function () {
+                    self.add(args);
                 });
-                $("#btn_edit").click(function () {
-                    self.edit();
+                $("#btn_edit",args).click(function () {
+                    self.edit(args);
                 });
-                $("#btn_delete").click(function () {
-                    self.remove();
+                $("#btn_delete",args).click(function () {
+                    self.remove(args);
                 });
-                $("#btn_initPwd").click(function () {
-                    self.initPwd();
+                $("#btn_initPwd",args).click(function () {
+                    self.initPwd(args);
                 });
-                $("#btn_query").click(function () {
-                    $("#userTable").bootstrapTable('refresh');
+                $("#btn_query",args).click(function () {
+                    // $("#userTable",args).bootstrapTable('refresh');
+                    $("#userTable", args).bootstrapTable('selectPage', 1);
                 });
 
-                $("#clearSearch").click(function () {
+                $("#clearSearch",args).click(function () {
                     base.reset(".main-box-body");
-                    $('#payType').select2("val", "");
-                    $('#collegeId').select2("val", "");
+                    $('#payType',args).select2("val", "");
+                    $('#collegeId',args).select2("val", "");
                 });
 
-                $('#addRole').select2({
+                $('#addRole',args).select2({
                     placeholder: '请选择角色'
                 });
 
-                $('#addModal').on(
+                $('#addModal',args).on(
                     'shown.bs.modal',
                     function () {
-                        $('#addForm').data('bootstrapValidator')
+                        $('#addForm',args).data('bootstrapValidator')
                             .resetForm(true);
                     })
             },
-            add: function () {
+            add: function (args) {
                 var self = this;
-                $('#addLoginName').val('');
-                $('#addUserName').val('');
-                $('#addUserCode').val('');
-                $('#addPassword').val('');
-                $('#addRePassword').val('');
-                $('#addDutyId').val('');
-                $('.addGender').val('');
-                $('#addPhone').val('');
-                $('#addAddress').val('');
-                $('#addModal').modal({
+                $('#addLoginName',args).val('');
+                $('#addUserName',args).val('');
+                $('#addUserCode',args).val('');
+                $('#addPassword',args).val('');
+                $('#addRePassword',args).val('');
+                $('#addDutyId',args).val('');
+                $('.addGender',args).val('');
+                $('#addPhone',args).val('');
+                $('#addAddress',args).val('');
+                $('#addModal',args).modal({
                     keyboard: false,
                     backdrop: 'static'
                 });
@@ -428,11 +465,9 @@
                                             message: '两次输入密码不一致',
                                             callback: function (value,
                                                                 validator) {
-                                                var password = $(
-                                                    '#addPassword')
+                                                var password = $('#addPassword',args)
                                                     .val();
-                                                var rePassword = $(
-                                                    '#addRePassword')
+                                                var rePassword = $('#addRePassword',args)
                                                     .val();
                                                 return password == rePassword;
                                             }
@@ -440,34 +475,34 @@
                                     }
                                 }
                             }
-                        }, "#addForm", self.create)
+                        }, "#addForm", self.create,args)
             },
-            create: function () {
+            create: function (args) {
                 $
                     .post(
                         "/user/managers/add",
                         {
-                            "loginName": $("#addLoginName").val(),
-                            "userName": $("#addUserName").val(),
-                            "contactTel": $("#addPhone").val(),
-                            "password": $("#addPassword").val(),
-                            "address": $("#addAddress").val(),
-                            "gender": $("#addMan").prop('checked') ? "p_gender_male"
+                            "loginName": $("#addLoginName",args).val(),
+                            "userName": $("#addUserName",args).val(),
+                            "contactTel": $("#addPhone",args).val(),
+                            "password": $("#addPassword",args).val(),
+                            "address": $("#addAddress",args).val(),
+                            "gender": $("#addMan",args).prop('checked') ? "p_gender_male"
                                 : "p_gender_female",
-                            "roleIds": $("#addRole").val() == null ? ""
-                                : $("#addRole").val().join(","),
-                            "userCode": $("#addUserCode").val(),
-                            "dutyId": $("#addDutyId").val() == "请选择" ? ""
-                                : $("#addDutyId").val(),
-                            "deptId": $("#addDeptId").val() == "请选择" ? ""
-                                : $("#addDeptId").val()
+                            "roleIds": $("#addRole",args).val() == null ? ""
+                                : $("#addRole",args).val().join(","),
+                            "userCode": $("#addUserCode",args).val(),
+                            "dutyId": $("#addDutyId",args).val() == "请选择" ? ""
+                                : $("#addDutyId",args).val(),
+                            "deptId": $("#addDeptId",args).val() == "请选择" ? ""
+                                : $("#addDeptId",args).val()
                         }, function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
                                     base.success("增加成功");
-                                    $("#userTable").bootstrapTable(
-                                        'refresh');
-                                    $('#addModal').modal('hide');
+                                    // $("#userTable",args).bootstrapTable('refresh');
+                                    $("#userTable", args).bootstrapTable('selectPage', 1);
+                                    $('#addModal',args).modal('hide');
                                 } else {
                                     base.error(data.message);
                                 }
@@ -476,9 +511,9 @@
                             }
                         });
             },
-            edit: function () {
+            edit: function (args) {
                 var self = this;
-                var arrselections = $("#userTable").bootstrapTable(
+                var arrselections = $("#userTable",args).bootstrapTable(
                     'getSelections');
                 if (arrselections.length > 1) {
                     sweetAlert("Oops...", "只能选择一行进行编辑!", "error");
@@ -488,26 +523,26 @@
                     sweetAlert("Oops...", "请选择有效数据!", "error");
                     return;
                 }
-                $('#editUserManagerId').val(arrselections[0].userManagerId);
-                $("#editLoginName").val(arrselections[0].loginName);
-                $("#editUserName").val(arrselections[0].userName);
-                $("#editAddress").val(arrselections[0].address);
-                $("#editUserCode").val(arrselections[0].userCode);
-                $("#editDeptId").val(arrselections[0].deptId).trigger(
+                $('#editUserManagerId',args).val(arrselections[0].userManagerId);
+                $("#editLoginName",args).val(arrselections[0].loginName);
+                $("#editUserName",args).val(arrselections[0].userName);
+                $("#editAddress",args).val(arrselections[0].address);
+                $("#editUserCode",args).val(arrselections[0].userCode);
+                $("#editDeptId",args).val(arrselections[0].deptId).trigger(
                     "change");
-                $("#editDutyId").val(arrselections[0].dutyId).trigger(
+                $("#editDutyId",args).val(arrselections[0].dutyId).trigger(
                     "change");
-                $("#editPhone").val(arrselections[0].contactTel);
-                $("#editBeEnabled").val(arrselections[0].beEnabled);
-                $("#editRole").val(arrselections[0].roleIds).trigger(
+                $("#editPhone",args).val(arrselections[0].contactTel);
+                $("#editBeEnabled",args).val(arrselections[0].beEnabled);
+                $("#editRole",args).val(arrselections[0].roleIds).trigger(
                     "change");
 
                 if (arrselections[0].gender == "男") {
-                    $("#editMan").prop("checked", "checked");
+                    $("#editMan",args).prop("checked", "checked");
                 } else {
-                    $("#editWoman").prop("checked", "checked");
+                    $("#editWoman",args).prop("checked", "checked");
                 }
-                $('#editModal').modal({
+                $('#editModal',args).modal({
                     keyboard: false,
                     backdrop: 'static'
                 });
@@ -543,28 +578,28 @@
                             }
                         }
                     }
-                }, "#editForm", self.update)
+                }, "#editForm", self.update,args)
             },
-            update: function () {
+            update: function (args) {
                 $
                     .post(
                         "/user/managers/updateManager",
                         {
                             "userManagerId": $(
-                                "#editUserManagerId").val(),
-                            "userName": $("#editUserName").val(),
-                            "userCode": $("#editUserCode").val(),
-                            "address": $("#editAddress").val(),
-                            "beEnabled": $("#editBeEnabled").val(),
-                            "roleIds": $("#editRole").val() == null ? ""
-                                : $("#editRole").val()
+                                "#editUserManagerId",args).val(),
+                            "userName": $("#editUserName",args).val(),
+                            "userCode": $("#editUserCode",args).val(),
+                            "address": $("#editAddress",args).val(),
+                            "beEnabled": $("#editBeEnabled",args).val(),
+                            "roleIds": $("#editRole",args).val() == null ? ""
+                                : $("#editRole",args).val()
                                 .join(","),
-                            "contactTel": $("#editPhone").val(),
-                            "dutyId": $("#editDutyId").val() == "请选择" ? ""
-                                : $("#editDutyId").val(),
-                            "deptId": $("#editDeptId").val() == "请选择" ? ""
-                                : $("#editDeptId").val(),
-                            "gender": $("#editMan")
+                            "contactTel": $("#editPhone",args).val(),
+                            "dutyId": $("#editDutyId",args).val() == "请选择" ? ""
+                                : $("#editDutyId",args).val(),
+                            "deptId": $("#editDeptId",args).val() == "请选择" ? ""
+                                : $("#editDeptId",args).val(),
+                            "gender": $("#editMan",args)
                                 .prop('checked') ? "p_gender_male"
                                 : "p_gender_female"
                         },
@@ -572,18 +607,18 @@
                             if (status == "success") {
                                 if (data.success == 0) {
                                     base.success("编辑成功");
-                                    $("#userTable").bootstrapTable(
-                                        'refresh');
-                                    $('#editModal').modal('hide');
-                                    $('#editForm').data(
+                                    // $("#userTable",args).bootstrapTable('refresh');
+                                    $("#userTable", args).bootstrapTable('selectPage', 1);
+                                    $('#editModal',args).modal('hide');
+                                    $('#editForm',args).data(
                                         'bootstrapValidator')
                                         .resetForm(true);
-                                    $('#addForm').data(
+                                    $('#addForm',args).data(
                                         'bootstrapValidator')
                                         .resetForm(true);
                                 } else {
                                     base.error(data.message);
-                                    $('#editForm').find(
+                                    $('#editForm',args).find(
                                         ".btn-primary")
                                         .removeAttr("disabled");
                                 }
@@ -592,8 +627,8 @@
                             }
                         });
             },
-            remove: function () {
-                var arrselections = $("#userTable").bootstrapTable(
+            remove: function (args) {
+                var arrselections = $("#userTable",args).bootstrapTable(
                     'getSelections');
                 if (arrselections.length > 1) {
                     base.error("只能选择一行进行编辑!");
@@ -625,10 +660,8 @@
                                             if (obj.success == 0) {
                                                 base
                                                     .success("删除成功");
-                                                $(
-                                                    "#userTable")
-                                                    .bootstrapTable(
-                                                        'refresh');
+                                                // $("#userTable",args).bootstrapTable('refresh');
+                                                $("#userTable", args).bootstrapTable('selectPage', 1);
                                             } else {
                                                 base
                                                     .error(obj.message);
@@ -640,8 +673,8 @@
                                     });
                         });
             },
-            initPwd: function () {
-                var arrselections = $("#userTable").bootstrapTable(
+            initPwd: function (args) {
+                var arrselections = $("#userTable",args).bootstrapTable(
                     'getSelections');
                 if (arrselections.length > 1) {
                     base.error("只能选择一行进行编辑!");
@@ -663,7 +696,8 @@
                             var obj = JSON.parse(data);
                             if (obj.success == 0) {
                                 base.success("初始化密码为：111111，成功");
-                                $("#userTable").bootstrapTable('refresh');
+                                // $("#userTable",args).bootstrapTable('refresh');
+                                $("#userTable", args).bootstrapTable('selectPage', 1);
                             } else {
                                 base.error(obj.message);
                             }
@@ -676,54 +710,54 @@
         };
     });
 
-function showDetail(orderId) {
-    $('#detailMoblile').val("");
-    $('#detailOrderId').val("");
-    $('#detailRealName').val("");
-    $('#detailWaybillNo').val("");
-    $('#detailSex').val("");
-    $('#detailState').val("");
-    $('#detailCityName').val("");
-    $('#detailAddress').val("");
-    $('#detailCollegeName').val("");
-    $('#detailStoreName').val("");
-    $('#detailLocation').val("");
-    $('#detailTotalMoney').val("");
-    $('#detailRebateMoney').val("");
-    $('#detailFinalMoney').val("");
-    $('#detailPayMoney').val("");
+function showDetail(orderId,args) {
+    $('#detailMoblile',args).val("");
+    $('#detailOrderId',args).val("");
+    $('#detailRealName',args).val("");
+    $('#detailWaybillNo',args).val("");
+    $('#detailSex',args).val("");
+    $('#detailState',args).val("");
+    $('#detailCityName',args).val("");
+    $('#detailAddress',args).val("");
+    $('#detailCollegeName',args).val("");
+    $('#detailStoreName',args).val("");
+    $('#detailLocation',args).val("");
+    $('#detailTotalMoney',args).val("");
+    $('#detailRebateMoney',args).val("");
+    $('#detailFinalMoney',args).val("");
+    $('#detailPayMoney',args).val("");
 
     $.post("/order/user/orderView", {
         "orderId": orderId
     }, function (data, status) {
         if (status == "success") {
-            $('#detailMoblile').val(data.mobile);
-            $('#detailOrderId').val(orderId);
-            $('#detailRealName').val(data.consignee);
-            $('#detailWaybillNo').val(data.waybillNo);
+            $('#detailMoblile',args).val(data.mobile);
+            $('#detailOrderId',args).val(orderId);
+            $('#detailRealName',args).val(data.consignee);
+            $('#detailWaybillNo',args).val(data.waybillNo);
             if (data.sex == "p_gender_male") {
-                $('#detailSex').val("男");
+                $('#detailSex',args).val("男");
             } else if (data.sex == "p_gender_female") {
-                $('#detailSex').val("女");
+                $('#detailSex',args).val("女");
             } else if (data.sex == "p_gender_secret") {
-                $('#detailSex').val("保密");
+                $('#detailSex',args).val("保密");
             }
-            $('#detailState').val(data.stateStr);
-            $('#detailCityName').val(data.cityName);
-            $('#detailAddress').val(data.address);
-            $('#detailCollegeName').val(data.fullName);
-            $('#detailStoreName').val(data.storeName);
-            $('#detailLocation').val(data.location);
-            $('#detailTotalMoney').val(data.totalMoney);
-            $('#detailRebateMoney').val(data.rebateMoney);
-            $('#detailFinalMoney').val(data.finalMoney);
-            $('#detailPayMoney').val(data.payMoney);
+            $('#detailState',args).val(data.stateStr);
+            $('#detailCityName',args).val(data.cityName);
+            $('#detailAddress',args).val(data.address);
+            $('#detailCollegeName',args).val(data.fullName);
+            $('#detailStoreName',args).val(data.storeName);
+            $('#detailLocation',args).val(data.location);
+            $('#detailTotalMoney',args).val(data.totalMoney);
+            $('#detailRebateMoney',args).val(data.rebateMoney);
+            $('#detailFinalMoney',args).val(data.finalMoney);
+            $('#detailPayMoney',args).val(data.payMoney);
         } else {
             base.error("初始化失败!");
         }
     });
 
-    $('#detailTable').bootstrapTable({
+    $('#detailTable',args).bootstrapTable({
         // 请求后台的URL（*）
         url: '/order/user/orderDetail',
         striped: true, // 是否显示行间隔色
@@ -744,5 +778,5 @@ function showDetail(orderId) {
         ]
     }).bootstrapTable('refresh', {query: {"orderId": orderId}});
 
-    $('#detailModal').modal();
+    $('#detailModal',args).modal();
 }

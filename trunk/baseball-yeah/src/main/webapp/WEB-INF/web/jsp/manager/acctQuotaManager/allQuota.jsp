@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ include file="/common/comm.jsp"%>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%--<%@ include file="/common/comm.jsp"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,23 +39,24 @@
 	<div id="page-wrapper" class="container">
 
 		<div class="row">
-			<form action="">
+			<form action="">--%>
+				<input type="hidden" class="inmodule" value="quotaManagerModules">
 				<div class="row">
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="main-box clearfix">
 								<div class="main-box-body clearfix">
 									<header class="main-box-header clearfix">
-										<div class="row">
-											<div class="col-lg-12">
-												<ol class="breadcrumb">
-													<li><a
-														href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>
-													<li class="active"><span>系统管理</span></li>
-												</ol>
-												<h1>指标配置管理</h1>
-											</div>
-										</div>
+										<%--<div class="row">--%>
+											<%--<div class="col-lg-12">--%>
+												<%--<ol class="breadcrumb">--%>
+													<%--<li><a--%>
+														<%--href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>--%>
+													<%--<li class="active"><span>系统管理</span></li>--%>
+												<%--</ol>--%>
+												<%--<h1>指标配置管理</h1>--%>
+											<%--</div>--%>
+										<%--</div>--%>
 									</header>
 									<div class="table-responsive">
 										<div class="panel-body" style="padding-bottom: 0px;">
@@ -70,23 +72,35 @@
 															aria-hidden="true"></span>修改
 													</button>
 												</shiro:hasPermission>
-												<shiro:hasPermission name="162_DELETE">
-													<button id="btn_delete" type="button"
+												<shiro:hasPermission name="162_ENABLE">
+													<button id="btn_activation" type="button"
 														class="btn btn-default">
-														<span class="glyphicon glyphicon-remove"
-															aria-hidden="true"></span>删除
+														<span class="glyphicon glyphicon-ok-circle"
+															aria-hidden="true"></span>启用
 													</button>
 												</shiro:hasPermission>
-												<shiro:hasPermission name="162_QUERY">
+												<shiro:hasPermission name="162_FROZEN">
+													<button id="btn_delete" type="button"
+															class="btn btn-default">
+														<span class="glyphicon glyphicon-remove"
+															  aria-hidden="true"></span>禁用
+													</button>
+												</shiro:hasPermission>
+												<%--<shiro:hasPermission name="162_QUERY">
 													<button type="button" id="btn_query"
 														class="btn btn-default">
 														<span class="glyphicon glyphicon-search"
 															aria-hidden="true"></span>查询
 													</button>
-												</shiro:hasPermission>
+												</shiro:hasPermission>--%>
 											</div>
 											<table id="quotaTable" class="table">
 											</table>
+											<%--<div class="main-box-body clearfix">
+												<div class="row">
+												</div>
+											</div>--%>
+
 										</div>
 									</div>
 								</div>
@@ -94,11 +108,11 @@
 						</div>
 					</div>
 				</div>
-			</form>
+			<%--</form>
 		</div>
 	</div>
-	</div>
+	</div>--%>
 	<jsp:include page="addQuota.jsp"></jsp:include>
 	<jsp:include page="editQuota.jsp"></jsp:include>
-</body>
-</html>
+<%--</body>
+</html>--%>

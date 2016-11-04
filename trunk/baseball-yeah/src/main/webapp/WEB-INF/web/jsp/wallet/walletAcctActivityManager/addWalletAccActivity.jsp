@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %><%--
 <%@ include file="/common/comm.jsp" %>
 <!DOCTYPE html>
 <html>
@@ -106,7 +107,8 @@
 <body style="background-color: #e7ebee;">
 <div id="page-wrapper" class="container">
     <div class="row">
-        <form action="">
+        <form action="">--%>
+            <input type="hidden" class="inmodule" value="acctActivityModules"/>
             <div class="row">
                 <div class="row">
                     <div class="col-lg-12">
@@ -126,7 +128,7 @@
                                     <div class="form-group col-lg-12 group-activity">
                                         <label for="activityName" class="col-lg-2 control-label add-activity">活动名称：</label>
                                         <div class="col-lg-6">
-                                            <input type="text" class="form-control" id="activityName" placeholder="活动名称" data-bind='value: activityName'>
+                                            <input type="text" class="form-control" id="activityName" placeholder="活动名称" data-bind='value: activityName' maxlength="125">
                                         </div>
                                     </div>
                                     <div class="form-group col-lg-12 group-activity">
@@ -472,9 +474,11 @@
                     </div>
                 </div>
             </div>
+<%--
         </form>
     </div>
 </div>
 </body>
 </html>
+--%>
 

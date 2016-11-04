@@ -40,10 +40,10 @@
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">账户状态</label>
                         <div class="radio">
-                            <input type="radio" name="grabSupervisors" id="grabY" value="option1"
-                                   checked=""> <label for="grabY">激活</label> <input
-                                type="radio" name="grabSupervisors" id="grabN" value="option2">
-                            <label for="grabN"> 封存</label>
+                            <input type="radio" name="grabSupervisors_packetStuManager" id="grabY_packetStuManager" value="option1"
+                                   checked=""> <label for="grabY_packetStuManager">激活</label> <input
+                                type="radio" name="grabSupervisors_packetStuManager" id="grabN_packetStuManager" value="option2">
+                            <label for="grabN_packetStuManager"> 封存</label>
                         </div>
                     </div>
                 </div>

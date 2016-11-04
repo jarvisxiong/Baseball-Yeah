@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.store.mapper.StoreMapper">
+<mapper namespace="com.rofour.baseball.dao.store.mapper.StoreMapper">
     <!-- 商户结果集 -->
-    <resultMap id="StoreResultMap" type="com.zhiduan.axp.dao.store.bean.StoreBean">
+    <resultMap id="StoreResultMap" type="com.rofour.baseball.dao.store.bean.StoreBean">
         <result property="storeId" column="store_id" javaType="long" jdbcType="BIGINT"/>
         <result property="storeCode" column="store_code"/>
         <result property="storeName" column="store_name"/>
@@ -13,7 +13,7 @@
     </resultMap>
     <!-- 商户_快递公司结果集 -->
     <resultMap id="StoreExpResultMap"
-               type="com.zhiduan.axp.dao.store.bean.StoreExpBean">
+               type="com.rofour.baseball.dao.store.bean.StoreExpBean">
         <result property="serId" column="ser_id " javaType="long"
                 jdbcType="BIGINT"/>
         <result property="storeId" column="store_id" javaType="long"
@@ -25,7 +25,7 @@
 
     <!-- 商户_学校结果集 -->
     <resultMap id="StoreSchoolResultMap"
-               type="com.zhiduan.axp.dao.store.bean.StoreSchoolBean">
+               type="com.rofour.baseball.dao.store.bean.StoreSchoolBean">
         <result property="scrId" column="scr_id " javaType="long"
                 jdbcType="BIGINT"/>
         <result property="storeId" column="store_id" javaType="long"
@@ -36,7 +36,7 @@
 
     <!-- 商户_快递站点结果集 -->
     <resultMap id="StoreSiteResultMap"
-               type="com.zhiduan.axp.dao.store.bean.StoreSiteBean">
+               type="com.rofour.baseball.dao.store.bean.StoreSiteBean">
         <result property="stoExpId" column="sto_exp_id " javaType="long"
                 jdbcType="BIGINT"/>
         <result property="phone" column="phone"/>
@@ -46,7 +46,7 @@
 
     <!-- 快递站点_axp门店结果集 -->
     <resultMap id="SiteAxpResultMap"
-               type="com.zhiduan.axp.dao.store.bean.SiteAxpBean">
+               type="com.rofour.baseball.dao.store.bean.SiteAxpBean">
         <result property="earId" column="ear_id" javaType="long"
                 jdbcType="BIGINT"/>
         <result property="stoExpId" column="sto_exp_id" javaType="long"
@@ -57,14 +57,14 @@
     </resultMap>
     <!-- 快递信息结果集 -->
     <resultMap id="ExpressResultMap"
-               type="com.zhiduan.axp.dao.manager.bean.ExpressBean">
+               type="com.rofour.baseball.dao.manager.bean.ExpressBean">
         <result property="expressCompanyId" column="express_company_id"
                 javaType="long" jdbcType="BIGINT"/>
         <result property="expressCompanyName" column="simple_name"/>
         <result property="beDefault" column="be_default"/>
     </resultMap>
     <!-- 门店信息结果集 -->
-    <resultMap id="AxpResultMap" type="com.zhiduan.axp.dao.store.bean.AxpBean">
+    <resultMap id="AxpResultMap" type="com.rofour.baseball.dao.store.bean.AxpBean">
         <result property="stoAxpId" column="store_id" javaType="long"
                 jdbcType="BIGINT"/>
         <result property="stoAxpName" column="stoAxpName"/>
@@ -73,7 +73,7 @@
     </resultMap>
     <!-- 爱学派门店信息结果集 -->
     <resultMap id="axpStoreResultMap"
-               type="com.zhiduan.axp.dao.store.bean.AxpStoreBean">
+               type="com.rofour.baseball.dao.store.bean.AxpStoreBean">
         <id property="storeId" column="store_id" javaType="long" jdbcType="BIGINT"/>
         <result property="storeCode" column="store_code" javaType="String"
                 jdbcType="VARCHAR"/>
@@ -105,7 +105,7 @@
     </resultMap>
     <!-- 快递站点信息结果集 -->
     <resultMap id="expStoreResultMap"
-               type="com.zhiduan.axp.dao.store.bean.ExpStoreBean">
+               type="com.rofour.baseball.dao.store.bean.ExpStoreBean">
         <id property="storeId" column="sto_exp_id" javaType="long"
             jdbcType="BIGINT"/>
         <result property="storeCode" column="store_code" javaType="String"
@@ -175,7 +175,7 @@
 		select * from tb_store where store_id=#{storeId} and be_deleted=0
 	</select>
 
-    <insert id="insertStore" parameterType="com.zhiduan.axp.dao.store.bean.StoreBean" useGeneratedKeys="true" keyProperty="storeId">
+    <insert id="insertStore" parameterType="com.rofour.baseball.dao.store.bean.StoreBean" useGeneratedKeys="true" keyProperty="storeId">
 		insert into tb_store(store_code,store_name,type,status,location,be_deleted)
 		values(#{storeCode},#{storeName},#{type},#{status},#{location},#{beDeleted})
 	</insert>
@@ -183,7 +183,7 @@
     <delete id="deleteStoreById" parameterType="long">
 		delete from tb_store where store_id=#{id}
 	</delete>
-    <update id="updateStore" parameterType="com.zhiduan.axp.dao.store.bean.StoreBean">
+    <update id="updateStore" parameterType="com.rofour.baseball.dao.store.bean.StoreBean">
         update tb_store t
         <set>
             <if test="storeCode != null">
@@ -224,12 +224,12 @@
     <delete id="deleteStoreExp" parameterType="long">
 		delete from tb_store_ec_rel where store_id=#{id}
 	</delete>
-    <insert id="insertStoreExp" parameterType="com.zhiduan.axp.dao.store.bean.StoreExpBean">
+    <insert id="insertStoreExp" parameterType="com.rofour.baseball.dao.store.bean.StoreExpBean">
 		insert into
 		tb_store_ec_rel(ser_id,store_id,express_company_id,be_default)
 		values(#{serId},#{storeId},#{expressCompanyId},#{beDefault})
 	</insert>
-    <update id="updateStoreExp" parameterType="com.zhiduan.axp.dao.store.bean.StoreExpBean">
+    <update id="updateStoreExp" parameterType="com.rofour.baseball.dao.store.bean.StoreExpBean">
         update tb_store_ec_rel t
         <set>
             <if test="storeId != null">
@@ -263,12 +263,12 @@
     <delete id="deleteStoreSchool" parameterType="long">
 		delete from tb_store_college_rel where store_id=#{id}
 	</delete>
-    <insert id="insertStoreSchool" parameterType="com.zhiduan.axp.dao.store.bean.StoreSchoolBean">
+    <insert id="insertStoreSchool" parameterType="com.rofour.baseball.dao.store.bean.StoreSchoolBean">
 		insert into
 		tb_store_college_rel(scr_id,store_id,college_id)
 		values(#{scrId},#{storeId},#{collegeId})
 	</insert>
-    <update id="updateStoreSchool" parameterType="com.zhiduan.axp.dao.store.bean.StoreSchoolBean">
+    <update id="updateStoreSchool" parameterType="com.rofour.baseball.dao.store.bean.StoreSchoolBean">
         update tb_store_college_rel t
         <set>
             <if test="storeId != null">
@@ -294,7 +294,7 @@
 		delete from
 		tb_store_exp where sto_exp_id=#{id}
 	</delete>
-    <insert id="insertStoreSite" parameterType="com.zhiduan.axp.dao.store.bean.StoreSiteBean">
+    <insert id="insertStoreSite" parameterType="com.rofour.baseball.dao.store.bean.StoreSiteBean">
 		insert into
 		tb_store_exp(sto_exp_id,phone,supervisor_name,packet_mode_mgr,packet_mode_send,close_mode)
 		values(#{stoExpId},#{phone},#{supervisorName},#{packetModeMgr},#{packetModeSend},#{closeMode})
@@ -315,7 +315,7 @@
             #{item}
         </foreach>
     </update>
-    <update id="updateStoreSite" parameterType="com.zhiduan.axp.dao.store.bean.StoreSiteBean">
+    <update id="updateStoreSite" parameterType="com.rofour.baseball.dao.store.bean.StoreSiteBean">
         update tb_store_exp t
         <set>
             <if test="phone != null">
@@ -355,12 +355,12 @@
     <delete id="deleteSiteAxpByAxpId" parameterType="long">
         delete from tb_store_exp_axp_rel where sto_axp_id=#{id}
     </delete>
-    <insert id="insertSiteAxp" parameterType="com.zhiduan.axp.dao.store.bean.SiteAxpBean">
+    <insert id="insertSiteAxp" parameterType="com.rofour.baseball.dao.store.bean.SiteAxpBean">
 		insert into
 		tb_store_exp_axp_rel(ear_id,sto_exp_id,sto_axp_id,be_deleted)
 		values(#{earId},#{stoExpId},#{stoAxpId},#{beDeleted})
 	</insert>
-    <update id="updateSiteAxp" parameterType="com.zhiduan.axp.dao.store.bean.SiteAxpBean">
+    <update id="updateSiteAxp" parameterType="com.rofour.baseball.dao.store.bean.SiteAxpBean">
         update tb_store_exp_axp_rel t
         <set>
             <if test="stoExpId != null">
@@ -427,6 +427,21 @@
 		update tb_store t
 		set t.be_deleted = 1 where t.store_id=#{storeId} and t.be_deleted = 0
 	</update>
+    <select id="getExistCoo"  parameterType="java.util.List" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM tb_store_exp WHERE  coo_id IS NOT NULL AND sto_exp_id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getStoreUser"  parameterType="java.util.List" resultType="java.lang.Integer">
+
+        SELECT COUNT(1) FROM tb_user_store_exp a INNER JOIN  tb_user b  ON a.user_id=b.user_id
+        WHERE  b.be_deleted=0 AND a.store_id IN
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
     <!-- 逻辑批量删除商户信息 -->
     <update id="logicalDeleteStoreByIds" parameterType="java.util.List">
@@ -436,19 +451,19 @@
             #{item}
         </foreach>
     </update>
-    <resultMap type="com.zhiduan.axp.dao.store.bean.SearchSiteBean"
+    <resultMap type="com.rofour.baseball.dao.store.bean.SearchSiteBean"
                id="phoneSiteResultMap">
         <id property="siteId" column="siteId"/>
         <result property="siteName" column="siteName"/>
     </resultMap>
 
-    <resultMap type="com.zhiduan.axp.dao.store.bean.SearchCollegeBean" id="collegeResultMap">
+    <resultMap type="com.rofour.baseball.dao.store.bean.SearchCollegeBean" id="collegeResultMap">
         <id property="collegeId" column="college_id"/>
         <result property="collegeCode" column="college_code"/>
         <result property="collegeName" column="college_name"/>
     </resultMap>
 
-    <resultMap type="com.zhiduan.axp.dao.store.bean.SearchStoreBean" id="phoneStoreResultMap">
+    <resultMap type="com.rofour.baseball.dao.store.bean.SearchStoreBean" id="phoneStoreResultMap">
         <id property="storeId" column="store_id"/>
         <result property="storeCode" column="store_code"/>
         <result property="phone" column="phone"/>
@@ -458,7 +473,7 @@
         <result property="location" column="location"/>
     </resultMap>
 
-    <resultMap id="customSiteResultMap" type="com.zhiduan.axp.controller.model.store.CustomStoreInfo">
+    <resultMap id="customSiteResultMap" type="com.rofour.baseball.controller.model.store.CustomStoreInfo">
         <result property="storeCode" column="store_code"/>
         <result property="storeName" column="store_name"/>
         <result property="beDeleted" column="be_deleted"/>
@@ -578,10 +593,10 @@
         WHERE t2.be_deleted = 0
         and t2.be_virtual!=1
         <if test="storeName!=null and storeName!=''">
-            and trim(t2.store_name)=#{storeName}
+            and trim(t2.store_name) LIKE CONCAT('%',#{storeName},'%')
         </if>
         <if test="phone!=null and phone!=''">
-            and trim(t1.phone)=#{phone}
+            and trim(t1.phone) LIKE CONCAT('%',#{phone},'%')
         </if>
         <if test="expressCompanyId!=null and expressCompanyId!=''">
             and t4.express_company_id=#{expressCompanyId}
@@ -617,12 +632,12 @@
         </foreach>
     </insert>
     <!-- 插入tb_store_axp 信息 -->
-    <insert id="insertAxpDetail" parameterType="com.zhiduan.axp.dao.store.bean.AxpDetailBean">
+    <insert id="insertAxpDetail" parameterType="com.rofour.baseball.dao.store.bean.AxpDetailBean">
         insert into
         tb_store_axp(sto_axp_id,phone,supervisor_name,licence) values
             (#{stoAxpId},#{phone},#{supervisorName},#{licence})
     </insert>
-    <update id="updateAxpDetail" parameterType="com.zhiduan.axp.dao.store.bean.AxpDetailBean">
+    <update id="updateAxpDetail" parameterType="com.rofour.baseball.dao.store.bean.AxpDetailBean">
         update tb_store_axp t
         <set>
             <if test="phone != null">
@@ -670,7 +685,7 @@
         AND   d.be_default=1
     </select>
     <!--插入短信账户 -->
-    <insert id="addSmsAccount" parameterType="com.zhiduan.axp.dao.bean.SmsAccountBean">
+    <insert id="addSmsAccount" parameterType="com.rofour.baseball.dao.bean.SmsAccountBean">
         insert into TB_SMS_ACCOUNT
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="storeId != null">

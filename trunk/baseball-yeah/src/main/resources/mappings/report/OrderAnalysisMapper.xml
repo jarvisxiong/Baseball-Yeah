@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rofour.baseball.dao.report.mapper.OrderAnalysisMapper">
+	<!-- 订单统计分析  create by wzq -->
+	<select id="getOrder" parameterType="String" resultType="java.util.Map">
+		SELECT
+			IFNULL(a.total_order_num,0) AS orderNum,
+			IFNULL(a.active_puser_num,0) AS winnerNum,
+			IFNULL(a.shipping_ability,0) AS shippingAbilityNum,
+			a.take_order_mins AS takeOrderMins,
+			a.take_order_mins_avg AS takeOrderMinsAvg,
+			a.order_type_take AS orderTypeTake,
+			a.order_type_send AS orderTypeSend,
+			a.order_num_yoy AS orderNumYoy,
+			a.order_num_qoq AS orderNumQoq,
+			a.order_source_service AS orderSourceWeixin,
+			a.order_source_sms AS orderSourceSms
+		FROM
+			rpt_order_statistics_sum a
+		WHERE
+			a.day = #{day}
+	</select>
+	
+	<!-- 各时段订单统计分析  create by wzq -->
+	<select id="getOrderByHours" parameterType="String" resultType="java.util.Map">
+		SELECT
+			a.hour AS hour,
+			IFNULL(a.total_order_num,0) AS orderNum,
+			IFNULL(a.take_order_num,0) AS takeOrderNum,
+			IFNULL(a.total_pay_num,0) AS payNum,
+			IFNULL(a.alipay_order_count,0) AS alipayOrderCount,
+			IFNULL(a.wechat_order_count,0) AS wechatOrderCount,
+			IFNULL(a.cash_order_count,0) AS cashOrderCount,
+			IFNULL(a.zhiduan_order_count,0) AS zhiduanOrderCount
+		FROM
+			rpt_order_monitor a
+		WHERE
+			a.day = #{day}
+		ORDER BY
+			a.hour
+	</select>
+
+	<!-- 前10天订单金额统计分析  create by wzq -->
+	<select id="getOrderAmountByTenDay" parameterType="String" resultType="java.util.Map">
+		SELECT
+			a.day AS day,
+			IFNULL(a.total_order_num,0) AS orderNum,
+			IFNULL(a.active_puser_num,0) AS winnerNum,
+			IFNULL(a.shipping_ability,0) AS shippingAbilityNum,
+			IFNULL(a.bonus_income,0) AS payNum
+		FROM
+			rpt_order_statistics_sum a
+		WHERE
+			a.day &gt;= #{day}
+		ORDER BY
+			a.day
+	</select>
+	
+	<!-- 前10天订单类型统计分析  create by wzq -->
+	<select id="getOrderTypeByTenDay" parameterType="String" resultType="java.util.Map">
+		SELECT
+			a.day AS day,
+			IFNULL(a.order_type_take,0) AS orderTypeTake,
+			IFNULL(a.order_type_send,0) AS orderTypeSend
+		FROM
+			rpt_order_statistics_sum a
+		WHERE
+			a.day &gt;= #{day}
+		ORDER BY
+			a.day
+	</select>
+	
+	<!-- 各地区订单统计分析  create by wzq -->
+	<select id="getOrderByAreas" parameterType="String" resultType="java.util.Map">
+		SELECT
+			b.region_name AS regionName,
+			IFNULL(SUM(a.total_order_num),0) AS orderNum,
+			IFNULL(SUM(a.order_num_avg),0) AS orderNumAvg
+		FROM
+			rpt_order_statistics a
+		JOIN
+			rpt_region b
+		ON left(a.region_id,4) = b.region_id
+		WHERE
+			a.day = #{day}
+		GROUP BY
+			left(a.region_id,4)
+		ORDER BY
+			SUM(a.order_num_avg) DESC
+		LIMIT 10
+	</select>
+	
+	<!-- 前10天订单小派统计分析  create by wzq -->
+	<select id="getOrderWinnerByTenDay" parameterType="String" resultType="java.util.Map">
+		SELECT
+			a.day AS day,
+			IFNULL(a.total_order_num,0) AS orderNum,
+			IFNULL(a.active_puser_num,0) AS winnerNum,
+			IFNULL(a.shipping_ability,0) AS shippingAbilityNum,
+			a.take_order_mins AS takeOrderMins
+		FROM
+			rpt_order_statistics_sum a
+		WHERE
+			a.day &gt;= #{day}
+		ORDER BY
+			a.day
+	</select>
+</mapper>

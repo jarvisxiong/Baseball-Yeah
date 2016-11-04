@@ -1,12 +1,17 @@
 define(
-		[ 'base' ],
-		function(base) {
+		[ 'base','packetStuManagerModules' ],
+		function(base,packet) {
 			/**
 			 * 私有成员定义区域
 			 */
+			
+			var packetinit=function (){
+				
+				packet.init();
+			}
 
 			return {
-				init : function(args) {
+				init : function(panel) {
 					// / <summary>
 					// / 模块初始化方法
 					// / </summary>
@@ -14,7 +19,7 @@ define(
 					var self = this;
 					var date = new Date();
 					// 开始时间
-					$('#createStartDatePicker').datetimepicker({
+					$('#createStartDatePicker',panel).datetimepicker({
 						format : 'yyyy-mm-dd hh:ii:ss',
 						autoclose : true,
 						startView : 2,
@@ -24,10 +29,10 @@ define(
 								date.getDate(), 23, 59, 59)
 					}).on('changeDate',function(e) {
 						var startTime = e.date;
-						$('#createEndDatePicker').datetimepicker('setStartDate',startTime);
+						$('#createEndDatePicker',panel).datetimepicker('setStartDate',startTime);
 					});
 
-					$('#createEndDatePicker').datetimepicker({
+					$('#createEndDatePicker',panel).datetimepicker({
 						format : 'yyyy-mm-dd hh:ii:ss',
 						autoclose : true,
 						startView : 2,
@@ -37,11 +42,11 @@ define(
 								date.getDate(), 23, 59, 59)
 					}).on('changeDate',function(e) {
 						var startTime = e.date;
-						$('#createStartDatePicker').datetimepicker('setEndDate',startTime);
+						$('#createStartDatePicker',panel).datetimepicker('setEndDate',startTime);
 					});
 					
 					// 结束时间
-					$('#deliveryStartDatePicker').datetimepicker({
+					$('#deliveryStartDatePicker',panel).datetimepicker({
 						format : 'yyyy-mm-dd hh:ii:ss',
 						autoclose : true,
 						startView : 2,
@@ -51,11 +56,11 @@ define(
 								date.getDate(), 23, 59, 59)
 					}).on('changeDate',function(e) {
 						var startTime = e.date;
-						$('#deliveryEndDatePicker').datetimepicker('setStartDate',startTime);
+						$('#deliveryEndDatePicker',panel).datetimepicker('setStartDate',startTime);
 					});
 					
 					// 结束时间
-					$('#deliveryEndDatePicker').datetimepicker({
+					$('#deliveryEndDatePicker',panel).datetimepicker({
 						format : 'yyyy-mm-dd hh:ii:ss',
 						autoclose : true,
 						startView : 2,
@@ -65,11 +70,11 @@ define(
 								date.getDate(), 23, 59, 59)
 					}).on('changeDate',function(e) {
 						var startTime = e.date;
-						$('#deliveryStartDatePicker').datetimepicker('setEndDate',startTime);
+						$('#deliveryStartDatePicker',panel).datetimepicker('setEndDate',startTime);
 					});
 
 					// 结束时间
-					$('#deliverySStartDatePicker').datetimepicker({
+					$('#deliverySStartDatePicker',panel).datetimepicker({
 						format : 'yyyy-mm-dd hh:ii:ss',
 						autoclose : true,
 						startView : 2,
@@ -79,11 +84,11 @@ define(
 								date.getDate(), 23, 59, 59)
 					}).on('changeDate',function(e) {
 						var startTime = e.date;
-						$('#deliverySEndDatePicker').datetimepicker('setStartDate',startTime);
+						$('#deliverySEndDatePicker',panel).datetimepicker('setStartDate',startTime);
 					});
 					
 					// 结束时间
-					$('#deliverySEndDatePicker').datetimepicker({
+					$('#deliverySEndDatePicker',panel).datetimepicker({
 						format : 'yyyy-mm-dd hh:ii:ss',
 						autoclose : true,
 						startView : 2,
@@ -93,7 +98,7 @@ define(
 								date.getDate(), 23, 59, 59)
 					}).on('changeDate',function(e) {
 						var startTime = e.date;
-						$('#deliverySStartDatePicker').datetimepicker('setEndDate',startTime);
+						$('#deliverySStartDatePicker',panel).datetimepicker('setEndDate',startTime);
 					});
 
 					base.datagrid(
@@ -101,35 +106,46 @@ define(
 										url : '/order/user/getAll',
 										queryParams : function(params) {
 											return $.extend(params, {
-												createStartDate : $('#createStartDate')
+												createStartDate : $('#createStartDate',panel)
 														.val(),
-												createEndDate : $('#createEndDate')
+												createEndDate : $('#createEndDate',panel)
 														.val(),
 												deliveryStartDate : $(
-														'#deliveryStartDate')
+														'#deliveryStartDate',panel)
 														.val(),
 												deliveryEndDate : $(
-														'#deliveryEndDate')
+														'#deliveryEndDate',panel)
 														.val(),
 												deliverySStartDate : $(
-														'#deliverySStartDate')
+														'#deliverySStartDate',panel)
 														.val(),
 												deliverySEndDate : $(
-														'#deliverySEndDate')
+														'#deliverySEndDate',panel)
 														.val(),
-												orderId : $.trim($("#orderId")
+												orderId : $.trim($("#orderId",panel)
 														.val()),
-												state : $.trim($("#state")
+												state : $.trim($("#state",panel)
 														.val()),
-												payType : $.trim($("#payType")
+												payType : $.trim($("#payType",panel)
 														.val()),
-												payId : $.trim($("#payId")
+												payId : $.trim($("#payId",panel)
 														.val()),
-												phone : $.trim($("#phone")
+												phone : $.trim($("#phone",panel)
 														.val()),
-												collegeId : $.trim($("#collegeId")
+												collegeId : $.trim($("#collegeId",panel)
 														.val()),
-												mobile : $("#mobile").val()
+												mobile : $("#mobile",panel).val()
+											});
+										},
+										onLoadSuccess : function(data){
+											$('.orderIdDetail',panel).click(function(){
+												self.showDetail($.trim($(this).text()),panel);
+											});
+											$('.phoneUserManager',panel).click(function(){
+												var phone = $.trim($(this).text());
+												var title = $(this).attr('title');
+												var href = '/order/gotoPacketStuManager?phone='+phone;
+												base.openTab(title,href,packetinit);
 											});
 										},
 										columns : [
@@ -142,7 +158,7 @@ define(
 													sortable : true,
 													formatter : function(value,
 															row, index) {
-														return "<a href='#' onclick='showDetail(\"" + value + "\");'>" + value + "</a>";
+														return "<a href='#' class='orderIdDetail'>" + value + "</a>";
 													},
 													width : 400
 												},
@@ -167,9 +183,31 @@ define(
 															return "<a class='label label-danger'>异常</a>";
 														}
 													},
+
 													sortable : true,
 													width : 400
 												},
+											{
+												field: 'lockState',
+												title: '是否锁定',
+												formatter: function (value, row, index) {
+													switch (value) {
+														case 0:
+															return "否";
+														case 1:
+															return "收件人分单锁定";
+														case 2:
+															return "货源分单锁定";
+														case 3:
+															return "众包分单锁定";
+														case 4:
+															return "系统分单锁定";
+														case 5:
+															return "预支付未付款锁定";
+													}
+												},
+												width: 80
+											},
 												{
 													field : 'payType',
 													title : '支付方式',
@@ -218,7 +256,7 @@ define(
 													field : 'phone',
 													title : '众包人手机号码',
 													formatter : function(value,row, index) {
-														return "<a title='管理此用户' href='/order/gotoPacketStuManager?phone="+value+"'>"+value+"</a>";
+														return "<a title='众包用户管理' href='#' class='phoneUserManager'>"+value+"</a>";
 													},
 													align:'center',
 													sortable : true,
@@ -296,17 +334,22 @@ define(
 										 * sortable : true, width:100 }
 										 */
 										]
-									}, '#userTable');
-
+									}, '#userTable',panel);
+					
 					$.ajax({
 						type : "POST",
 						url : "/order/user/selectAllPayType",
 						dataType : "json",
 						success : function(data) {
-							$("#payType").select2({
+							$.each(data,function(index,obj){
+								if(obj.id == 4){
+									data.splice(index,1);
+								}
+							});
+							$("#payType",panel).select2({
 								data : data
 							});
-							 $('#collegeId').select2("val", "");
+							 $('#collegeId',panel).select2("val", "");
 						}
 					});
 					
@@ -315,57 +358,68 @@ define(
 						url : "/manage/college/getCollageForSel",
 						dataType : "json",
 						success : function(data) {
-							$("#collegeId").select2({
+							$("#collegeId",panel).select2({
 								data : data.data
 							});
 						}
 					});
 					
-					$("#btn_add").click(function() {
-						self.add();
+					$("#btn_add",panel).click(function() {
+						self.add(panel);
 					});
-					$("#btn_edit").click(function() {
-						self.edit();
+					$("#btn_edit",panel).click(function() {
+						self.edit(panel);
 					});
-					$("#btn_delete").click(function() {
-						self.remove();
+					$("#btn_delete",panel).click(function() {
+						self.remove(panel);
 					});
-					$("#btn_initPwd").click(function() {
-						self.initPwd();
+					$("#btn_initPwd",panel).click(function() {
+						self.initPwd(panel);
 					});
-					$("#btn_query").click(function() {
-						$("#userTable").bootstrapTable('refresh');
+					$("#btn_query",panel).click(function() {
+						//$("#userTable",panel).bootstrapTable('refresh',{"query": {"offset": 0}});
+						var orderId = $.trim($("#orderId",panel).val());
+						var payId = $.trim($("#payId",panel).val());
+						if(orderId && isNaN(orderId)){
+							sweetAlert("", "输入的订单号格式不正确", "info");
+							return false;
+						}
+						if(payId && isNaN(payId)){
+							sweetAlert("", "输入的支付流水号格式不正确", "info");
+							return false;
+						}
+						$("#userTable", panel).bootstrapTable('selectPage', 1);
 					});
 
-					$("#clearSearch").click(function () {
-		                base.reset(".main-box-body");
-		                $('#payType').select2("val", "");
-		                $('#collegeId').select2("val", "");
+					$("#clearSearch",panel).click(function () {
+		                base.reset($(".main-box-body",panel));
+		                $('#payType',panel).select2("val", "");
+		                $('#collegeId',panel).select2("val", "");
 		            });
 					
-					$('#addRole').select2({
+					$('#addRole',panel).select2({
 						placeholder : '请选择角色'
 					});
 
-					$('#addModal').on(
+					$('#addModal',panel).on(
 							'shown.bs.modal',
 							function() {
-								$('#addForm').data('bootstrapValidator')
+								$('#addForm',panel).data('bootstrapValidator')
 										.resetForm(true);
-							})
+							});
 				},
-				add : function() {
+				add : function(panel) {
 					var self = this;
-					$('#addLoginName').val('');
-					$('#addUserName').val('');
-					$('#addUserCode').val('');
-					$('#addPassword').val('');
-					$('#addRePassword').val('');
-					$('#addDutyId').val('');
-					$('.addGender').val('');
-					$('#addPhone').val('');
-					$('#addAddress').val('');
-					$('#addModal').modal({
+					$('#addLoginName',panel).val('');
+					$('#addUserName',panel).val('');
+					$('#addUserCode',panel).val('');
+					$('#addPassword',panel).val('');
+					$('#addRePassword',panel).val('');
+					$('#addDutyId',panel).val('');
+					$('.addGender',panel).val('');
+					$('#addPhone',panel).val('');
+					$('#addAddress',panel).val('');
+					$('#addModal',panel).modal({
 						keyboard : false,
 						backdrop : 'static'
 					});
@@ -441,10 +495,10 @@ define(
 																value,
 																validator) {
 															var password = $(
-																	'#addPassword')
+																	'#addPassword',panel)
 																	.val();
 															var rePassword = $(
-																	'#addRePassword')
+																	'#addRePassword',panel)
 																	.val();
 															return password == rePassword;
 														}
@@ -452,34 +506,34 @@ define(
 												}
 											}
 										}
-									}, "#addForm", self.create)
+									}, "#addForm", self.create, panel)
 				},
-				create : function() {
+				create : function(panel) {
 					$
 							.post(
 									"/user/managers/add",
 									{
-										"loginName" : $("#addLoginName").val(),
-										"userName" : $("#addUserName").val(),
-										"contactTel" : $("#addPhone").val(),
-										"password" : $("#addPassword").val(),
-										"address" : $("#addAddress").val(),
-										"gender" : $("#addMan").prop('checked') ? "p_gender_male"
+										"loginName" : $("#addLoginName",panel).val(),
+										"userName" : $("#addUserName",panel).val(),
+										"contactTel" : $("#addPhone",panel).val(),
+										"password" : $("#addPassword",panel).val(),
+										"address" : $("#addAddress",panel).val(),
+										"gender" : $("#addMan",panel).prop('checked') ? "p_gender_male"
 												: "p_gender_female",
-										"roleIds" : $("#addRole").val() == null ? ""
-												: $("#addRole").val().join(","),
-										"userCode" : $("#addUserCode").val(),
-										"dutyId" : $("#addDutyId").val() == "请选择" ? ""
-												: $("#addDutyId").val(),
-										"deptId" : $("#addDeptId").val() == "请选择" ? ""
-												: $("#addDeptId").val()
+										"roleIds" : $("#addRole",panel).val() == null ? ""
+												: $("#addRole",panel).val().join(","),
+										"userCode" : $("#addUserCode",panel).val(),
+										"dutyId" : $("#addDutyId",panel).val() == "请选择" ? ""
+												: $("#addDutyId",panel).val(),
+										"deptId" : $("#addDeptId",panel).val() == "请选择" ? ""
+												: $("#addDeptId",panel).val()
 									}, function(data, status) {
 										if (status == "success") {
 											if (data.success == 0) {
 												base.success("增加成功");
-												$("#userTable").bootstrapTable(
+												$("#userTable",panel).bootstrapTable(
 														'refresh');
-												$('#addModal').modal('hide');
+												$('#addModal',panel).modal('hide');
 											} else {
 												base.error(data.message);
 											}
@@ -488,9 +542,9 @@ define(
 										}
 									});
 				},
-				edit : function() {
+				edit : function(panel) {
 					var self = this;
-					var arrselections = $("#userTable").bootstrapTable(
+					var arrselections = $("#userTable",panel).bootstrapTable(
 							'getSelections');
 					if (arrselections.length > 1) {
 						sweetAlert("Oops...", "只能选择一行进行编辑!", "error");
@@ -500,26 +554,26 @@ define(
 						sweetAlert("Oops...", "请选择有效数据!", "error");
 						return;
 					}
-					$('#editUserManagerId').val(arrselections[0].userManagerId);
-					$("#editLoginName").val(arrselections[0].loginName);
-					$("#editUserName").val(arrselections[0].userName);
-					$("#editAddress").val(arrselections[0].address);
-					$("#editUserCode").val(arrselections[0].userCode);
-					$("#editDeptId").val(arrselections[0].deptId).trigger(
+					$('#editUserManagerId',panel).val(arrselections[0].userManagerId);
+					$("#editLoginName",panel).val(arrselections[0].loginName);
+					$("#editUserName",panel).val(arrselections[0].userName);
+					$("#editAddress",panel).val(arrselections[0].address);
+					$("#editUserCode",panel).val(arrselections[0].userCode);
+					$("#editDeptId",panel).val(arrselections[0].deptId).trigger(
 							"change");
-					$("#editDutyId").val(arrselections[0].dutyId).trigger(
+					$("#editDutyId",panel).val(arrselections[0].dutyId).trigger(
 							"change");
-					$("#editPhone").val(arrselections[0].contactTel);
-					$("#editBeEnabled").val(arrselections[0].beEnabled);
-					$("#editRole").val(arrselections[0].roleIds).trigger(
+					$("#editPhone",panel).val(arrselections[0].contactTel);
+					$("#editBeEnabled",panel).val(arrselections[0].beEnabled);
+					$("#editRole",panel).val(arrselections[0].roleIds).trigger(
 							"change");
 
 					if (arrselections[0].gender == "男") {
-						$("#editMan").prop("checked", "checked");
+						$("#editMan",panel).prop("checked", "checked");
 					} else {
-						$("#editWoman").prop("checked", "checked");
+						$("#editWoman",panel).prop("checked", "checked");
 					}
-					$('#editModal').modal({
+					$('#editModal',panel).modal({
 						keyboard : false,
 						backdrop : 'static'
 					});
@@ -555,28 +609,28 @@ define(
 								}
 							}
 						}
-					}, "#editForm", self.update)
+					}, "#editForm", self.update, panel)
 				},
-				update : function() {
+				update : function(panel) {
 					$
 							.post(
 									"/user/managers/updateManager",
 									{
 										"userManagerId" : $(
-												"#editUserManagerId").val(),
-										"userName" : $("#editUserName").val(),
-										"userCode" : $("#editUserCode").val(),
-										"address" : $("#editAddress").val(),
-										"beEnabled" : $("#editBeEnabled").val(),
-										"roleIds" : $("#editRole").val() == null ? ""
-												: $("#editRole").val()
+												"#editUserManagerId",panel).val(),
+										"userName" : $("#editUserName",panel).val(),
+										"userCode" : $("#editUserCode",panel).val(),
+										"address" : $("#editAddress",panel).val(),
+										"beEnabled" : $("#editBeEnabled",panel).val(),
+										"roleIds" : $("#editRole",panel).val() == null ? ""
+												: $("#editRole",panel).val()
 														.join(","),
-										"contactTel" : $("#editPhone").val(),
-										"dutyId" : $("#editDutyId").val() == "请选择" ? ""
-												: $("#editDutyId").val(),
-										"deptId" : $("#editDeptId").val() == "请选择" ? ""
-												: $("#editDeptId").val(),
-										"gender" : $("#editMan")
+										"contactTel" : $("#editPhone",panel).val(),
+										"dutyId" : $("#editDutyId",panel).val() == "请选择" ? ""
+												: $("#editDutyId",panel).val(),
+										"deptId" : $("#editDeptId",panel).val() == "请选择" ? ""
+												: $("#editDeptId",panel).val(),
+										"gender" : $("#editMan",panel)
 												.prop('checked') ? "p_gender_male"
 												: "p_gender_female"
 									},
@@ -584,18 +638,18 @@ define(
 										if (status == "success") {
 											if (data.success == 0) {
 												base.success("编辑成功");
-												$("#userTable").bootstrapTable(
+												$("#userTable",panel).bootstrapTable(
 														'refresh');
-												$('#editModal').modal('hide');
-												$('#editForm').data(
+												$('#editModal',panel).modal('hide');
+												$('#editForm',panel).data(
 														'bootstrapValidator')
 														.resetForm(true);
-												$('#addForm').data(
+												$('#addForm',panel).data(
 														'bootstrapValidator')
 														.resetForm(true);
 											} else {
 												base.error(data.message);
-												$('#editForm').find(
+												$('#editForm',panel).find(
 														".btn-primary")
 														.removeAttr("disabled");
 											}
@@ -604,8 +658,8 @@ define(
 										}
 									});
 				},
-				remove : function() {
-					var arrselections = $("#userTable").bootstrapTable(
+				remove : function(panel) {
+					var arrselections = $("#userTable",panel).bootstrapTable(
 							'getSelections');
 					if (arrselections.length > 1) {
 						base.error("只能选择一行进行编辑!");
@@ -638,7 +692,7 @@ define(
 																	base
 																			.success("删除成功");
 																	$(
-																			"#userTable")
+																			"#userTable",panel)
 																			.bootstrapTable(
 																					'refresh');
 																} else {
@@ -652,8 +706,8 @@ define(
 														});
 									});
 				},
-				initPwd : function() {
-					var arrselections = $("#userTable").bootstrapTable(
+				initPwd : function(panel) {
+					var arrselections = $("#userTable",panel).bootstrapTable(
 							'getSelections');
 					if (arrselections.length > 1) {
 						base.error("只能选择一行进行编辑!");
@@ -675,7 +729,7 @@ define(
 								var obj = JSON.parse(data);
 								if (obj.success == 0) {
 									base.success("初始化密码为：111111，成功");
-									$("#userTable").bootstrapTable('refresh');
+									$("#userTable",panel).bootstrapTable('refresh');
 								} else {
 									base.error(obj.message);
 								}
@@ -684,77 +738,77 @@ define(
 							}
 						});
 					});
+				},
+				showDetail : function(orderId, panel){
+					$('#detailMoblile',panel).val("");
+					$('#detailOrderId',panel).val("");
+					$('#detailRealName',panel).val("");
+					$('#detailWaybillNo',panel).val("");
+					$('#detailSex',panel).val("");
+					$('#detailState',panel).val("");
+					$('#detailCityName',panel).val("");
+					$('#detailAddress',panel).val("");
+					$('#detailCollegeName',panel).val("");
+					$('#detailStoreName',panel).val("");
+					$('#detailLocation',panel).val("");
+					$('#detailTotalMoney',panel).val("");
+					$('#detailRebateMoney',panel).val("");
+					$('#detailFinalMoney',panel).val("");
+					$('#detailPayMoney',panel).val("");
+					
+					$.post("/order/user/orderView", {
+						"orderId" : orderId,
+						"type" : "send"
+					}, function(data, status) {
+						if (status == "success") {
+							$('#detailMoblile',panel).val(data.mobile);
+							$('#detailOrderId',panel).val(orderId);
+							$('#detailRealName',panel).val(data.consignee);
+							$('#detailWaybillNo',panel).val(data.waybillNo);
+							if(data.sex=="p_gender_male"){
+								$('#detailSex',panel).val("男");
+							}else if(data.sex=="p_gender_female"){
+								$('#detailSex',panel).val("女");
+							}else if(data.sex=="p_gender_secret"){
+								$('#detailSex',panel).val("保密");
+							}
+							$('#detailState',panel).val(data.stateStr);
+							$('#detailCityName',panel).val(data.cityName);
+							$('#detailAddress',panel).val(data.address);
+							$('#detailCollegeName',panel).val(data.fullName);
+							$('#detailStoreName',panel).val(data.storeName);
+							$('#detailLocation',panel).val(data.location);
+							$('#detailTotalMoney',panel).val(data.totalMoney);
+							$('#detailRebateMoney',panel).val(data.rebateMoney);
+							$('#detailFinalMoney',panel).val(data.finalMoney);
+							$('#detailPayMoney',panel).val(data.payMoney);
+						} else {
+							base.error("初始化失败!");
+						}
+					});
+
+					$('#detailTable',panel).bootstrapTable({
+						 // 请求后台的URL（*）
+				        url : '/order/user/orderDetail',
+				        striped: true, // 是否显示行间隔色
+				        singleSelect: true,
+				        queryParams : function(pa) {
+							return {"orderId" : orderId};
+						},
+				        height: 320,
+						columns : [ {
+							field : 'createDateStr',
+							title : '操作时间',
+							width : 100
+						}, {
+							field : 'content',
+							title : '内容',
+							width : 100
+						}
+						]
+					}).bootstrapTable('refresh',{query: {"orderId" : orderId}});
+
+					$('#detailModal',panel).modal();
 				}
 			};
 		});
-
-function showDetail(orderId) {
-	$('#detailMoblile').val("");
-	$('#detailOrderId').val("");
-	$('#detailRealName').val("");
-	$('#detailWaybillNo').val("");
-	$('#detailSex').val("");
-	$('#detailState').val("");
-	$('#detailCityName').val("");
-	$('#detailAddress').val("");
-	$('#detailCollegeName').val("");
-	$('#detailStoreName').val("");
-	$('#detailLocation').val("");
-	$('#detailTotalMoney').val("");
-	$('#detailRebateMoney').val("");
-	$('#detailFinalMoney').val("");
-	$('#detailPayMoney').val("");
-	
-	$.post("/order/user/orderView", {
-		"orderId" : orderId
-	}, function(data, status) {
-		if (status == "success") {
-			$('#detailMoblile').val(data.mobile);
-			$('#detailOrderId').val(orderId);
-			$('#detailRealName').val(data.consignee);
-			$('#detailWaybillNo').val(data.waybillNo);
-			if(data.sex=="p_gender_male"){
-				$('#detailSex').val("男");
-			}else if(data.sex=="p_gender_female"){
-				$('#detailSex').val("女");
-			}else if(data.sex=="p_gender_secret"){
-				$('#detailSex').val("保密");
-			}
-			$('#detailState').val(data.stateStr);
-			$('#detailCityName').val(data.cityName);
-			$('#detailAddress').val(data.address);
-			$('#detailCollegeName').val(data.fullName);
-			$('#detailStoreName').val(data.storeName);
-			$('#detailLocation').val(data.location);
-			$('#detailTotalMoney').val(data.totalMoney);
-			$('#detailRebateMoney').val(data.rebateMoney);
-			$('#detailFinalMoney').val(data.finalMoney);
-			$('#detailPayMoney').val(data.payMoney);
-		} else {
-			base.error("初始化失败!");
-		}
-	});
-
-	$('#detailTable').bootstrapTable({
-		 // 请求后台的URL（*）
-        url : '/order/user/orderDetail',
-        striped: true, // 是否显示行间隔色
-        singleSelect: true,
-        queryParams : function(pa) {
-			return {"orderId" : orderId};
-		},
-        height: 320,
-		columns : [ {
-			field : 'createDateStr',
-			title : '操作时间',
-			width : 100
-		}, {
-			field : 'content',
-			title : '内容',
-			width : 100
-		}
-		]
-	}).bootstrapTable('refresh',{query: {"orderId" : orderId}});
-
-	$('#detailModal').modal();
-}

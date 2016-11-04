@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.user.mapper.UserManagerLoginMapper">
+<mapper namespace="com.rofour.baseball.dao.user.mapper.UserManagerLoginMapper">
     <!-- 根据主键查询 -->
     <select id="getInfoByLoginName" parameterType="java.lang.String"
-            resultType="com.zhiduan.axp.dao.user.bean.UserManagerLoginBean">
+            resultType="com.rofour.baseball.dao.user.bean.UserManagerLoginBean">
 		select t1.user_manager_id,
 		t1.login_name, t1.password,
 		t1.user_name,
@@ -28,7 +28,7 @@
 	</select>
 
     <select id="loginSelect" parameterType="java.lang.String"
-            resultType="com.zhiduan.axp.dao.user.bean.UserManagerLoginBean">
+            resultType="com.rofour.baseball.dao.user.bean.UserManagerLoginBean">
 		select t1.user_manager_id  'userManagerId',t1.password,t1.be_deleted 'beDeleted',
 		t2.dept_name deptName, t1.user_name showName from
 		tb_user_manager t1 LEFT  join  tb_dept t2 on t1.dept_id=t2.dept_id

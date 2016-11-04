@@ -121,7 +121,7 @@ define(
 	                }
 	            };
 			return {
-				init : function(args) {
+				init : function(panel) {
 					var self = this;
 
 					base.datagrid({
@@ -131,9 +131,9 @@ define(
 		                    return $.extend(params,
 		                        {
 		                    	messageTypeId: $(
-		                                "#search_messageTypeId").val(),
+		                                "#search_messageTypeId",panel).val(),
                                 sendTypeId: $(
-		                                "#search_sendTypeId").val()
+		                                "#search_sendTypeId",panel).val()
 		                        });
 		                },
 						columns : [ {
@@ -143,11 +143,15 @@ define(
 							title : '消息类型',
 							formatter: function (value,
                                     row, index) {
-								var result;
+								var result = value;
 								if(value == "p_noticetype_check"){
 									result = "校验通知";
 								}else if(value == "p_noticetype_come"){
 									result = "到件通知";
+								}else if(value == "p_noticetype_order"){
+									result = "订单通知";
+								}else if(value == "p_notice_monitor"){
+									result = "监控通知";
 								}
 			                   return result;
 							},
@@ -209,7 +213,7 @@ define(
 							sortable : true,
                             width:400  
 						}]
-					}, '#msgConfigTable');
+					}, '#msgConfigTable',panel);
 					//请求通知类型
 					 $.ajax({
 			                type: "GET",
@@ -217,13 +221,13 @@ define(
 			                dataType: "json",
 			                success: function (data) {
 
-			                    $("#search_messageTypeId").select2({
+			                    $("#search_messageTypeId",panel).select2({
 			                        data: data
 			                    });
-			                    $("#add_messageTypeId").select2({
+			                    $("#add_messageTypeId",panel).select2({
 			                        data: data
 			                    });
-			                    $("#edit_messageTypeId").select2({
+			                    $("#edit_messageTypeId",panel).select2({
 			                        data: data
 			                    });
 			                }
@@ -235,61 +239,70 @@ define(
 			                dataType: "json",
 			                success: function (data) {
 
-			                    $("#search_sendTypeId").select2({
+			                    $("#search_sendTypeId",panel).select2({
 			                        data: data
 			                    });
-			                    $("#add_sendTypeId").select2({
+			                    $("#add_sendTypeId",panel).select2({
 			                        data: data
 			                    });
-			                    $("#edit_sendTypeId").select2({
+			                    $("#edit_sendTypeId",panel).select2({
 			                        data: data
 			                    });
 			                }
 			            });
-					$("#btn_add").click(function() {
-						self.add();
+					$("#btn_add",panel).click(function() {
+						self.add(panel);
 					});
-					$("#btn_edit").click(function() {
-						self.edit();
+					$("#btn_edit",panel).click(function() {
+						self.edit(panel);
 					});
-					$("#btn_delete").click(function() {
-						self.remove();
+					$("#btn_delete",panel).click(function() {
+						self.remove(panel);
 					});
-					$("#btn_query").click(function() {
-						$("#msgConfigTable").bootstrapTable('refresh');
+					$("#btn_query",panel).click(function() {
+						$("#msgConfigTable", panel).bootstrapTable('selectPage', 1);
 					});
-					$('#addModal').on('shown.bs.modal', function () {
-						$("#add_messageTypeId").val(" ").trigger("change");
-						$("#add_sendTypeId").val(" ").trigger("change");
-		                $('#addForm').data('bootstrapValidator').resetForm(true);
+					$('#addModal',panel).on('shown.bs.modal', function () {
+						$("#add_messageTypeId",panel).val(" ").trigger("change");
+						$("#add_sendTypeId",panel).val(" ").trigger("change");
+		                $('#addForm',panel).data('bootstrapValidator').resetForm(true);
+		            });
+					$("#clearSearch", panel).click(function () {
+		                base.reset(".main-box-header");
+		                $('#search_messageTypeId', panel).val(" ").trigger("change");
+		                $('#search_sendTypeId', panel).val(" ").trigger("change");
+		            });
+					$("#editModal", panel).on('hidden.bs.modal', function() {
+		                $("#editForm", panel).data('bootstrapValidator').destroy();
+		                $("#editForm", panel).data('bootstrapValidator', null);
 		            });
 				},
-				add : function() {
+				add : function(panel) {
 					var self = this;
-	                $('#addModal').modal({
+	                $('#addModal',panel).modal({
 	    			    keyboard: false,
 	    			    backdrop:'static'
 	    			});
-					base.validator(add_validate, "#addForm", self.create)
+					base.validator(add_validate, "#addForm", self.create,panel)
 				},
-				create : function() {
-					$.post("addconfig",
+				create : function(panel) {
+					$.post("/manage/msgconfig/addconfig",
 							{
-								"messageTypeId" : $("#add_messageTypeId").val(),
-								"sendTypeId" : $("#add_sendTypeId").val(),
-								"level" : $("#add_level").val(),
-								"beImmediateSend" : $("#add_beImmediateSend").prop('checked') ? "1" : "0",
-								"maxLength" : $("#add_maxLength").val(),
-								"sendRoleId" : $("#add_sendRoleId").val(),
-								"extendCode" : $("#add_extendCode").val(),
-								"beEnabled" : $("#add_beEnabled").prop('checked') ? "1" : "0",
+								"messageTypeId" : $("#add_messageTypeId",panel).val(),
+								"sendTypeId" : $("#add_sendTypeId",panel).val(),
+								"level" : $("#add_level",panel).val(),
+								"beImmediateSend" : $("#add_beImmediateSend",panel).prop('checked') ? "1" : "0",
+								"maxLength" : $("#add_maxLength",panel).val(),
+								"sendRoleId" : $("#add_sendRoleId",panel).val(),
+								"extendCode" : $("#add_extendCode",panel).val(),
+								"beEnabled" : $("#add_beEnabled",panel).prop('checked') ? "1" : "0",
 							}, function(data, status) {
 								if (status == "success") {
 									var obj = data;
 									if (obj.success == 0) {
 										 base.success("添加成功！");
-										$("#msgConfigTable").bootstrapTable('refresh');
-										$('#addModal').modal('hide');
+										$("#msgConfigTable",panel).bootstrapTable('refresh');
+										$('#addModal',panel).modal('hide');
 									} else {
 										base.error(obj.message);
 									}
@@ -300,10 +313,10 @@ define(
 				},
 				
 				//更新
-				edit : function() {
+				edit : function(panel) {
 					var self = this;
 	        
-					var arrselections = $("#msgConfigTable").bootstrapTable(
+					var arrselections = $("#msgConfigTable",panel).bootstrapTable(
 							'getSelections');
 					if (arrselections.length > 1) {
 						sweetAlert("Oops...", "只能选择一行进行编辑!", "error");
@@ -313,45 +326,45 @@ define(
 						sweetAlert("Oops...", "请选择有效数据!", "error");
 						return;
 					}
-			        $('#editModal').modal({
+			        $('#editModal',panel).modal({
 	    			    keyboard: false,
 	    			    backdrop:'static'
 	    			});
-					$("#edit_messageTypeId").val(arrselections[0].messageTypeId).trigger("change");
-					$("#edit_sendTypeId").val(arrselections[0].sendTypeId).trigger("change");
-					$("#edit_maxLength").val(arrselections[0].maxLength);
-					$("#edit_sendRoleId").val(arrselections[0].sendRoleId);
-					$("#edit_extendCode").val(arrselections[0].extendCode);
-					$("#edit_level").val(arrselections[0].level);
-					$("#edit_beImmediateSend").prop("checked",arrselections[0].beImmediateSend =="1" ? true : false);
-					$("#edit_beImmediateSend_no").prop("checked",arrselections[0].beImmediateSend =="0" ? true : false);
-					$("#edit_beEnabled").prop("checked",arrselections[0].beEnabled =="1" ? true : false);
-					$("#edit_beEnabled_no").prop("checked",arrselections[0].beEnabled =="0" ? true : false);
+					$("#edit_messageTypeId",panel).val(arrselections[0].messageTypeId).trigger("change");
+					$("#edit_sendTypeId",panel).val(arrselections[0].sendTypeId).trigger("change");
+					$("#edit_maxLength",panel).val(arrselections[0].maxLength);
+					$("#edit_sendRoleId",panel).val(arrselections[0].sendRoleId);
+					$("#edit_extendCode",panel).val(arrselections[0].extendCode);
+					$("#edit_level",panel).val(arrselections[0].level);
+					$("#edit_beImmediateSend",panel).prop("checked",arrselections[0].beImmediateSend =="1" ? true : false);
+					$("#edit_beImmediateSend_no",panel).prop("checked",arrselections[0].beImmediateSend =="0" ? true : false);
+					$("#edit_beEnabled",panel).prop("checked",arrselections[0].beEnabled =="1" ? true : false);
+					$("#edit_beEnabled_no",panel).prop("checked",arrselections[0].beEnabled =="0" ? true : false);
 					
-					$("#messageConfigId").val(arrselections[0].messageConfigId);
+					$("#messageConfigId",panel).val(arrselections[0].messageConfigId);
 
-					base.validator(edit_validate, '#editForm', self.update)
+					base.validator(edit_validate, '#editForm', self.update,panel)
 				},
-				update : function() {
-					$.post("updateconfig",
+				update : function(panel) {
+					$.post("/manage/msgconfig/updateconfig",
 							{
-								"messageTypeId" : $("#edit_messageTypeId").val(),
-								"sendTypeId" : $("#edit_sendTypeId").val(),
-								"maxLength" : $("#edit_maxLength").val(),
-								"sendRoleId" : $("#edit_sendRoleId").val(),
-								"extendCode" : $("#edit_extendCode").val(),
-								"level" : $("#edit_level").val(),
-								"beImmediateSend" : $("#edit_beImmediateSend").prop('checked') ? "1" : "0",
-								"beEnabled" : $("#edit_beEnabled").prop('checked') ? "1" : "0",
-								"messageConfigId" : $("#messageConfigId").val()
+								"messageTypeId" : $("#edit_messageTypeId",panel).val(),
+								"sendTypeId" : $("#edit_sendTypeId",panel).val(),
+								"maxLength" : $("#edit_maxLength",panel).val(),
+								"sendRoleId" : $("#edit_sendRoleId",panel).val(),
+								"extendCode" : $("#edit_extendCode",panel).val(),
+								"level" : $("#edit_level",panel).val(),
+								"beImmediateSend" : $("#edit_beImmediateSend",panel).prop('checked') ? "1" : "0",
+								"beEnabled" : $("#edit_beEnabled",panel).prop('checked') ? "1" : "0",
+								"messageConfigId" : $("#messageConfigId",panel).val()
 							}, function(data, status) {
 								if (status == "success") {
 									var obj = data;
 									if (obj.success == 0) {
 										 base.success("更新成功！");
-										$("#msgConfigTable").bootstrapTable('refresh');
-										$('#editModal').modal('hide');
-										$('#editForm').data('bootstrapValidator').resetForm(true);
+										$("#msgConfigTable",panel).bootstrapTable('refresh');
+										$('#editModal',panel).modal('hide');
+										$('#editForm',panel).data('bootstrapValidator').resetForm(true);
 									} else {
 										base.error(obj.message);
 									}
@@ -361,8 +374,8 @@ define(
 							});
 				},
 				//删除
-				remove : function() {
-					var arrselections = $("#msgConfigTable").bootstrapTable(
+				remove : function(panel) {
+					var arrselections = $("#msgConfigTable",panel).bootstrapTable(
 							'getSelections');
 					if (arrselections.length > 1) {
 						base.error("只能选择一行进行编辑!");
@@ -378,14 +391,14 @@ define(
 						title : "删除",
 						text : "您确定要删除此消息配置信息吗？"
 					}, function() {
-						$.post("deleteconfig", {
+						$.post("/manage/msgconfig/deleteconfig", {
 							"messageConfigId" : messageConfigId
 						}, function(data, status) {
 							if (status == "success") {
 								var obj = data;
 								if (obj.success == 0) {
 									 base.success("删除成功！");
-									$("#msgConfigTable").bootstrapTable('refresh');
+									$("#msgConfigTable",panel).bootstrapTable('refresh');
 								} else {
 									base.error(obj.message);
 								}

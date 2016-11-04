@@ -2,8 +2,8 @@ define(['base'], function (base) {
     /**
        * 私有成员定义区域
        */
-	var setting = {
-			check : {
+	function setting(panel){
+			return {check : {
 				enable : false,
 				chkStyle :"checkbox"
 			},
@@ -16,13 +16,13 @@ define(['base'], function (base) {
 			},
 			callback: {
 				onClick: function(event,treeId,treeNode){
-					$("#id").val(treeNode.id);//当前选中的id
-					$("#pId").val(treeNode.pId);//当前选中的pId
+					$("#id",panel).val(treeNode.id);//当前选中的id
+					$("#pId",panel).val(treeNode.pId);//当前选中的pId
 				},
 				onExpand: function(event,treeId,treeNode){
-					var tableHeight = $("#mainTree").height();
+					var tableHeight = $("#mainTree",panel).height();
 					if (tableHeight > 900) {
-                        $(parent.document).find("#mainFrame").height(document.body.scrollHeight);
+                        $(parent.document).find("#mainFrame",panel).height(document.body.scrollHeight);
                     }
 				}
 			},
@@ -47,11 +47,11 @@ define(['base'], function (base) {
 				autoParam: ["id", "name"],
 				type:"post"
 			}
-		};
-    function initTree(){
+		}};
+    function initTree(panel){
     	$.get("/manage/area/getall", function(data, status) {
 			$(document).ready(function() {
-				$.fn.zTree.init($("#treeDemo"), setting, data);
+				$.fn.zTree.init($("#treeDemo",panel), setting(panel), data);
 			});
     	});
     	//请求区域id和name
@@ -60,12 +60,12 @@ define(['base'], function (base) {
                 url: "/manage/area/getarea",
                 dataType: "json",
                 success: function (data) {
-                	$("#add_p_areaId").empty();
-                    $("#add_p_areaId").select2({
+                	$("#add_p_areaId",panel).empty();
+                    $("#add_p_areaId",panel).select2({
                         data: data
                     });
-                    $("#edit_p_areaId").empty();
-                    $("#edit_p_areaId").select2({
+                    $("#edit_p_areaId",panel).empty();
+                    $("#edit_p_areaId",panel).select2({
                         data: data
                     });
                 }
@@ -76,20 +76,20 @@ define(['base'], function (base) {
                 url: "/manage/province/getprovince",
                 dataType: "json",
                 success: function (data) {
-                	$("#add_c_provinceId").empty();
-                    $("#add_c_provinceId").select2({
+                	$("#add_c_provinceId",panel).empty();
+                    $("#add_c_provinceId",panel).select2({
                         data: data
                     });
-                    $("#edit_c_provinceId").empty();
-                    $("#edit_c_provinceId").select2({
+                    $("#edit_c_provinceId",panel).empty();
+                    $("#edit_c_provinceId",panel).select2({
                         data: data
                     });
-                    $("#add_co_provinceId").empty();
-                    $("#add_co_provinceId").select2({
+                    $("#add_co_provinceId",panel).empty();
+                    $("#add_co_provinceId",panel).select2({
                         data: data
                     });
-                    $("#edit_co_provinceId").empty();
-                    $("#edit_co_provinceId").select2({
+                    $("#edit_co_provinceId",panel).empty();
+                    $("#edit_co_provinceId",panel).select2({
                         data: data
                     });
                 }
@@ -100,23 +100,27 @@ define(['base'], function (base) {
                 url: "/manage/city/getcity",
                 dataType: "json",
                 success: function (data) {
-                	$("#add_co_cityId").empty();
-                    $("#add_co_cityId").select2({
+                	$("#add_co_cityId",panel).empty();
+                    $("#add_co_cityId",panel).select2({
                         data: data
                     });
-                    $("#edit_co_cityId").empty();
-                    $("#edit_co_cityId").select2({
+                    $("#edit_co_cityId",panel).empty();
+                    $("#edit_co_cityId",panel).select2({
                         data: data
                     });
                 }
         });
     }
-    var add_a_validate = {
-            fields: {
+    function add_a_validate(panel) {
+            return {fields: {
             	add_a_areaName: {
                     validators: {
                         notEmpty: {
                             message: '区域名称不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[\u4E00-\u9FA5a-zA-Z0-9]{1,20}$/,
+                            message: '不允许含有空格等其他特殊字符'
                         }
                     }
                 },
@@ -124,6 +128,10 @@ define(['base'], function (base) {
                     validators: {
                     	notEmpty: {
                             message: '商务负责人不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[\u4E00-\u9FA5a-zA-Z0-9]{1,20}$/,
+                            message: '不允许含有空格等其他特殊字符'
                         }
                     }
                 },
@@ -139,7 +147,7 @@ define(['base'], function (base) {
                         callback: {
 	                        message: '序号格式不正确,请输入0-32767内数字',
 	                        callback: function(value, validator) {
-	                        	var sortNo = $("#add_a_sortNo").val();
+	                        	var sortNo = $("#add_a_sortNo",panel).val();
 	                        	if(sortNo && sortNo>0 && sortNo < 32767){
 	                        		return true;
 	                        	} 
@@ -160,13 +168,17 @@ define(['base'], function (base) {
                     }
                 }
             }
-        };
-    var edit_a_validate = {
-            fields: {
+        }};
+    function edit_a_validate(panel){
+            return {fields: {
             	edit_a_areaName: {
                     validators: {
                         notEmpty: {
                             message: '区域名称不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[\u4E00-\u9FA5a-zA-Z0-9]{1,20}$/,
+                            message: '不允许含有空格等其他特殊字符'
                         }
                     }
                 },
@@ -174,6 +186,10 @@ define(['base'], function (base) {
                     validators: {
                     	notEmpty: {
                             message: '商务负责人不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[\u4E00-\u9FA5a-zA-Z0-9]{1,20}$/,
+                            message: '不允许含有空格等其他特殊字符'
                         }
                     }
                 },
@@ -189,7 +205,7 @@ define(['base'], function (base) {
                         callback: {
 	                        message: '序号格式不正确,请输入0-32767内数字',
 	                        callback: function(value, validator) {
-	                        	var sortNo = $("#edit_a_sortNo").val();
+	                        	var sortNo = $("#edit_a_sortNo",panel).val();
 	                        	if(sortNo && sortNo>0 && sortNo < 32767){
 	                        		return true;
 	                        	} 
@@ -210,13 +226,17 @@ define(['base'], function (base) {
                     }
                 }
             }
-        };
-	var add_p_validate = {
-            fields: {
+        }};
+	function add_p_validate(panel) {
+            return {fields: {
             	add_p_provinceName: {
                     validators: {
                         notEmpty: {
                             message: '省份名称不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[\u4E00-\u9FA5a-zA-Z0-9]{1,20}$/,
+                            message: '不允许含有空格等其他特殊字符'
                         }
                     }
                 },
@@ -239,7 +259,7 @@ define(['base'], function (base) {
 		                callback: {
 		                    message: '序号格式不正确,请输入0-32767内数字',
 		                    callback: function(value, validator) {
-		                    	var sortNo = $("#add_p_sortNo").val();
+		                    	var sortNo = $("#add_p_sortNo",panel).val();
 		                    	if(sortNo && sortNo>0 && sortNo < 32767){
 		                    		return true;
 		                    	} 
@@ -249,13 +269,17 @@ define(['base'], function (base) {
                     }
                 }
             }
-        };
-	var edit_p_validate = {
-            fields: {
+        }};
+	function edit_p_validate(panel) {
+            return {fields: {
             	edit_p_provinceName: {
                     validators: {
                         notEmpty: {
                             message: '省份名称不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[\u4E00-\u9FA5a-zA-Z0-9]{1,20}$/,
+                            message: '不允许含有空格等其他特殊字符'
                         }
                     }
                 },
@@ -278,7 +302,7 @@ define(['base'], function (base) {
 		                callback: {
 		                    message: '序号格式不正确,请输入0-32767内数字',
 		                    callback: function(value, validator) {
-		                    	var sortNo = $("#edit_p_sortNo").val();
+		                    	var sortNo = $("#edit_p_sortNo",panel).val();
 		                    	if(sortNo && sortNo>0 && sortNo < 32767){
 		                    		return true;
 		                    	} 
@@ -288,13 +312,17 @@ define(['base'], function (base) {
                     }
                 }
             }
-        };
-	var add_c_validate = {
-            fields: {
+        }};
+	function add_c_validate(panel){
+            return {fields: {
             	add_c_cityName: {
                     validators: {
                         notEmpty: {
                             message: '城市名称不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[\u4E00-\u9FA5a-zA-Z0-9]{1,20}$/,
+                            message: '不允许含有空格等其他特殊字符'
                         }
                     }
                 },
@@ -317,7 +345,7 @@ define(['base'], function (base) {
                         callback: {
 	                        message: '序号格式不正确,请输入0-32767内数字',
 	                        callback: function(value, validator) {
-	                        	var sortNo = $("#add_c_sortNo").val();
+	                        	var sortNo = $("#add_c_sortNo",panel).val();
 	                        	if(sortNo && sortNo>0 && sortNo < 32767){
 	                        		return true;
 	                        	} 
@@ -343,13 +371,17 @@ define(['base'], function (base) {
                     }
                 }
             }
-        };
-	var edit_c_validate = {
-            fields: {
+        }};
+	function edit_c_validate(panel){
+            return {fields: {
             	edit_c_cityName: {
                     validators: {
                         notEmpty: {
                             message: '城市名称不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[\u4E00-\u9FA5a-zA-Z0-9]{1,20}$/,
+                            message: '不允许含有空格等其他特殊字符'
                         }
                     }
                 },
@@ -372,7 +404,7 @@ define(['base'], function (base) {
                         callback: {
 	                        message: '序号格式不正确,请输入0-32767内数字',
 	                        callback: function(value, validator) {
-	                        	var sortNo = $("#edit_c_sortNo").val();
+	                        	var sortNo = $("#edit_c_sortNo",panel).val();
 	                        	if(sortNo && sortNo>0 && sortNo < 32767){
 	                        		return true;
 	                        	} 
@@ -398,13 +430,17 @@ define(['base'], function (base) {
                     }
                 }
             }
-        };
-	var add_co_validate = {
-            fields: {
+        }};
+	function add_co_validate(panel) {
+            return {fields: {
             	add_co_countyName: {
                     validators: {
                         notEmpty: {
                             message: '区县名称不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[\u4E00-\u9FA5a-zA-Z0-9]{1,20}$/,
+                            message: '不允许含有空格等其他特殊字符'
                         }
                     }
                 },
@@ -434,7 +470,7 @@ define(['base'], function (base) {
                         callback: {
 	                        message: '序号格式不正确,请输入0-32767内数字',
 	                        callback: function(value, validator) {
-	                        	var sortNo = $("#add_co_sortNo").val();
+	                        	var sortNo = $("#add_co_sortNo",panel).val();
 	                        	if(sortNo && sortNo>0 && sortNo < 32767){
 	                        		return true;
 	                        	} 
@@ -452,13 +488,17 @@ define(['base'], function (base) {
                     }
                 }
             }
-        };
-	var edit_co_validate = {
-            fields: {
+        }};
+	function edit_co_validate(panel) {
+            return {fields: {
             	edit_co_countyName: {
                     validators: {
                         notEmpty: {
                             message: '区县名称不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[\u4E00-\u9FA5a-zA-Z0-9]{1,20}$/,
+                            message: '不允许含有空格等其他特殊字符'
                         }
                     }
                 },
@@ -488,7 +528,7 @@ define(['base'], function (base) {
                         callback: {
 	                        message: '序号格式不正确,请输入0-32767内数字',
 	                        callback: function(value, validator) {
-	                        	var sortNo = $("#edit_co_sortNo").val();
+	                        	var sortNo = $("#edit_co_sortNo",panel).val();
 	                        	if(sortNo && sortNo>0 && sortNo < 32767){
 	                        		return true;
 	                        	} 
@@ -506,60 +546,60 @@ define(['base'], function (base) {
                     }
                 }
             }
-        };
+        }};
     return {
-        init: function (args) {
-        	initTree();
+        init: function (panel) {
+        	initTree(panel);
         	var self = this;
-        	 $("#btn_add_a").click(function () {
- 				$("#type").val("area");
-                 self.add();
+        	 $("#btn_add_a",panel).click(function () {
+ 				$("#type",panel).val("area");
+                 self.add(panel);
              });
-            $("#btn_add_p").click(function () {
-				$("#type").val("province");
-                self.add();
+            $("#btn_add_p",panel).click(function () {
+				$("#type",panel).val("province");
+                self.add(panel);
             });
-            $("#btn_add_c").click(function () {
-            	$("#type").val("city");
-                self.add();
+            $("#btn_add_c",panel).click(function () {
+            	$("#type",panel).val("city");
+                self.add(panel);
             });
-            $("#btn_add_co").click(function () {
-            	$("#type").val("country");
-                self.add();
+            $("#btn_add_co",panel).click(function () {
+            	$("#type",panel).val("country");
+                self.add(panel);
             });
-            $("#btn_edit").click(function () {
-                self.edit();
+            $("#btn_edit",panel).click(function () {
+                self.edit(panel);
             });
-            $("#btn_delete").click(function () {
-                self.remove();
+            $("#btn_delete",panel).click(function () {
+                self.remove(panel);
             });
-            $('#a_addModal').on('shown.bs.modal', function () {
-                $('#a_addForm').data('bootstrapValidator').resetForm(true);
+            $('#a_addModal',panel).on('shown.bs.modal', function () {
+                $('#a_addForm',panel).data('bootstrapValidator').resetForm(true);
             });
-            $('#a_editModal').on('hide.bs.modal', function () {
-                $('#a_editForm').data('bootstrapValidator').resetForm(true);
+            $('#a_editModal',panel).on('hide.bs.modal', function () {
+                $('#a_editForm',panel).data('bootstrapValidator').resetForm(true);
             });
-            $('#p_addModal').on('shown.bs.modal', function () {
-            	$("#add_p_areaId").val(" ").trigger("change");
-                $('#p_addForm').data('bootstrapValidator').resetForm(true);
+            $('#p_addModal',panel).on('shown.bs.modal', function () {
+            	$("#add_p_areaId",panel).val(" ").trigger("change");
+                $('#p_addForm',panel).data('bootstrapValidator').resetForm(true);
             });
-            $('#p_editModal').on('hide.bs.modal', function () {
-                $('#p_editForm').data('bootstrapValidator').resetForm(true);
+            $('#p_editModal',panel).on('hide.bs.modal', function () {
+                $('#p_editForm',panel).data('bootstrapValidator').resetForm(true);
             });
-            $('#c_addModal').on('shown.bs.modal', function () {
-            	$("#add_c_provinceId").val(" ").trigger("change");
-                $('#c_addForm').data('bootstrapValidator').resetForm(true);
+            $('#c_addModal',panel).on('shown.bs.modal', function () {
+            	$("#add_c_provinceId",panel).val(" ").trigger("change");
+                $('#c_addForm',panel).data('bootstrapValidator').resetForm(true);
             });
-            $('#pc_editModal').on('hide.bs.modal', function () {
-                $('#c_editForm').data('bootstrapValidator').resetForm(true);
+            $('#pc_editModal',panel).on('hide.bs.modal', function () {
+                $('#c_editForm',panel).data('bootstrapValidator').resetForm(true);
             });
-            $('#co_addModal').on('shown.bs.modal', function () {
-            	$("#add_co_provinceId").val(" ").trigger("change");
-            	$("#add_co_cityId").val(" ").trigger("change");
-                $('#co_addForm').data('bootstrapValidator').resetForm(true);
+            $('#co_addModal',panel).on('shown.bs.modal', function () {
+            	$("#add_co_provinceId",panel).val(" ").trigger("change");
+            	$("#add_co_cityId",panel).val(" ").trigger("change");
+                $('#co_addForm',panel).data('bootstrapValidator').resetForm(true);
             });
-            $('#co_editModal').on('hide.bs.modal', function () {
-                $('#co_editForm').data('bootstrapValidator').resetForm(true);
+            $('#co_editModal',panel).on('hide.bs.modal', function () {
+                $('#co_editForm',panel).data('bootstrapValidator').resetForm(true);
             });
             var getCityAsyc = function(){
 				var provinceId = this.value;
@@ -569,67 +609,67 @@ define(['base'], function (base) {
 		                url: "/manage/city/getcity?provinceId="+provinceId,
 		                dataType: "json",
 		                success: function (data) {
-		                	$("#add_co_cityId").empty();
-		                    $("#add_co_cityId").select2({
+		                	$("#add_co_cityId",panel).empty();
+		                    $("#add_co_cityId",panel).select2({
 		                        data: data
 		                    });
-		                    var oldId = $("#edit_co_cityId_old").val();
-		                    $("#edit_co_cityId").empty();
-		                    $("#edit_co_cityId").select2({
+		                    var oldId = $("#edit_co_cityId_old",panel).val();
+		                    $("#edit_co_cityId",panel).empty();
+		                    $("#edit_co_cityId",panel).select2({
 		                        data: data
 		                    });
 		                    if(oldId && oldId != ""){
-		                    	$("#edit_co_cityId").val(oldId).trigger("change");
+		                    	$("#edit_co_cityId",panel).val(oldId).trigger("change");
 		                    }
 		                }
 	            });
 			}
-			$("#add_co_provinceId").on("change", getCityAsyc);
-			$("#edit_co_provinceId").on("change",getCityAsyc);
+			$("#add_co_provinceId",panel).on("change", getCityAsyc);
+			$("#edit_co_provinceId",panel).on("change",getCityAsyc);
         },
-        add: function () {
+        add: function (panel) {
             var self = this;
-            var type = $("#type").val();
+            var type = $("#type",panel).val();
             if(type == "area"){
-            	$('#a_addModal').modal({
+            	$('#a_addModal',panel).modal({
       			    keyboard: false,
       			    backdrop:'static'
       			});
-            	base.validator(add_a_validate, "#a_addForm", self.create);
+            	base.validator(add_a_validate(panel), "#a_addForm", self.create,panel);
             }else if(type == "province"){
-            	$('#p_addModal').modal({
+            	$('#p_addModal',panel).modal({
       			    keyboard: false,
       			    backdrop:'static'
       			});
-            	base.validator(add_p_validate, "#p_addForm", self.create);
+            	base.validator(add_p_validate(panel), "#p_addForm", self.create,panel);
             }else if(type == "city"){
-            	$('#c_addModal').modal({
+            	$('#c_addModal',panel).modal({
       			    keyboard: false,
       			    backdrop:'static'
       			});
-            	base.validator(add_c_validate, "#c_addForm", self.create);
+            	base.validator(add_c_validate(panel), "#c_addForm", self.create,panel);
             }else if(type == "country"){
-            	$('#co_addModal').modal({
+            	$('#co_addModal',panel).modal({
       			    keyboard: false,
       			    backdrop:'static'
       			});
-            	base.validator(add_co_validate, "#co_addForm", self.create);
+            	base.validator(add_co_validate(panel), "#co_addForm", self.create,panel);
             }
         },
-        create: function () {
-        	var type = $("#type").val();
+        create: function (panel) {
+        	var type = $("#type",panel).val();
         	if(type == "area"){
            	 $.post("/manage/area/add",
-                        {"areaName": $("#add_a_areaName").val(),
-                            "businessPrincipal": $("#add_a_businessPrincipal").val(),
-                            "sortNo": $("#add_a_sortNo").val(),
-                            "contactPhone": $("#add_a_contactPhone").val()
+                        {"areaName": $("#add_a_areaName",panel).val(),
+                            "businessPrincipal": $("#add_a_businessPrincipal",panel).val(),
+                            "sortNo": $("#add_a_sortNo",panel).val(),
+                            "contactPhone": $("#add_a_contactPhone",panel).val()
                         },function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
                                 	base.success("添加成功");
-                              	    $("#a_addModal").modal('hide');
-                              	    initTree();
+                              	    $("#a_addModal",panel).modal('hide');
+                              	    initTree(panel);
                                 } else {
                                     base.error(data.message);
                                 }
@@ -639,15 +679,15 @@ define(['base'], function (base) {
                 });
            }else if(type == "province"){
             	 $.post("/manage/province/insertprovince",
-                         {"provinceName": $("#add_p_provinceName").val(),
-                             "areaId": $("#add_p_areaId").val(),
-                             "sortNo": $("#add_p_sortNo").val()
+                         {"provinceName": $("#add_p_provinceName",panel).val(),
+                             "areaId": $("#add_p_areaId",panel).val(),
+                             "sortNo": $("#add_p_sortNo",panel).val()
                          },function (data, status) {
                              if (status == "success") {
                                  if (data.success == 0) {
                                 	 base.success("添加成功");
-                               	    $("#p_addModal").modal('hide');
-                               	    initTree();
+                               	    $("#p_addModal",panel).modal('hide');
+                               	    initTree(panel);
                                  } else {
                                      base.error(data.message);
                                  }
@@ -657,17 +697,17 @@ define(['base'], function (base) {
                  });
             }else if(type == "city"){
             	$.post("/manage/city/insertcity",
-                        {   "cityName": $("#add_c_cityName").val(),
-                            "provinceId": $("#add_c_provinceId").val(),
-                            "sortNo": $("#add_c_sortNo").val(),
-                            "telZoneCode": $("#add_c_telZoneCode").val(),
-                            "postCode": $("#add_c_postCode").val(),
+                        {   "cityName": $("#add_c_cityName",panel).val(),
+                            "provinceId": $("#add_c_provinceId",panel).val(),
+                            "sortNo": $("#add_c_sortNo",panel).val(),
+                            "telZoneCode": $("#add_c_telZoneCode",panel).val(),
+                            " postCode": $("#add_c_postCode",panel).val()
                         },function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
                                 	base.success("添加成功");
-                              	    $("#c_addModal").modal('hide');
-                              	    initTree();
+                              	    $("#c_addModal",panel).modal('hide');
+                              	    initTree(panel);
                                 } else {
                                     base.error(data.message);
                                 }
@@ -677,16 +717,16 @@ define(['base'], function (base) {
                 });
             }else if(type == "country"){
             	$.post("/manage/county/insertcounty",
-                        {   "countyName": $("#add_co_countyName").val(),
-                            "cityId": $("#add_co_cityId").val(),
-                            "sortNo": $("#add_co_sortNo").val(),
-                            "postCode": $("#add_co_postCode").val(),
+                        {   "countyName": $("#add_co_countyName",panel).val(),
+                            "cityId": $("#add_co_cityId",panel).val(),
+                            "sortNo": $("#add_co_sortNo",panel).val(),
+                            "postCode": $("#add_co_postCode",panel).val(),
                         },function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
                                 	base.success("添加成功");
-                              	    $("#co_addModal").modal('hide');
-                              	    initTree();
+                              	    $("#co_addModal",panel).modal('hide');
+                              	    initTree(panel);
                                 } else {
                                     base.error(data.message);
                                 }
@@ -697,9 +737,9 @@ define(['base'], function (base) {
             }
            
         },
-        edit: function () {
+        edit: function (panel) {
         	var self = this;
-            var id = $("#id").val();
+            var id = $("#id",panel).val();
         	if(!id || id == ""){
         		sweetAlert("Oops...", "请选择一行进行修改!", "error");
 				return;
@@ -710,11 +750,11 @@ define(['base'], function (base) {
                         {"areaId": id.slice(2)},function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
-                              	    $("#edit_a_areaName").val(data.data.areaName);
-                              	    $("#edit_a_businessPrincipal").val(data.data.businessPrincipal);
-                              	    $("#edit_a_contactPhone").val(data.data.contactPhone);
-                              	    $("#edit_a_sortNo").val(data.data.sortNo);
-                              	    $("#edit_a_areaId").val(data.data.areaId);
+                              	    $("#edit_a_areaName",panel).val(data.data.areaName);
+                              	    $("#edit_a_businessPrincipal",panel).val(data.data.businessPrincipal);
+                              	    $("#edit_a_contactPhone",panel).val(data.data.contactPhone);
+                              	    $("#edit_a_sortNo",panel).val(data.data.sortNo);
+                              	    $("#edit_a_areaId",panel).val(data.data.areaId);
                                 } else {
                                     base.error(data.message);
                                 }
@@ -722,20 +762,20 @@ define(['base'], function (base) {
                                 base.error("数据加载失败!");
                         }
                 });
-        		$('#a_editModal').modal({
+        		$('#a_editModal',panel).modal({
     			    keyboard: false,
     			    backdrop:'static'
     			});
-        		base.validator(edit_a_validate, '#a_editForm', self.update);
+        		base.validator(edit_a_validate(panel), '#a_editForm', self.update,panel);
         	}else if(id.indexOf("p_") != -1){
         		$.post("/manage/province/selectprovince",
                         {"provinceId": id.slice(2)},function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
-                              	    $("#edit_p_provinceName").val(data.data.provinceName);
-                              	    $("#edit_p_provinceId").val(data.data.provinceId);
-                              	    $("#edit_p_sortNo").val(data.data.sortNo);
-                              	    $("#edit_p_areaId").val(data.data.areaId).trigger("change");
+                              	    $("#edit_p_provinceName",panel).val(data.data.provinceName);
+                              	    $("#edit_p_provinceId",panel).val(data.data.provinceId);
+                              	    $("#edit_p_sortNo",panel).val(data.data.sortNo);
+                              	    $("#edit_p_areaId",panel).val(data.data.areaId).trigger("change");
                                 } else {
                                     base.error(data.message);
                                 }
@@ -743,22 +783,22 @@ define(['base'], function (base) {
                                 base.error("数据加载失败!");
                         }
                 });
-        		$('#p_editModal').modal({
+        		$('#p_editModal',panel).modal({
     			    keyboard: false,
     			    backdrop:'static'
     			});
-        		base.validator(edit_p_validate, '#p_editForm', self.update);
+        		base.validator(edit_p_validate(panel), '#p_editForm', self.update,panel);
         	}else if(id.indexOf("c_") != -1){
         		$.post("/manage/city/selectcity",
                         {"cityId": id.slice(2)},function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
-                              	    $("#edit_c_cityName").val(data.data.cityName);
-                              	    $("#edit_c_sortNo").val(data.data.sortNo);
-                              	    $("#edit_c_provinceId").val(data.data.provinceId).trigger("change");
-                              	    $("#edit_c_telZoneCode").val(data.data.telZoneCode);
-                              	    $("#edit_c_postCode").val(data.data.postCode);
-                              		$("#edit_c_cityId").val(data.data.cityId);
+                              	    $("#edit_c_cityName",panel).val(data.data.cityName);
+                              	    $("#edit_c_sortNo",panel).val(data.data.sortNo);
+                              	    $("#edit_c_provinceId",panel).val(data.data.provinceId).trigger("change");
+                              	    $("#edit_c_telZoneCode",panel).val(data.data.telZoneCode);
+                              	    $("#edit_c_postCode",panel).val(data.data.postCode);
+                              		$("#edit_c_cityId",panel).val(data.data.cityId);
                                 } else {
                                     base.error(data.message);
                                 }
@@ -766,22 +806,22 @@ define(['base'], function (base) {
                                 base.error("数据加载失败!");
                         }
                 });
-        		$('#c_editModal').modal({
+        		$('#c_editModal',panel).modal({
     			    keyboard: false,
     			    backdrop:'static'
     			});
-        		base.validator(edit_c_validate, '#c_editForm', self.update)
+        		base.validator(edit_c_validate(panel), '#c_editForm', self.update,panel)
         	}else if(id.indexOf("co_") != -1){
         		$.post("/manage/county/selectcounty",
                         {"countyId": id.slice(3)},function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
-                              	    $("#edit_co_countyName").val(data.data.countyName);
-                              	    $("#edit_co_cityId_old").val(data.data.cityId);
-                              	    $("#edit_co_provinceId").val(data.data.provinceId).trigger("change");
-                              	    $("#edit_co_postCode").val(data.data.postCode);
-                              	    $("#edit_co_sortNo").val(data.data.sortNo);
-                              	    $("#edit_co_countyId").val(data.data.countyId);
+                              	    $("#edit_co_countyName",panel).val(data.data.countyName);
+                              	    $("#edit_co_cityId_old",panel).val(data.data.cityId);
+                              	    $("#edit_co_provinceId",panel).val(data.data.provinceId).trigger("change");
+                              	    $("#edit_co_postCode",panel).val(data.data.postCode);
+                              	    $("#edit_co_sortNo",panel).val(data.data.sortNo);
+                              	    $("#edit_co_countyId",panel).val(data.data.countyId);
                                 } else {
                                     base.error(data.message);
                                 }
@@ -789,30 +829,30 @@ define(['base'], function (base) {
                                 base.error("数据加载失败!");
                         }
                 });
-        		$('#co_editModal').modal({
+        		$('#co_editModal',panel).modal({
     			    keyboard: false,
     			    backdrop:'static'
     			});
-        		base.validator(edit_co_validate, '#co_editForm', self.update)
+        		base.validator(edit_co_validate(panel), '#co_editForm', self.update,panel)
         	}
         },
-        update: function () {
-        	var id = $("#id").val();
+        update: function (panel) {
+        	var id = $("#id",panel).val();
         	if(id.indexOf("a_") != -1){
         		$.post(
                         "/manage/area/upd",
-                        {   "areaId": $("#edit_a_areaId").val(),
-                            "areaName": $("#edit_a_areaName").val(),
-                            "businessPrincipal": $("#edit_a_businessPrincipal").val(),
-                            "sortNo": $("#edit_a_sortNo").val(),
-                            "contactPhone": $("#edit_a_contactPhone").val(),
+                        {   "areaId": $("#edit_a_areaId",panel).val(),
+                            "areaName": $("#edit_a_areaName",panel).val(),
+                            "businessPrincipal": $("#edit_a_businessPrincipal",panel).val(),
+                            "sortNo": $("#edit_a_sortNo",panel).val(),
+                            "contactPhone": $("#edit_a_contactPhone",panel).val(),
                         },
                         function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
                                 	base.success("更新成功");
-                                	initTree();
-                                    $("#a_editModal").modal('hide');
+                                	initTree(panel);
+                                    $("#a_editModal",panel).modal('hide');
                                 } else {
                                     base.error(data.message);
                                 }
@@ -823,17 +863,17 @@ define(['base'], function (base) {
         	}else if(id.indexOf("p_") != -1){
         		$.post(
                         "/manage/province/updateprovince",
-                        {   "areaId": $("#edit_p_areaId").val(),
-                            "provinceName": $("#edit_p_provinceName").val(),
-                            "provinceId": $("#edit_p_provinceId").val(),
-                            "sortNo": $("#edit_p_sortNo").val(),
+                        {   "areaId": $("#edit_p_areaId",panel).val(),
+                            "provinceName": $("#edit_p_provinceName",panel).val(),
+                            "provinceId": $("#edit_p_provinceId",panel).val(),
+                            "sortNo": $("#edit_p_sortNo",panel).val(),
                         },
                         function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
                                 	base.success("更新成功");
-                                	initTree();
-                                    $("#p_editModal").modal('hide');
+                                	initTree(panel);
+                                    $("#p_editModal",panel).modal('hide');
                                 } else {
                                     base.error(data.message);
                                 }
@@ -844,19 +884,19 @@ define(['base'], function (base) {
         	}else if(id.indexOf("c_") != -1){
         		$.post(
                         "/manage/city/updatecity",
-                        {   "cityId": $("#edit_c_cityId").val(),
-                            "cityName": $("#edit_c_cityName").val(),
-                            "provinceId": $("#edit_c_provinceId").val(),
-                            "sortNo": $("#edit_c_sortNo").val(),
-                            "postCode": $("#edit_c_postCode").val(),
-                            "telZoneCode": $("#edit_c_telZoneCode").val(),
+                        {   "cityId": $("#edit_c_cityId",panel).val(),
+                            "cityName": $("#edit_c_cityName",panel).val(),
+                            "provinceId": $("#edit_c_provinceId",panel).val(),
+                            "sortNo": $("#edit_c_sortNo",panel).val(),
+                            "postCode": $("#edit_c_postCode",panel).val(),
+                            "telZoneCode": $("#edit_c_telZoneCode",panel).val()
                         },
                         function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
                                 	base.success("更新成功");
-                                	initTree();
-                                    $("#c_editModal").modal('hide');
+                                	initTree(panel);
+                                    $("#c_editModal",panel).modal('hide');
                                 } else {
                                     base.error(data.message);
                                 }
@@ -867,18 +907,18 @@ define(['base'], function (base) {
         	}else if(id.indexOf("co_") != -1){
         		$.post(
                         "/manage/county/updatecounty",
-                        {   "cityId": $("#edit_co_cityId").val(),
-                            "countyName": $("#edit_co_countyName").val(),
-                            "sortNo": $("#edit_co_sortNo").val(),
-                            "postCode": $("#edit_co_postCode").val(),
-                            "countyId": $("#edit_co_countyId").val(),
+                        {   "cityId": $("#edit_co_cityId",panel).val(),
+                            "countyName": $("#edit_co_countyName",panel).val(),
+                            "sortNo": $("#edit_co_sortNo",panel).val(),
+                            "postCode": $("#edit_co_postCode",panel).val(),
+                            "countyId": $("#edit_co_countyId",panel).val(),
                         },
                         function (data, status) {
                             if (status == "success") {
                                 if (data.success == 0) {
                                 	base.success("更新成功");
-                                	initTree();
-                                    $("#co_editModal").modal('hide');
+                                	initTree(panel);
+                                    $("#co_editModal",panel).modal('hide');
                                 } else {
                                     base.error(data.message);
                                 }
@@ -888,8 +928,8 @@ define(['base'], function (base) {
                         });
         	}
         },
-        remove: function () {
-        	var id = $("#id").val();
+        remove: function (panel) {
+        	var id = $("#id",panel).val();
         	if(!id || id == ""){
         		sweetAlert("Oops...", "请选择一行进行删除!", "error");
 				return;
@@ -918,7 +958,7 @@ define(['base'], function (base) {
 						var obj = data;
 						if (obj.success == 0) {
 							base.success("删除成功");
-							initTree();
+							initTree(panel);
 						} else {
 							base.error(obj.message);
 						}

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.user.mapper.UserMapper">
+<mapper namespace="com.rofour.baseball.dao.user.mapper.UserMapper">
     <!-- 基本返回结果 -->
-    <resultMap id="UserResultMap" type="com.zhiduan.axp.dao.user.bean.UserBean">
+    <resultMap id="UserResultMap" type="com.rofour.baseball.dao.user.bean.UserBean">
         <constructor>
             <idArg column="user_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
             <arg column="nickname" jdbcType="VARCHAR" javaType="java.lang.String"/>
@@ -20,7 +20,7 @@
         </constructor>
     </resultMap>
     <!-- 用户基本返回结果 -->
-    <resultMap type="com.zhiduan.axp.dao.user.bean.UserBean" id="BaseUserResultMap">
+    <resultMap type="com.rofour.baseball.dao.user.bean.UserBean" id="BaseUserResultMap">
         <id column="user_id" property="userId"/>
         <result column="nickname" property="nickname"/>
         <result column="user_name" property="userName"/>
@@ -36,7 +36,7 @@
         <result column="be_deleted" property="beDeleted"/>
     </resultMap>
     <!-- 获取站点员工列表 -->
-    <resultMap type="com.zhiduan.axp.dao.user.bean.UserCheckBean"
+    <resultMap type="com.rofour.baseball.dao.user.bean.UserCheckBean"
                id="UserRegisterCheckMap">
         <result column="user_id" property="userId"/>
         <result column="phone" property="phone"/>
@@ -54,14 +54,14 @@
         <result column="supervisor_phone" property="supervisorPhone"/>
         <collection column="college_full_name" property="collegeFullName"/>
     </resultMap>
-    <select id="selectUserInfoByIdCard" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+    <select id="selectUserInfoByIdCard" parameterType="com.rofour.baseball.controller.model.UserInfo"
             resultType="int">
 		select count(id_no)
 		from tb_user
 		where id_no =
 		#{identityNumber,jdbcType=VARCHAR} AND be_deleted=0
 	</select>
-    <select id="selectUserInfoByIdCardAndPhone" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+    <select id="selectUserInfoByIdCardAndPhone" parameterType="com.rofour.baseball.controller.model.UserInfo"
             resultType="int">
 		select count(id_no)
 		from tb_user
@@ -70,7 +70,7 @@
 		#{phone,jdbcType=VARCHAR} AND be_deleted=0
 	</select>
     <!-- 动态插入数据 -->
-    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.user.bean.UserBean"
+    <insert id="insertSelective" parameterType="com.rofour.baseball.dao.user.bean.UserBean"
             useGeneratedKeys="true" keyProperty="userId">
         insert into tb_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -153,7 +153,7 @@
 
 
     <!-- 查询所有 -->
-    <select id="selectAll" resultType="com.zhiduan.axp.dao.user.bean.StoreUserManagerBean">
+    <select id="selectAll" resultType="com.rofour.baseball.dao.user.bean.StoreUserManagerBean">
 		SELECT
 		tb_store.store_id,tb_user_store_exp.`be_supervisor`,tb_user_store_exp.`identity_number`,tb_store.`store_name`,tb_user.*
 		FROM (tb_store INNER JOIN
@@ -169,7 +169,7 @@
 	</select>
     <!-- 根据用户名查询用户 -->
     <select id="selectSelective" resultMap="UserResultMap"
-            parameterType="com.zhiduan.axp.dao.user.bean.UserBean">
+            parameterType="com.rofour.baseball.dao.user.bean.UserBean">
 		select * from tb_user where user_name= #{userName} and be_deleted =0
 	</select>
 
@@ -187,7 +187,7 @@
 	</select>
 
     <!-- 根据用户Id和类型查询用户 -->
-    <select id="selectByUserAndType" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+    <select id="selectByUserAndType" parameterType="com.rofour.baseball.controller.model.UserInfo"
             resultType="int">
 		select user_type_id from tb_user_type where
 		user_id=#{userId} and user_type=#{userType}
@@ -195,7 +195,7 @@
 
     <!-- 登录根据用户名和密码查询用户 -->
     <select id="loginSelect" resultMap="BaseUserResultMap"
-            parameterType="com.zhiduan.axp.dao.user.bean.UserBean">
+            parameterType="com.rofour.baseball.dao.user.bean.UserBean">
 		SELECT
 		u.user_id,u.user_name,u.account_pwd,e.verify_status FROM tb_user u
 		,tb_user_store_exp e WHERE u.be_deleted = 0 AND
@@ -204,7 +204,7 @@
 
     <!-- 根据用户名和密码查询用户 -->
     <select id="selectByNameAndPwd" resultMap="BaseUserResultMap"
-            parameterType="com.zhiduan.axp.controller.model.UserInfo">
+            parameterType="com.rofour.baseball.controller.model.UserInfo">
 		select * from tb_user where user_name =#{userName} and
 		account_pwd = #{accountPwd} and be_deleted=0
 	</select>
@@ -216,38 +216,38 @@
 	</delete>
 
     <!-- 更改密码 -->
-    <update id="changePwd" parameterType="com.zhiduan.axp.controller.model.UserInfo">
+    <update id="changePwd" parameterType="com.rofour.baseball.controller.model.UserInfo">
 		update tb_user set
 		account_pwd = #{newPwd} where user_name=#{userName} and be_deleted = 0
 	</update>
 
     <!-- 重置密码 -->
-    <update id="resetPwd" parameterType="com.zhiduan.axp.controller.model.UserInfo">
+    <update id="resetPwd" parameterType="com.rofour.baseball.controller.model.UserInfo">
 		update tb_user set
 		account_pwd = #{newPwd} where user_name=#{userName} and be_deleted = 0
 	</update>
 
     <!-- 注销用户 -->
-    <update id="cancleUser" parameterType="com.zhiduan.axp.controller.model.UserInfo">
+    <update id="cancleUser" parameterType="com.rofour.baseball.controller.model.UserInfo">
 		update tb_user set
 		be_deleted = 1 where user_name=#{userName}
 	</update>
 
     <!-- 根据旧手机更换手机号码 -->
-    <update id="changePnByPn" parameterType="com.zhiduan.axp.controller.model.UserInfo">
+    <update id="changePnByPn" parameterType="com.rofour.baseball.controller.model.UserInfo">
 		update tb_user set
 		phone=#{newPhone},user_name=#{newPhone} where phone=#{phone}
 	</update>
 
     <!-- 根据密码和用户名，更换手机号码 -->
-    <update id="changePnByPwd" parameterType="com.zhiduan.axp.controller.model.UserInfo">
+    <update id="changePnByPwd" parameterType="com.rofour.baseball.controller.model.UserInfo">
 		update tb_user set
 		phone=#{newPhone},user_name=#{newPhone} where user_name=#{userName}
 		and account_pwd = #{accountPwd}
 	</update>
 
 
-    <update id="updateUser" parameterType="com.zhiduan.axp.controller.model.UserInfo">
+    <update id="updateUser" parameterType="com.rofour.baseball.controller.model.UserInfo">
 		update tb_user
 		set
 		user_name=#{phone},
@@ -275,7 +275,7 @@
 	</select>
 
     <select id="selectByNameAndPwd1" resultType="Integer"
-            parameterType="com.zhiduan.axp.controller.model.UserInfo">
+            parameterType="com.rofour.baseball.controller.model.UserInfo">
 		select
 		count(*)
 		from tb_user
@@ -291,7 +291,7 @@
 		be_deleted=0
 	</select>
     <select id="validateUserPhone" resultType="Integer"
-            parameterType="com.zhiduan.axp.dao.user.bean.StoreUserManagerBean">
+            parameterType="com.rofour.baseball.dao.user.bean.StoreUserManagerBean">
 		select
 		count(1)
 		from tb_user
@@ -299,8 +299,8 @@
 		phone=#{phone,jdbcType=VARCHAR} and be_deleted=0 and
 		user_id!=#{userId}
 	</select>
-    <select id="selectUserInfo" resultType="com.zhiduan.axp.controller.model.UserInfo"
-            parameterType="com.zhiduan.axp.controller.model.UserInfo">
+    <select id="selectUserInfo" resultType="com.rofour.baseball.controller.model.UserInfo"
+            parameterType="com.rofour.baseball.controller.model.UserInfo">
 		SELECT
 		tb_user.id_no as
 		'identityNumber',tb_user.real_name,tb_user.user_id,tb_user.user_name,tb_user.nickname,tb_user.phone,tb_user.county_id,tb_user.icon
@@ -318,8 +318,8 @@
 		SELECT sq_user.nextval
 		FROM DUAL;
 	</select>
-    <select id="userRegisterCheck" parameterType="com.zhiduan.axp.controller.model.UserInfo"
-            resultType="com.zhiduan.axp.dao.user.bean.UserCheckBean">
+    <select id="userRegisterCheck" parameterType="com.rofour.baseball.controller.model.UserInfo"
+            resultType="com.rofour.baseball.dao.user.bean.UserCheckBean">
         SELECT a.user_id userId,a.phone,a.real_name realName,a.user_name userName,a.age,a.nickname
         nickName,a.signup_time signupTime,
         b.verify_status verifyStatus,b.be_supervisor beSupervisor,b.verify_time verifyTime, f.college_id
@@ -369,7 +369,7 @@
 
     </select>
 
-    <select id="userRegisterCheckCount" parameterType="com.zhiduan.axp.controller.model.UserInfo"
+    <select id="userRegisterCheckCount" parameterType="com.rofour.baseball.controller.model.UserInfo"
             resultType="int">
 
         SELECT COUNT(*) FROM (
@@ -431,7 +431,7 @@
 
 	</delete>
     <!-- 更新合作公司user信息 -->
-    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.controller.model.UserInfo">
+    <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.controller.model.UserInfo">
         update tb_user
         <set>
             <if test="nickname != null">
@@ -468,8 +468,8 @@
         </set>
         where user_id = #{userId,jdbcType=BIGINT}
     </update>
-    <select id="selectAddresseeInfo" parameterType="com.zhiduan.axp.dao.user.bean.AddresseeBean"
-            resultType="com.zhiduan.axp.dao.user.bean.AddresseeBean">
+    <select id="selectAddresseeInfo" parameterType="com.rofour.baseball.dao.user.bean.AddresseeBean"
+            resultType="com.rofour.baseball.dao.user.bean.AddresseeBean">
         SELECT
         a.user_id userId,
         a.phone,
@@ -485,7 +485,7 @@
         FROM
         tb_user a,
         c_user b,
-        tb_user_type c
+        (select * from tb_user_type group by user_id,user_type) c
         WHERE a.user_id = b.user_id AND a.user_id=c.user_id
         AND c.user_type=4
         <if test="userName != '' and userName != null">
@@ -514,7 +514,7 @@
         LIMIT #{offset}, #{limit}
     </select>
     
-    <select id="selectAddresseeCount" parameterType="com.zhiduan.axp.dao.user.bean.AddresseeBean" resultType="int">
+    <select id="selectAddresseeCount" parameterType="com.rofour.baseball.dao.user.bean.AddresseeBean" resultType="int">
        SELECT COUNT(1) FROM (SELECT
         a.user_id userId,
         a.phone,

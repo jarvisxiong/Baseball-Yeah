@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.wallet.mapper.WalletVerifyMapper">  
-    <select id="selectWalletVerify" resultType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo" parameterType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo">
+<mapper namespace="com.rofour.baseball.dao.wallet.mapper.WalletVerifyMapper">
+    <select id="selectWalletVerify" resultType="com.rofour.baseball.controller.model.wallet.WalletVerifyInfo" parameterType="com.rofour.baseball.controller.model.wallet.WalletVerifyInfo">
 	SELECT a.user_id userId,a.phone,a.user_name userName,a.id_no
 	identityNumber,a.real_name realName,b.user_type userType ,case
 	b.user_type when 1 then '货源' when 3 then '众包' end
@@ -50,7 +50,7 @@
 	</if>
     </select>
     <!-- 查询单个钱包审核账户 -->
-    <select id="selectWalletUserInfo" resultType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo" parameterType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo">
+    <select id="selectWalletUserInfo" resultType="com.rofour.baseball.controller.model.wallet.WalletVerifyInfo" parameterType="com.rofour.baseball.controller.model.wallet.WalletVerifyInfo">
 	SELECT a.user_id userId,a.phone,a.user_name userName,a.id_no
 	identityNumber,a.real_name realName,b.user_type userType ,case
 	b.user_type when 1 then '货源' when 3 then '众包' end
@@ -73,7 +73,7 @@
 	   	and  a.user_id=#{userId}
 	</if>
     </select>
-    <update id="updatePuserVerify"  parameterType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo">
+    <update id="updatePuserVerify"  parameterType="com.rofour.baseball.controller.model.wallet.WalletVerifyInfo">
       update p_user 
       <set>
          <if test="verifyStatus!=null">
@@ -97,7 +97,7 @@
       </where>
     </update>
     
-    <update id="updateExpUserVerify"  parameterType="com.zhiduan.axp.controller.model.wallet.WalletVerifyInfo">
+    <update id="updateExpUserVerify"  parameterType="com.rofour.baseball.controller.model.wallet.WalletVerifyInfo">
       update tb_user_store_exp 
       <set>
          <if test="verifyStatus!=null">

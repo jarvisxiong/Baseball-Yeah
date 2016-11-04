@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zhiduan.axp.dao.report.mapper.ReportWaybillMapper">
+<mapper namespace="com.rofour.baseball.dao.report.mapper.ReportWaybillMapper">
     <!-- 获取学校手机号统计信息 -->
-    <select id="getPhoneCount" resultType="com.zhiduan.axp.dao.report.bean.SearchPhoneCountBean"
-            parameterType="com.zhiduan.axp.dao.report.bean.SearchPhoneCountBean">
+    <select id="getPhoneCount" resultType="com.rofour.baseball.dao.report.bean.SearchPhoneCountBean"
+            parameterType="com.rofour.baseball.dao.report.bean.SearchPhoneCountBean">
         select t1.college_id as collegeId,t1.full_name as collegeName,count(tepphone.phone) as phoneCount
         from tb_college t1 left join tb_store_college_rel t2 on
         t1.college_id=t2.college_id
@@ -25,8 +25,8 @@
     </select>
 
     <!-- 获取学校手机号明细信息 -->
-    <select id="getPhoneDetailCount" resultType="com.zhiduan.axp.dao.report.bean.SearchPhoneCountBean"
-            parameterType="com.zhiduan.axp.dao.report.bean.SearchPhoneCountBean">
+    <select id="getPhoneDetailCount" resultType="com.rofour.baseball.dao.report.bean.SearchPhoneCountBean"
+            parameterType="com.rofour.baseball.dao.report.bean.SearchPhoneCountBean">
         select t1.college_id as collegeId,t1.full_name as
         collegeName,tepphone.phone from tb_college t1 left join
         tb_store_college_rel t2 on t1.college_id=t2.college_id
@@ -48,7 +48,7 @@
     </select>
 
     <!-- 获取所有学校手机号的统计信息 -->
-    <select id="getPhoneAllCount" resultType="com.zhiduan.axp.dao.report.bean.SearchPhoneCountBean">
+    <select id="getPhoneAllCount" resultType="com.rofour.baseball.dao.report.bean.SearchPhoneCountBean">
         select (select count(*) from tb_college) as collegeCount,
         count(tepphone.phone) as phoneCount from tb_college t1 left join
         tb_store_college_rel t2 on t1.college_id=t2.college_id
@@ -67,7 +67,7 @@
     <select id="getSqlDataList" parameterType="Map" resultType="Map">
         ${sqlString}
     </select>
-     <select id="selectCityPhoneCount" resultType="com.zhiduan.axp.controller.model.report.ReportCityPhoneInfo" parameterType="Map">
+     <select id="selectCityPhoneCount" resultType="com.rofour.baseball.controller.model.report.ReportCityPhoneInfo" parameterType="Map">
 		<!-- select aa.city_id cityId,aa.city_name cityName,aa.total_phone_num totalPhoneNum,aa.total_reg_num totalRegNum,bb.new_num newNum,
 		if(total_phone_num>0, round((aa.total_reg_num/aa.total_phone_num*100),2),0) regRate,
 		if(total_phone_num>0, round((bb.new_num/aa.total_phone_num*100),2),0)  growRate
@@ -133,9 +133,9 @@
 		     and aa.city_id=#{cityId}
 		</if>
      </select>
-     <select id="selectWayBillLogInfo" parameterType="com.zhiduan.axp.controller.model.WayBillLogInfo" resultType="com.zhiduan.axp.controller.model.WayBillLogInfo">
+     <select id="selectWayBillLogInfo" parameterType="com.rofour.baseball.controller.model.WayBillLogInfo" resultType="com.rofour.baseball.controller.model.WayBillLogInfo">
 	select waybill_no
-	wayBillNo,operation,content,date_format(log_time,'%Y-%m-%d %h:%i:%s')
+	wayBillNo,operation,content,date_format(log_time,'%Y-%m-%d %H:%i:%s')
 	logTime,b.store_name storeName,d.full_name expressCompanyName,a.express_company_id expressCompanyId,c.user_name userName
 	from tb_waybill_log a
 	LEFT JOIN tb_store b ON b.store_id=a.store_id
@@ -161,7 +161,7 @@
 	</where>
 	LIMIT #{offset},#{limit}
      </select>
-       <select id="selectWayBillLogTotalCount" parameterType="com.zhiduan.axp.controller.model.WayBillLogInfo" resultType="int">
+       <select id="selectWayBillLogTotalCount" parameterType="com.rofour.baseball.controller.model.WayBillLogInfo" resultType="int">
 	select count(1) totalCount
 	from tb_waybill_log a
 	LEFT JOIN tb_store b ON b.store_id=a.store_id

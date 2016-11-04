@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rofour.baseball.dao.report.mapper.PacketOperationMapper">
+
+	<select id="getActivityRateList" parameterType="com.rofour.baseball.dao.report.bean.ActivityRateBean"
+			resultType="com.rofour.baseball.dao.report.bean.ActivityRateBean">
+		SELECT
+			rpn.id, rpn.day, rpn.college_id collegeId, rpn.college_name collegeName
+			, IFNULL(rpn.puser_num, 0) AS puserNum
+			, IFNULL(rpn.active_puser_num_day, 0) AS activePuserNumDay
+			, IFNULL(rpn.active_puser_num_month, 0) AS activePuserNumMonth
+			, SubQueryAlias2.activeRate
+			, (
+				(
+					SELECT SUM(CASE WHEN rpn2.active_puser_num_day IS NULL THEN 0 ELSE (CASE WHEN rpn2.puser_num IS NULL THEN 0 ELSE ROUND(rpn2.active_puser_num_day / rpn2.puser_num, 8) END) END)
+					FROM rpt_puser_num rpn2
+					WHERE rpn2.college_id = rpn.college_id
+					AND rpn2.day LIKE CONCAT(substring_index(rpn.day, '-', 2), '%')
+				) / (
+					SELECT COUNT(rpn3.id)
+					FROM rpt_puser_num rpn3
+					WHERE rpn3.college_id = rpn.college_id
+					AND rpn3.day LIKE CONCAT(substring_index(rpn.day, '-', 2), '%')
+				)
+			) AS averageActiveRate
+			, IFNULL((SubQueryAlias2.activeRate -
+				(
+					SELECT SUM(CASE WHEN rpn2.active_puser_num_day IS NULL THEN 0 ELSE (CASE WHEN rpn2.puser_num IS NULL THEN 0 ELSE ROUND(rpn2.active_puser_num_day / rpn2.puser_num, 8) END) END)
+					FROM rpt_puser_num rpn2
+					WHERE rpn2.college_id = rpn.college_id
+					AND rpn2.day LIKE CONCAT(substring_index(rpn.day, '-', 2), '%')
+				) /
+				(
+					SELECT COUNT(rpn3.id)
+					FROM rpt_puser_num rpn3
+					WHERE rpn3.college_id = rpn.college_id
+					AND rpn3.day LIKE CONCAT(substring_index(rpn.day, '-', 2), '%')
+				)
+			) / (
+				(
+					SELECT SUM(CASE WHEN rpn2.active_puser_num_day IS NULL THEN 0 ELSE (CASE WHEN rpn2.puser_num IS NULL THEN 0 ELSE ROUND(rpn2.active_puser_num_day / rpn2.puser_num, 8) END) END)
+					FROM rpt_puser_num rpn2
+					WHERE rpn2.college_id = rpn.college_id
+					AND rpn2.day LIKE CONCAT(substring_index(rpn.day, '-', 2), '%')
+				) /
+				(
+					SELECT COUNT(rpn3.id)
+					FROM rpt_puser_num rpn3
+					WHERE rpn3.college_id = rpn.college_id
+					AND rpn3.day LIKE CONCAT(substring_index(rpn.day, '-', 2), '%')
+				)
+			), 0) AS increaseActiveRate
+			, CASE WHEN SubQueryAlias1.active_puser_num_day IS NULL THEN NULL ELSE (rpn.active_puser_num_day - SubQueryAlias1.active_puser_num_day ) / SubQueryAlias1.active_puser_num_day END AS packetIncreaseRate
+		FROM
+			rpt_puser_num rpn
+		LEFT JOIN (
+			SELECT active_puser_num_day, day, college_id
+			FROM rpt_puser_num
+		) AS SubQueryAlias1 ON (SubQueryAlias1.day = DATE_SUB(rpn.day ,INTERVAL 1 day) AND SubQueryAlias1.college_id = rpn.college_id)
+		LEFT JOIN (
+			SELECT CASE WHEN active_puser_num_day IS NULL THEN 0 ELSE (CASE WHEN puser_num IS NULL THEN 0 ELSE ROUND(active_puser_num_day / puser_num, 8) END) END AS activeRate, id
+			FROM rpt_puser_num
+		) AS SubQueryAlias2 ON (SubQueryAlias2.id = rpn.id)
+		WHERE
+			'1' = '1'
+		<if test="searchColleges != null and searchColleges != ''">
+			AND <![CDATA[rpn.college_id in ${searchColleges} ]]>
+		</if>
+		<if test="searchStartDate!=null and searchStartDate!=''">
+			AND <![CDATA[rpn.day >= #{searchStartDate}]]>
+		</if>
+		<if test="searchEndDate!=null and searchEndDate!=''">
+			AND <![CDATA[rpn.day <= #{searchEndDate}]]>
+		</if>
+		ORDER BY
+		<if test="sort != null and sort != ''">
+			<choose>
+				<when test="sort == 'activePuserNum'">
+					<if test="sort == 'activePuserNum' and searchMonth != null and searchMonth != ''">
+						activePuserNumMonth
+					</if>
+					<if test="sort == 'activePuserNum' and (searchMonth == null or searchMonth == '')">
+						activePuserNumDay
+					</if>
+				</when>
+				<otherwise>
+					${sort}
+				</otherwise>
+			</choose>
+		</if>
+			${order}
+		LIMIT #{offset}, #{limit}
+	</select>
+
+    <select id="getActivityRateListCount" parameterType="com.rofour.baseball.dao.report.bean.ActivityRateBean" resultType="java.lang.Integer">
+        SELECT COUNT(rpn.id)
+        FROM rpt_puser_num rpn
+        WHERE '1' = '1'
+		<if test="searchColleges != null and searchColleges != ''">
+			AND <![CDATA[rpn.college_id in ${searchColleges}]]>
+		</if>
+        <if test="searchStartDate!=null and searchStartDate!=''">
+			AND <![CDATA[rpn.day >= #{searchStartDate}]]>
+        </if>
+        <if test="searchEndDate!=null and searchEndDate!=''">
+			AND <![CDATA[rpn.day <= #{searchEndDate}]]>
+        </if>
+    </select>
+
+	<select id="getCommentRateList" parameterType="com.rofour.baseball.dao.report.bean.CommentRateBean" resultType="com.rofour.baseball.dao.report.bean.CommentRateBean">
+		SELECT
+			ros.day, ros.college_id AS collegeId, ros.college_name AS collegeName
+			, CASE WHEN ros.comment_order_num IS NULL THEN 0 ELSE ros.comment_order_num END AS commentOrderNum
+			, CASE WHEN ros.comment_order_goodnum IS NULL THEN 0 ELSE comment_order_goodnum END AS commentOrderGoodnum
+			, CASE WHEN ros.comment_order_num IS NULL THEN 0 ELSE CAST(ros.comment_order_num * 10 AS UNSIGNED) END AS commentOrderTotalscore
+			, CASE WHEN ros.comment_order_getscore IS NULL THEN 0 ELSE ros.comment_order_getscore * 2 END AS commentOrderGetscore
+			, CASE WHEN SubQueryAlias2.todayFavorableRate IS NULL THEN 0.00 ELSE SubQueryAlias2.todayFavorableRate END AS favorableRate
+			, CASE WHEN (SubQueryAlias1.yesterdayFavorableRate IS NULL) THEN NULL ELSE
+				(CASE WHEN (SubQueryAlias2.todayFavorableRate IS NULL) THEN NULL ELSE (SubQueryAlias2.todayFavorableRate - SubQueryAlias1.yesterdayFavorableRate) / SubQueryAlias1.yesterdayFavorableRate END)
+			  END AS increaseRate
+		FROM
+			rpt_order_statistics AS ros
+		LEFT JOIN (
+			SELECT ROUND(	comment_order_goodnum / comment_order_num, 8) AS yesterdayFavorableRate
+			, day, college_id
+			FROM rpt_order_statistics
+		) AS SubQueryAlias1 ON (SubQueryAlias1.day = DATE_SUB(ros.day ,INTERVAL 1 day) AND SubQueryAlias1.college_id = ros.college_id)
+		LEFT JOIN (
+			SELECT ROUND(comment_order_goodnum / comment_order_num, 8) AS todayFavorableRate
+			, id
+			FROM rpt_order_statistics
+		) AS SubQueryAlias2 ON (SubQueryAlias2.id = ros.id)
+		WHERE
+			'1' = '1'
+		<if test="searchColleges != null and searchColleges != ''">
+			AND <![CDATA[ros.college_id in ${searchColleges} ]]>
+		</if>
+		<if test="searchStartDate!=null and searchStartDate!=''">
+			AND <![CDATA[ros.day >= #{searchStartDate}]]>
+		</if>
+		<if test="searchEndDate!=null and searchEndDate!=''">
+			AND <![CDATA[ros.day <= #{searchEndDate}]]>
+		</if>
+		ORDER BY ${sort} ${order}
+		LIMIT #{offset}, #{limit}
+	</select>
+
+	<select id="getCommentRateListCount" parameterType="com.rofour.baseball.dao.report.bean.CommentRateBean" resultType="java.lang.Integer">
+		SELECT COUNT(ros.id)
+		FROM rpt_order_statistics ros
+		WHERE '1' = '1'
+		<if test="searchColleges != null and searchColleges != ''">
+			AND <![CDATA[ros.college_id in ${searchColleges} ]]>
+		</if>
+		<if test="searchStartDate!=null and searchStartDate!=''">
+			AND <![CDATA[ros.day >= #{searchStartDate}]]>
+		</if>
+		<if test="searchEndDate!=null and searchEndDate!=''">
+			AND <![CDATA[ros.day <= #{searchEndDate}]]>
+		</if>
+	</select>
+
+	<select id="getRecOrderRateList" parameterType="com.rofour.baseball.controller.model.report.RecieveOrderRateInfo" resultType="com.rofour.baseball.controller.model.report.RecieveOrderRateInfo">
+		SELECT
+			DATE_FORMAT(ros.day,'%Y-%m-%d') as day,
+			ros.college_name as collegeName,
+			ros.total_order_num as totalOrderNum,
+			ros.order_status_waittaking as orderStatusWaittaking,
+			(select total_order_num from rpt_order_statistics where day = DATE_SUB(ros.day,INTERVAL 1 day) and college_id=ros.college_id limit 1) as totalOrderNumBefore,
+			(select order_status_waittaking from rpt_order_statistics where day = DATE_SUB(ros.day,INTERVAL 1 day) and college_id=ros.college_id limit 1) as orderStatusWaittakingBefore
+		FROM
+			(select * from rpt_order_statistics order by day desc) ros
+		<where>
+			<if test="collegeIdList != null and collegeIdList.size > 0 ">
+				AND ros.college_id in 
+				<foreach item="item" index="index" collection="collegeIdList" open="(" separator="," close=")">
+		            #{item}
+		        </foreach>
+			</if>
+			<if test="startDate!=null and startDate!=''">
+	            <![CDATA[ AND ros.day >= #{startDate}]]>
+	        </if>
+	        <if test="endDate!=null and endDate!=''">
+	            <![CDATA[ AND ros.day <= #{endDate}]]>
+	        </if>
+        </where>
+        <if test="(collegeIdList == null or collegeIdList.size == 0) and (startDate==null or startDate=='') and (endDate==null or endDate=='') ">
+        	group by ros.college_id 
+        </if>
+        <if test="sort != null and order != null">
+	        ORDER BY ${sort} ${order}
+        </if>
+        limit #{offset},#{limit}
+	</select>
+
+	<select id="getRecOrderRateListCount" parameterType="com.rofour.baseball.controller.model.report.RecieveOrderRateInfo" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			(SELECT
+				1
+			FROM
+				rpt_order_statistics ros
+			<where>
+				<if test="collegeIdList != null and collegeIdList != '' ">
+					AND ros.college_id in 
+					<foreach item="item" index="index" collection="collegeIdList" open="(" separator="," close=")">
+			            #{item}
+			        </foreach>
+				</if>
+				<if test="startDate!=null and startDate!=''">
+		            <![CDATA[ AND ros.day >= #{startDate}]]>
+		        </if>
+		        <if test="endDate!=null and endDate!=''">
+		            <![CDATA[ AND ros.day <= #{endDate}]]>
+		        </if>
+	        </where>
+	        <if test="(collegeIdList == null or collegeIdList.size == 0) and (startDate==null or startDate=='') and (endDate==null or endDate=='') ">
+	        	group by ros.college_id 
+	        </if>
+	        ) res
+	</select>
+	
+	<select id="getPacketReportNavPartOne" resultType="com.rofour.baseball.controller.model.report.PacketReportNavInfo">
+		SELECT
+			rrps.puser_num as puserNum,
+			rrps.active_puser_num as activePuserNum,
+			(select puser_num from rpt_region_puser_sum where day = DATE_SUB(rrps.day,INTERVAL 1 day) and region_id = 1 limit 1) as puserNumBefore
+		FROM
+			rpt_region_puser_sum rrps
+		WHERE
+			rrps.day = DATE_FORMAT(DATE_SUB(now(),INTERVAL 1 day),'%Y-%m-%d')
+		AND rrps.region_id = 1
+		limit 1
+	</select>
+	
+	<select id="getPacketReportNavPartTwo" resultType="com.rofour.baseball.controller.model.report.PacketReportNavInfo">
+		SELECT 
+			ross.shipping_ability as shippingAbility,
+			ross.total_order_num as totalOrderNum,
+			ross.take_order_num as takeOrderNum,
+			ross.comment_order_num as commentOrderNum,
+			ross.comment_order_goodnum as commentOrderGoodnum,
+			ross.comment_order_getscore as commentOrderGetscore,
+			(select shipping_ability from rpt_order_statistics_sum where day = DATE_SUB(ross.day,INTERVAL 1 day) limit 1) as shippingAbilityBefore
+		FROM
+			rpt_order_statistics_sum ross
+		WHERE
+			ross.day = DATE_FORMAT(DATE_SUB(now(),INTERVAL 1 day),'%Y-%m-%d')
+		limit 1
+	</select>
+	
+	<select id="getReceiveOrderByDate" parameterType="map" resultType="com.rofour.baseball.controller.model.report.RecieveOrderRateInfo">
+		select
+			sum(order_status_puser) orderStatusPuser,
+			day
+		from
+			rpt_order_statistics
+			group by day order by `day` desc limit 0,#{count}
+	</select>
+</mapper>

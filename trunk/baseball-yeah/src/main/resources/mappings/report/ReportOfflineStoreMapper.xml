@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zhiduan.axp.dao.report.mapper.ReportOfflineStoreMapper">
+<mapper namespace="com.rofour.baseball.dao.report.mapper.ReportOfflineStoreMapper">
 
-	<select id="getOfflineStoreList" resultType="com.zhiduan.axp.controller.model.report.ReportOfflinePartyInfo">
+	<select id="getOfflineStoreList" resultType="com.rofour.baseball.controller.model.report.ReportOfflinePartyInfo">
 		SELECT 
 		  e.cityName as cityName,
 		  DATE(a.add_time) AS date,
@@ -51,7 +51,7 @@
 		limit #{offset},#{limit}
 	</select>
 
-	<select id="getOfflineStoreCount" resultType="int" parameterType="com.zhiduan.axp.controller.model.report.ReportOfflinePartyInfo">
+	<select id="getOfflineStoreCount" resultType="int" parameterType="com.rofour.baseball.controller.model.report.ReportOfflinePartyInfo">
 		SELECT COUNT(*) FROM 
 	
 			(
@@ -102,8 +102,8 @@
 	
 	</select>
 	
-	<select id="getDetailList" parameterType="com.zhiduan.axp.controller.model.report.ReportWaybillInfo"
-		resultType="com.zhiduan.axp.controller.model.report.ReportWaybillInfo">
+	<select id="getDetailList" parameterType="com.rofour.baseball.controller.model.report.ReportWaybillInfo"
+		resultType="com.rofour.baseball.controller.model.report.ReportWaybillInfo">
 		SELECT
 			waybill_no  AS waybillNo,
 			add_time AS arriveDate,
@@ -126,7 +126,7 @@
 		limit #{offset},#{limit}
 	</select>
 	
-	<select id="getDetailCount" parameterType="com.zhiduan.axp.controller.model.report.ReportWaybillInfo"
+	<select id="getDetailCount" parameterType="com.rofour.baseball.controller.model.report.ReportWaybillInfo"
 		resultType="int">
 		SELECT
 			COUNT(waybill_id)

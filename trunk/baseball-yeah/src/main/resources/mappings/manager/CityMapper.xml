@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.CityMapper">
-	<resultMap id="CityResultMap" type="com.zhiduan.axp.dao.manager.bean.CityBean">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.CityMapper">
+	<resultMap id="CityResultMap" type="com.rofour.baseball.dao.manager.bean.CityBean">
 		<constructor>
 			<idArg column="city_id" jdbcType="BIGINT" javaType="java.lang.Long" />
 			<arg column="province_id" jdbcType="BIGINT" javaType="java.lang.Long" />
@@ -11,7 +11,7 @@
 			<arg column="sort_no" jdbcType="SMALLINT" javaType="java.lang.Short" />
 		</constructor>
 	</resultMap>
-	<resultMap type="com.zhiduan.axp.dao.manager.bean.CityBean"
+	<resultMap type="com.rofour.baseball.dao.manager.bean.CityBean"
 		id="BaseCityResultMap">
 		<result column="city_id" property="cityId" />
 		<result column="province_id" property="provinceId" />
@@ -19,7 +19,6 @@
 		<result column="tel_zone_code" property="telZoneCode" />
 		<result column="post_code" property="postCode" />
 		<result column="sort_no" property="sortNo" />
-
 	</resultMap>
 
 	<sql id="Base_Column_List">
@@ -33,12 +32,34 @@
 		where city_id = #{cityId,jdbcType=BIGINT}
 	</select>
 
-	<select id="selectCitiesByProvinceId" resultType="com.zhiduan.axp.dao.manager.bean.CityBean"
+	<select id="selectCitiesByProvinceId" resultType="com.rofour.baseball.dao.manager.bean.CityBean"
 		parameterType="java.lang.Long">
 		select
 		<include refid="Base_Column_List" />
 		from tb_city
 		where province_id = #{provinceId,jdbcType=BIGINT}
+	</select>
+
+	<!--查询城市列表和运力-->
+	<select id="selectCityAndWorkSignin" resultType="com.rofour.baseball.dao.manager.bean.CityBean" parameterType="HashMap">
+		SELECT  a.* ,COUNT(b.city_id) AS work_signin
+		FROM `tb_city`  a
+			LEFT JOIN  p_work_signin b ON (a.city_id = b.city_id AND b.work_date = #{date})
+		<if test="provinceId != null">
+			WHERE a.province_id = #{provinceId}
+		</if>
+		GROUP BY a.city_id
+
+	</select>
+
+	<!--查询城市列表和运力 分页-->
+	<select id="selectCityAndWorkSigninPage" resultType="com.rofour.baseball.dao.manager.bean.CityBean" parameterType="com.rofour.baseball.controller.model.RequestWorkSigninInfo">
+		SELECT  a.* ,COUNT(b.city_id) AS work_signin
+		FROM `tb_city`  a
+			LEFT JOIN  p_work_signin b ON (a.city_id = b.city_id AND b.work_date = #{workDate}) WHERE a.province_id = #{provinceId} GROUP BY a.city_id
+		ORDER BY ${sort} ${order}
+		LIMIT #{offset},#{limit}
+
 	</select>
 	
 	<select id="selectCidsByPids" resultType="java.lang.Long"
@@ -57,13 +78,13 @@
 		where province_id = #{provinceId,jdbcType=BIGINT}
 	</select>
 	<!-- 检查有学校城市 -->
-	<select id="selectAllCities" resultType="com.zhiduan.axp.dao.manager.bean.CityBean">
+	<select id="selectAllCities" resultType="com.rofour.baseball.dao.manager.bean.CityBean">
 		SELECT tc.city_id,tc.city_name FROM tb_city tc
 		WHERE EXISTS ( SELECT 1 FROM tb_college tc1 WHERE tc.city_id=tc1.city_id)
 	</select>
     
     <!-- 查询所有城市 -->
-    <select id="selectAll" resultType="com.zhiduan.axp.dao.manager.bean.CityBean">
+    <select id="selectAll" resultType="com.rofour.baseball.dao.manager.bean.CityBean">
         SELECT 
         <include refid="Base_Column_List" />
         FROM tb_city
@@ -132,7 +153,7 @@
 		delete from tb_city
 		where city_id = #{cityId,jdbcType=BIGINT}
 	</delete>
-	<insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.CityBean">
+	<insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.CityBean">
 		insert into tb_city ( province_id, city_name,
 		tel_zone_code, post_code, sort_no
 		)
@@ -141,7 +162,7 @@
 		#{sortNo,jdbcType=SMALLINT}
 		)
 	</insert>
-	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.CityBean">
+	<insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.CityBean">
 		insert into tb_city
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="cityId != null">
@@ -184,7 +205,7 @@
 			</if>
 		</trim>
 	</insert>
-	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.CityBean">
+	<update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.CityBean">
 		update tb_city
 		<set>
 			<if test="provinceId != null">
@@ -205,7 +226,7 @@
 		</set>
 		where city_id = #{cityId,jdbcType=BIGINT}
 	</update>
-	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.CityBean">
+	<update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.CityBean">
 		update tb_city
 		set province_id = #{provinceId,jdbcType=BIGINT},
 		city_name = #{cityName,jdbcType=VARCHAR},

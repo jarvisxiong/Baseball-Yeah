@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.message.mapper.MsgTypeParasMapper">
-    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.message.bean.MsgTypeParasBean">
+<mapper namespace="com.rofour.baseball.dao.message.mapper.MsgTypeParasMapper">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.message.bean.MsgTypeParasBean">
         <constructor>
             <idArg column="paras_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
             <arg column="paras_code" jdbcType="VARCHAR" javaType="java.lang.String"/>
@@ -65,7 +65,7 @@
     </delete>
 
     <!--新增-->
-    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.message.bean.MsgTypeParasBean">
+    <insert id="insertSelective" parameterType="com.rofour.baseball.dao.message.bean.MsgTypeParasBean">
         insert into ts_msg_type_paras
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="parasId != null">
@@ -116,7 +116,7 @@
     </insert>
 
     <!--更新-->
-    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.message.bean.MsgTypeParasBean">
+    <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.message.bean.MsgTypeParasBean">
         update ts_msg_type_paras
         <set>
             <if test="parasCode != null">

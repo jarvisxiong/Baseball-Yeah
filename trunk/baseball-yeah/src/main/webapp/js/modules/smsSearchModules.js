@@ -13,11 +13,11 @@ define(['base'], function (base) {
     var _bizId;
     var _bizType;
     return {
-        init: function (args) {
+        init: function (panel) {
             var self = this;
 
             //开始时间
-            $('#starttimePicker').datetimepicker({
+            $('#starttimePicker',panel).datetimepicker({
                 format: 'yyyy-mm-dd hh:ii:ss',
                 autoclose: true,
                 pickTime: true,
@@ -25,7 +25,7 @@ define(['base'], function (base) {
             })
 
             //结束时间
-            $('#endtimePicker').datetimepicker({
+            $('#endtimePicker',panel).datetimepicker({
                 format: 'yyyy-mm-dd hh:ii:ss',
                 autoclose: true,
                 pickTime: true,
@@ -38,12 +38,12 @@ define(['base'], function (base) {
                 url: "/manage/propertydict/queryByAlias?alias=message_type_id",
                 dataType: "json",
                 success: function (data) {
-                    $("#selmsgType").select2({
+                    $("#selmsgType",panel).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#selmsgType').select2("val", null);
+                    $('#selmsgType',panel).select2("val", null);
                 }
             });
             /*** 加载短信状态列表 ***/
@@ -52,12 +52,12 @@ define(['base'], function (base) {
                 url: '/message/sms/getSmsStatus',
                 dataType: 'json',
                 success: function (data) {
-                    $("#selsmsStatus").select2({
+                    $("#selsmsStatus",panel).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#selsmsStatus').select2("val", null);
+                    $('#selsmsStatus',panel).select2("val", null);
                 }
             });
             /*** 加载门店列表 ***/
@@ -66,24 +66,24 @@ define(['base'], function (base) {
                 url: "/store/exp/expstoreinfo",
                 dataType: "json",
                 success: function (data) {
-                    $("#selstore").select2({
+                    $("#selstore",panel).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#selstore').select2("val", null);
+                    $('#selstore',panel).select2("val", null);
                 }
             });
 
-            $("#startdate").val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
-            $("#enddate").val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59).Format("yyyy-MM-dd HH:mm:ss"));
-            _sendStoreID = $("#selstore").val() == " " ? null : parseInt($("#selstore").val());
-            _type = $("#selmsgType").val() == " " ? null : $("#selmsgType").val();
-            _status = $("#selsmsStatus").val() == " " ? null : parseInt($("#selsmsStatus").val());
-            _startSubmitTime = $("#startdate").val();
-            _endSubmitTime = $("#enddate").val();
-            _keyWord = $("#txtRvPhone").val() == "" ? null : $("#txtRvPhone").val();
-            _sendPhone = $("#txtSendPhone").val() == "" ? null : $("#txtSendPhone").val();
+            $("#startdate",panel).val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
+            $("#enddate",panel).val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59).Format("yyyy-MM-dd HH:mm:ss"));
+            _sendStoreID = $("#selstore",panel).val() == " " ? null : parseInt($("#selstore",panel).val());
+            _type = $("#selmsgType",panel).val() == " " ? null : $("#selmsgType",panel).val();
+            _status = $("#selsmsStatus",panel).val() == " " ? null : parseInt($("#selsmsStatus",panel).val());
+            _startSubmitTime = $("#startdate",panel).val();
+            _endSubmitTime = $("#enddate",panel).val();
+            _keyWord = $("#txtRvPhone",panel).val() == "" ? null : $("#txtRvPhone",panel).val();
+            _sendPhone = $("#txtSendPhone",panel).val() == "" ? null : $("#txtSendPhone",panel).val();
             function queryList() {
                 datatable = base.datagrid({
                     url: '/message/sms/querySmsGrid',
@@ -208,27 +208,28 @@ define(['base'], function (base) {
                         switch (field) {
                             case "bizId":
                                 if (row.messageTypeId == "p_noticetype_come") {
-                                    self.scanInfo(value, "p_noticetype_come");
+                                    self.scanInfo(value, "p_noticetype_come",panel);
                                 }
                                 return;
 
                         }
                     }
-                }, '#userTable');
-                datatable.bootstrapTable('refresh');
+                }, '#userTable',panel);
+                //datatable.bootstrapTable('refresh');
+                datatable.bootstrapTable('selectPage', 1);
                 $(window).resize(function () {
-                    $('#wayBillLogTable').bootstrapTable('resetView');
+                    $('#wayBillLogTable',panel).bootstrapTable('resetView');
                 });
             }
 
-            $("#btn_query").click(function () {
-                _sendStoreID = $("#selstore").val() == " " ? null : parseInt($("#selstore").val());
-                _type = $("#selmsgType").val() == " " ? null : $("#selmsgType").val();
-                _status = $("#selsmsStatus").val() == " " ? null : parseInt($("#selsmsStatus").val());
-                _startSubmitTime =$("#startdate").val();
-                _endSubmitTime = $("#enddate").val();
-                _keyWord = $("#txtRvPhone").val() == "" ? null : $("#txtRvPhone").val();
-                _sendPhone =$("#txtSendPhone").val() == "" ? null : $("#txtSendPhone").val();
+            $("#btn_query",panel).click(function () {
+                _sendStoreID = $("#selstore",panel).val() == " " ? null : parseInt($("#selstore",panel).val());
+                _type = $("#selmsgType",panel).val() == " " ? null : $("#selmsgType",panel).val();
+                _status = $("#selsmsStatus",panel).val() == " " ? null : parseInt($("#selsmsStatus",panel).val());
+                _startSubmitTime =$("#startdate",panel).val();
+                _endSubmitTime = $("#enddate",panel).val();
+                _keyWord = $("#txtRvPhone",panel).val() == "" ? null : $("#txtRvPhone",panel).val();
+                _sendPhone =$("#txtSendPhone",panel).val() == "" ? null : $("#txtSendPhone",panel).val();
                 if ((new Date(Date.parse(_endSubmitTime.replace(/-/g, "/"))).getTime() - new Date(Date.parse(_startSubmitTime.replace(/-/g, "/"))).getTime()) < 0) {
                     sweetAlert("", "结束时间不能小于开始时间!", "info");
                     return;
@@ -243,19 +244,19 @@ define(['base'], function (base) {
                 }
                 queryList();
             });
-            $("#clearSearch").click(function () {
+            $("#clearSearch",panel).click(function () {
 
-                $("#startdate").val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
-                $("#enddate").val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59).Format("yyyy-MM-dd HH:mm:ss"));
-                $("#txtRvPhone").val("");
-                $("#txtSendPhone").val("");
-                $("#selstore").select2("val", null);
-                $("#selmsgType").select2("val", null);
-                $("#selsmsStatus").select2("val", null);
+                $("#startdate",panel).val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 00, 00, 00).Format("yyyy-MM-dd HH:mm:ss"));
+                $("#enddate",panel).val(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59).Format("yyyy-MM-dd HH:mm:ss"));
+                $("#txtRvPhone",panel).val("");
+                $("#txtSendPhone",panel).val("");
+                $("#selstore",panel).select2("val", null);
+                $("#selmsgType",panel).select2("val", null);
+                $("#selsmsStatus",panel).select2("val", null);
             });
         },
 
-        scanInfo: function (bizId, bizType) {
+        scanInfo: function (bizId, bizType,panel) {
 
             _bizId = bizId;
             _bizType = bizType;
@@ -268,18 +269,18 @@ define(['base'], function (base) {
                 success: function (data) {
                     if (data != null) {
 
-                        $("#biz_waybillNumber").val(data.waybillNumber);
-                        $("#biz_expressCompanyText").val(data.expressCompanyText);
-                        $("#biz_addTime").val(data.addTime);
-                        $("#biz_scanTime").val(data.scanTime);
+                        $("#biz_waybillNumber",panel).val(data.waybillNumber);
+                        $("#biz_expressCompanyText",panel).val(data.expressCompanyText);
+                        $("#biz_addTime",panel).val(data.addTime);
+                        $("#biz_scanTime",panel).val(data.scanTime);
 
                     } else {
-                        $("#biz_waybillNumber").val("");
-                        $("#biz_expressCompanyText").val("");
-                        $("#biz_addTime").val("");
-                        $("#biz_scanTime").val("");
+                        $("#biz_waybillNumber",panel).val("");
+                        $("#biz_expressCompanyText",panel).val("");
+                        $("#biz_addTime",panel).val("");
+                        $("#biz_scanTime",panel).val("");
                     }
-                    $('#bizInfoModal').modal({
+                    $('#bizInfoModal',panel).modal({
                         keyboard: false,
                         backdrop: 'static'
                     });

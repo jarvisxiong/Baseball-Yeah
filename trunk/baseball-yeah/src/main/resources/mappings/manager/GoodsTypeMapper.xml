@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper
-        namespace="com.zhiduan.axp.dao.manager.mapper.GoodsTypeMapper">
-    <select id="selectByPrimaryKey" resultType="com.zhiduan.axp.dao.manager.bean.GoodsTypeBean"
-            parameterType="com.zhiduan.axp.dao.manager.bean.GoodsTypeBean">
+        namespace="com.rofour.baseball.dao.manager.mapper.GoodsTypeMapper">
+    <select id="selectByPrimaryKey" resultType="com.rofour.baseball.dao.manager.bean.GoodsTypeBean"
+            parameterType="com.rofour.baseball.dao.manager.bean.GoodsTypeBean">
        select t.goods_type_id goodsTypeId,t.name, date_format(t.update_time,'%Y-%m-%d %h:%i:%s') updateTime,
       t.update_user updateUser,t.description from tb_goods_type t where t.goods_type_id=#{goodsTypeId}
     </select>
@@ -12,11 +12,11 @@
         where goods_type_id = #{goodsTypeId}
     </delete>
     <insert id="insert"
-            parameterType="com.zhiduan.axp.dao.manager.bean.GoodsTypeBean">
+            parameterType="com.rofour.baseball.dao.manager.bean.GoodsTypeBean">
       INSERT INTO  tb_goods_type (name, update_user, update_time, description) VALUES (#{name},#{updateUser},now(),#{description})
     </insert>
     <update id="updateByPrimaryKeySelective"
-            parameterType="com.zhiduan.axp.dao.manager.bean.GoodsTypeBean">
+            parameterType="com.rofour.baseball.dao.manager.bean.GoodsTypeBean">
         update tb_goods_type
         <set>
             <if test="name != null">
@@ -32,11 +32,11 @@
         </set>
         where goods_type_id = #{goodsTypeId}
     </update>
-    <select id="selectAll" resultType="com.zhiduan.axp.dao.manager.bean.GoodsTypeBean">
-      select t.goods_type_id goodsTypeId,t.name, date_format(t.update_time,'%Y-%m-%d %h:%i:%s') updateTime,
+    <select id="selectAll" resultType="com.rofour.baseball.dao.manager.bean.GoodsTypeBean">
+      select t.goods_type_id goodsTypeId,t.name, date_format(t.update_time,'%Y-%m-%d %H:%i:%s') updateTime,
   t.update_user updateUser,t.description from tb_goods_type t
     </select>
-    <select id="isNameExist" resultType="int"  parameterType="com.zhiduan.axp.dao.manager.bean.GoodsTypeBean">
+    <select id="isNameExist" resultType="int"  parameterType="com.rofour.baseball.dao.manager.bean.GoodsTypeBean">
         SELECT
         count(1)
         FROM tb_goods_type where

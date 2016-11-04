@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.OfferPriceMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.OfferPriceMapper">
 
-    <select id="getAll" parameterType="com.zhiduan.axp.controller.model.manager.OfferPriceInfo"
-            resultType="com.zhiduan.axp.controller.model.manager.OfferPriceInfo">
+    <select id="getAll" parameterType="com.rofour.baseball.controller.model.manager.OfferPriceInfo"
+            resultType="com.rofour.baseball.controller.model.manager.OfferPriceInfo">
         SELECT *
         FROM (
         SELECT toa.offer_area_id offerAreaId,toa.offer_area_name offerAreaName,group_concat(province_name) provinceNames,group_concat(tp.province_id) provinceIdsStr
@@ -21,11 +21,11 @@
             AND ss.provinceIdsStr LIKE concat('%,',#{provinceId},',%') OR ss.provinceIdsStr LIKE concat('%,',#{provinceId},'%') OR ss.provinceIdsStr LIKE concat('%',#{provinceId},',%') OR ss.provinceIdsStr=#{provinceId}
         </if>
     </select>
-    <select id="selectAll" resultType="com.zhiduan.axp.dao.manager.bean.OfferAreaBean">
+    <select id="selectAll" resultType="com.rofour.baseball.dao.manager.bean.OfferAreaBean">
       SELECT offer_area_id offerAreaId,offer_area_name offerAreaName FROM tb_offer_area
     </select>
 
-    <select id="getAllTotal" parameterType="com.zhiduan.axp.controller.model.manager.OfferPriceInfo" resultType="java.lang.Integer">
+    <select id="getAllTotal" parameterType="com.rofour.baseball.controller.model.manager.OfferPriceInfo" resultType="java.lang.Integer">
         SELECT count(1) FROM (
         SELECT *
         FROM (
@@ -48,7 +48,7 @@
         SELECT count(1) FROM tb_offer_area WHERE offer_area_name=#{offerAreaName}
     </select>
 
-    <update id="updateOfferArea" parameterType="com.zhiduan.axp.controller.model.manager.OfferPriceInfo">
+    <update id="updateOfferArea" parameterType="com.rofour.baseball.controller.model.manager.OfferPriceInfo">
       UPDATE tb_offer_area SET offer_area_name=#{offerAreaName} WHERE offer_area_id=#{offerAreaId};
     </update>
 
@@ -60,7 +60,7 @@
         DELETE FROM tb_offer_area_province WHERE offer_area_id=#{offerAreaId};
     </delete>
 
-    <insert id="addOfferArea" parameterType="com.zhiduan.axp.controller.model.manager.OfferPriceInfo" useGeneratedKeys="true" keyProperty="offerAreaId">
+    <insert id="addOfferArea" parameterType="com.rofour.baseball.controller.model.manager.OfferPriceInfo" useGeneratedKeys="true" keyProperty="offerAreaId">
       INSERT INTO tb_offer_area(offer_area_name) VALUES (#{offerAreaName})
     </insert>
 

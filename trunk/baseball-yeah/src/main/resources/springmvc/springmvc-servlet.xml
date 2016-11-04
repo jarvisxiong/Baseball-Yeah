@@ -21,7 +21,7 @@
     <mvc:annotation-driven     
         conversion-service="conversionService" />    
 
-    <context:component-scan base-package="com.zhiduan.axp" use-default-filters="false">
+    <context:component-scan base-package="com.rofour.baseball" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
         <context:include-filter type="annotation"
                                 expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
@@ -107,7 +107,7 @@
 	<!-- 注解式 -->
 	<task:annotation-driven />
 
-	<bean id="shortUrl" class=" com.zhiduan.axp.common.ShortUrl">
+	<bean id="shortUrl" class=" com.rofour.baseball.common.ShortUrl">
 		<property name="source" value="${sina.source}"/>
 	</bean>
 </beans>

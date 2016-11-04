@@ -44,7 +44,7 @@ define(['base'], function (base) {
     }
 
     return {
-        init: function (args) {
+        init: function (panel) {
             // / <summary>
             // / 模块初始化方法
             // / </summary>
@@ -52,7 +52,7 @@ define(['base'], function (base) {
             var self = this;
 
             //开始时间
-            $('#addstarttimePicker').datetimepicker({
+            $('#addstarttimePicker', panel).datetimepicker({
                 format: 'hh:ii:ss',
                 autoclose: true,
                 pickTime: true,
@@ -62,7 +62,7 @@ define(['base'], function (base) {
             });
 
             //结束时间
-            $('#addendtimePicker').datetimepicker(
+            $('#addendtimePicker', panel).datetimepicker(
                 {
                     format: 'hh:ii:ss',
                     autoclose: true,
@@ -82,20 +82,20 @@ define(['base'], function (base) {
                 sidePagination: "client", // 分页方式：client客户端分页，server服务端分页（*）
                 queryParams: function (params) {
                     return $.extend(params, {
-                        monitorName: $('#monitorName').val()
+                        monitorName: $('#monitorName', panel).val()
                     });
                 },
                 onPageChange: function (number, size) {
                     //表格控件不支持高度自适应
-                    var tableHeight = $('#monitorTable').find("thead").height() + $('#monitorTable').find("tbody").height()
-                        + 3 + $('#monitorTable').parent().parent().parent().parent().find(".clearfix").height();
-                    if ($('#monitorTable').bootstrapTable('getData').length == 0) {//如果没有数据 给固定文字的高度
+                    var tableHeight = $('#monitorTable', panel).find("thead").height() + $('#monitorTable', panel).find("tbody").height()
+                        + 3 + $('#monitorTable', panel).parent().parent().parent().parent().find(".clearfix").height();
+                    if ($('#monitorTable', panel).bootstrapTable('getData').length == 0) {//如果没有数据 给固定文字的高度
                         tableHeight = 105;
                     }
                     if (this.search || this.showExport) {//如果有自带的功能 把自带功能的元素高度加上
-                        tableHeight += ($('#monitorTable').parent().parent().parent().parent().find(".pull-left").height() + 20);
+                        tableHeight += ($('#monitorTable', panel).parent().parent().parent().parent().find(".pull-left").height() + 20);
                     }
-                    $('#monitorTable').bootstrapTable('resetView', {"height": tableHeight});
+                    $('#monitorTable', panel).bootstrapTable('resetView', {"height": tableHeight});
                     if (tableHeight > 900) {//当高度过高 刷新外面iframe高度
                         $(parent.document).find("#mainFrame").height(document.body.scrollHeight);
                     } else {
@@ -154,77 +154,79 @@ define(['base'], function (base) {
                         sortable: true
                     }
                 ]
-            }, '#monitorTable');
+            }, '#monitorTable', panel);
 
-            $("#btn_add").click(function () {
-                self.add();
+            $("#btn_add", panel).click(function () {
+                self.add(panel);
             });
-            $("#btn_edit").click(function () {
-                self.edit();
+            $("#btn_edit", panel).click(function () {
+                self.edit(panel);
             });
-            $("#btn_delete").click(function () {
-                self.remove();
+            $("#btn_delete", panel).click(function () {
+                self.remove(panel);
             });
-            $("#btn_query").click(function () {
+            $("#btn_query", panel).click(function () {
                 $("#monitorTable").bootstrapTable('refresh');
             });
 
-            $("#clearSearch").click(function () {
+            $("#clearSearch", panel).click(function () {
                 base.reset(".main-box-header");
             });
 
-            $("#btn_contact_add").click(function () {
+            $("#btn_contact_add", panel).click(function () {
                 addRow($('#contactDiv'));
-                $('#addForm').bootstrapValidator('addField', $("#contactDiv").find(".add-user").eq(0));
-                $('#addForm').bootstrapValidator('addField', $("#contactDiv").find(".add-phone").eq(0));
-                $('#addForm').bootstrapValidator('addField', $("#contactDiv").find(".add-email").eq(0));
+                $('#addForm', panel).bootstrapValidator('addField', $("#contactDiv", panel).find(".add-user").eq(0));
+                $('#addForm', panel).bootstrapValidator('addField', $("#contactDiv", panel).find(".add-phone").eq(0));
+                $('#addForm', panel).bootstrapValidator('addField', $("#contactDiv", panel).find(".add-email").eq(0));
             });
 
-            $("#btn_contact_edit").click(function () {
-                addRow($('#contactEditDiv'));
+            $("#btn_contact_edit", panel).click(function () {
+                addRow($('#contactEditDiv', panel));
             });
 
-            $('#addModal').on('shown.bs.modal', function () {
-                $('#addForm').data('bootstrapValidator').resetForm(true);
-                $("#addmonitorName").val("");
-                $("#addmonitorSql").val("");
-                $("#addthreshold").val("");
-                $("#addrunInterval").val("");
-                $("#addstartTime").val("00:00:00");
-                $("#addendTime").val("23:59:59");
-                $("#contactDiv").empty();
+            $('#addModal', panel).on('shown.bs.modal', function () {
+                $('#addForm', panel).data('bootstrapValidator').resetForm(true);
+                $("#addmonitorName", panel).val("");
+                $("#addmonitorSql", panel).val("");
+                $("#addthreshold", panel).val("");
+                $("#addrunInterval", panel).val("");
+                $("#addstartTime", panel).val("00:00:00");
+                $("#addendTime", panel).val("23:59:59");
+                $("#contactDiv", panel).empty();
             });
 
-            $('#editModal').on('hidden.bs.modal', function () {
-                $('#editForm').data('bootstrapValidator').resetForm(true);
-                $("#editmonitorName").val("");
-                $("#editmonitorSql").val("");
-                $("#editthreshold").val("");
-                $("#editstartTime").val("");
-                $("#editendTime").val("");
-                $("#editrunInterval").val("");
-                $("#contactEditDiv").empty();
+            $('#editModal', panel).on('hidden.bs.modal', function () {
+                $('#editForm', panel).data('bootstrapValidator').resetForm(true);
+                $("#editmonitorName", panel).val("");
+                $("#editmonitorSql", panel).val("");
+                $("#editthreshold", panel).val("");
+                $("#editstartTime", panel).val("");
+                $("#editendTime", panel).val("");
+                $("#editrunInterval", panel).val("");
+                $("#contactEditDiv", panel).empty();
+                $("#editForm", panel).data('bootstrapValidator').destroy();
+                $("#editForm", panel).data('bootstrapValidator', null);
             });
 
             $(document).on('click', '#editForm .row .remove-row', function () {
                 var parent = $(this).parent();
-                $('#editForm').bootstrapValidator('removeField', parent.find(".add-user").eq(0));
-                $('#editForm').bootstrapValidator('removeField', parent.find(".add-phone").eq(0));
-                $('#editForm').bootstrapValidator('removeField', parent.find(".add-email").eq(0));
+                $('#editForm', panel).bootstrapValidator('removeField', parent.find(".add-user").eq(0));
+                $('#editForm', panel).bootstrapValidator('removeField', parent.find(".add-phone").eq(0));
+                $('#editForm', panel).bootstrapValidator('removeField', parent.find(".add-email").eq(0));
                 parent.remove();
             });
 
             $(document).on('click', '#addForm .row .remove-row', function () {
                 var parent = $(this).parent();
-                $('#addForm').bootstrapValidator('removeField', parent.find(".add-user").eq(0));
-                $('#addForm').bootstrapValidator('removeField', parent.find(".add-phone").eq(0));
-                $('#addForm').bootstrapValidator('removeField', parent.find(".add-email").eq(0));
+                $('#addForm', panel).bootstrapValidator('removeField', parent.find(".add-user").eq(0));
+                $('#addForm', panel).bootstrapValidator('removeField', parent.find(".add-phone").eq(0));
+                $('#addForm', panel).bootstrapValidator('removeField', parent.find(".add-email").eq(0));
                 parent.remove();
             });
         },
-        add: function () {
+        add: function (panel) {
             var self = this;
-            $('#addModal').modal();
+            $('#addModal', panel).modal();
             var validate = {
                 fields: {
                     addmonitorName: {
@@ -315,11 +317,11 @@ define(['base'], function (base) {
                     },
                 }
             };
-            base.validator(validate, "#addForm", self.create);
+            base.validator(validate, "#addForm", self.create, panel);
         },
-        create: function () {
+        create: function (panel) {
             var monitorContactsInfoList = [];
-            var contactRows = $("#contactDiv").children();
+            var contactRows = $("#contactDiv", panel).children();
             for (var i = 0; i < contactRows.length; i++) { //遍历子元素
                 var monitorContactsInfo = {};
                 monitorContactsInfo.contactName = $(contactRows[i]).find(".add-user").val();
@@ -335,27 +337,27 @@ define(['base'], function (base) {
                 }
                 monitorContactsInfoList.push(monitorContactsInfo);
             }
-            var startTime = $("#addstartTime").val() == '' ? '1970-01-01 00:00:00' : '1970-01-01 ' + $("#addstartTime").val();
-            var endTime = $("#addendTime").val() == '' ? '1970-01-01 23:59:59' : '1970-01-01 ' + $("#addendTime").val();
+            var startTime = $("#addstartTime", panel).val() == '' ? '1970-01-01 00:00:00' : '1970-01-01 ' + $("#addstartTime", panel).val();
+            var endTime = $("#addendTime", panel).val() == '' ? '1970-01-01 23:59:59' : '1970-01-01 ' + $("#addendTime", panel).val();
             $.ajax({
                 url: "/manage/monitor/add",
                 contentType: "application/json",
                 type: "POST",
                 data: JSON.stringify({
-                    "monitorName": $("#addmonitorName").val(),
-                    "monitorSql": $("#addmonitorSql").val(),
-                    "threshold": $("#addthreshold").val(),
+                    "monitorName": $("#addmonitorName", panel).val(),
+                    "monitorSql": $("#addmonitorSql", panel).val(),
+                    "threshold": $("#addthreshold", panel).val(),
                     "startTime": startTime,
                     "endTime": endTime,
-                    "runInterval": $("#addrunInterval").val(),
+                    "runInterval": $("#addrunInterval", panel).val(),
                     "monitorContactsInfoList": monitorContactsInfoList
                 }),
                 success: function (data) {
                     var obj = data;
                     if (obj.success == 0) {
-                        $("#monitorTable").bootstrapTable('refresh');
-                        $('#addModal').modal('hide');
-                        $('#addForm').data('bootstrapValidator').resetForm(true);
+                        $("#monitorTable", panel).bootstrapTable('refresh');
+                        $('#addModal', panel).modal('hide');
+                        $('#addForm', panel).data('bootstrapValidator').resetForm(true);
                         base.success("添加成功！");
                     } else {
                         base.error(obj.message);
@@ -366,7 +368,7 @@ define(['base'], function (base) {
                 }
             });
         },
-        edit: function () {
+        edit: function (panel) {
             var self = this;
             var validate = {
                 fields: {
@@ -458,7 +460,7 @@ define(['base'], function (base) {
                     },
                 }
             };
-            var arrselections = $("#monitorTable").bootstrapTable('getSelections');
+            var arrselections = $("#monitorTable", panel).bootstrapTable('getSelections');
             if (arrselections.length > 1) {
                 sweetAlert("Oops...", "只能选择一行进行编辑!", "error");
                 return;
@@ -467,32 +469,32 @@ define(['base'], function (base) {
                 sweetAlert("Oops...", "请选择有效数据!", "error");
                 return;
             }
-            $('#editModal').modal();
+            $('#editModal', panel).modal();
 
-            $("#monitorId").val(arrselections[0].monitorId);
-            $("#editmonitorName").val(arrselections[0].monitorName);
-            $("#editmonitorSql").val(arrselections[0].monitorSql);
-            $("#editthreshold").val(arrselections[0].threshold);
-            $("#editrunInterval").val(arrselections[0].runInterval);
-            $("#editstartTime").val(arrselections[0].startTime.slice(arrselections[0].startTime.indexOf(' ') + 1));
-            $("#editendTime").val(arrselections[0].endTime.slice(arrselections[0].endTime.indexOf(' ') + 1));
-            base.validator(validate, "#editForm", self.update);
+            $("#monitorId", panel).val(arrselections[0].monitorId);
+            $("#editmonitorName", panel).val(arrselections[0].monitorName);
+            $("#editmonitorSql", panel).val(arrselections[0].monitorSql);
+            $("#editthreshold", panel).val(arrselections[0].threshold);
+            $("#editrunInterval", panel).val(arrselections[0].runInterval);
+            $("#editstartTime", panel).val(arrselections[0].startTime.slice(arrselections[0].startTime.indexOf(' ') + 1));
+            $("#editendTime", panel).val(arrselections[0].endTime.slice(arrselections[0].endTime.indexOf(' ') + 1));
+            base.validator(validate, "#editForm", self.update, panel);
             var contactsList = arrselections[0].monitorContactsInfoList;
             for (var i = 0; i < contactsList.length; i++) {
-                addRow($('#contactEditDiv'));
-                $('#editForm').bootstrapValidator('addField', $("#contactEditDiv").find(".add-user").eq(0));
-                $('#editForm').bootstrapValidator('addField', $("#contactEditDiv").find(".add-phone").eq(0));
-                $('#editForm').bootstrapValidator('addField', $("#contactEditDiv").find(".add-email").eq(0));
+                addRow($('#contactEditDiv', panel));
+                $('#editForm', panel).bootstrapValidator('addField', $("#contactEditDiv", panel).find(".add-user").eq(0));
+                $('#editForm', panel).bootstrapValidator('addField', $("#contactEditDiv", panel).find(".add-phone").eq(0));
+                $('#editForm', panel).bootstrapValidator('addField', $("#contactEditDiv", panel).find(".add-email").eq(0));
             }
             for (var i = 0; i < contactsList.length; i++) {
-                $("#contactEditDiv").find(".add-user").eq(i).val(contactsList[i].contactName);
-                $("#contactEditDiv").find(".add-phone").eq(i).val(contactsList[i].phone);
-                $("#contactEditDiv").find(".add-email").eq(i).val(contactsList[i].email);
+                $("#contactEditDiv", panel).find(".add-user", panel).eq(i).val(contactsList[i].contactName);
+                $("#contactEditDiv", panel).find(".add-phone", panel).eq(i).val(contactsList[i].phone);
+                $("#contactEditDiv", panel).find(".add-email", panel).eq(i).val(contactsList[i].email);
             }
         },
-        update: function () {
+        update: function (panel) {
             var monitorContactsInfoList = [];
-            var contactRows = $("#contactEditDiv").children();
+            var contactRows = $("#contactEditDiv", panel).children();
             for (var i = 0; i < contactRows.length; i++) { //遍历子元素
                 var monitorContactsInfo = {};
                 monitorContactsInfo.contactName = $(contactRows[i]).find(".add-user").val();
@@ -500,28 +502,28 @@ define(['base'], function (base) {
                 monitorContactsInfo.email = $(contactRows[i]).find(".add-email").val();
                 monitorContactsInfoList.push(monitorContactsInfo);
             }
-            var startTime = $("#editstartTime").val() == '' ? '1970-01-01 00:00:00' : '1970-01-01 ' + $("#editstartTime").val();
-            var endTime = $("#editendTime").val() == '' ? '1970-01-01 23:59:59' : '1970-01-01 ' + $("#editendTime").val();
+            var startTime = $("#editstartTime", panel).val() == '' ? '1970-01-01 00:00:00' : '1970-01-01 ' + $("#editstartTime", panel).val();
+            var endTime = $("#editendTime", panel).val() == '' ? '1970-01-01 23:59:59' : '1970-01-01 ' + $("#editendTime", panel).val();
             $.ajax({
                 url: "/manage/monitor/update",
                 contentType: "application/json",
                 type: "POST",
                 data: JSON.stringify({
-                    "monitorId": $("#monitorId").val(),
-                    "monitorName": $("#editmonitorName").val(),
-                    "monitorSql": $("#editmonitorSql").val(),
-                    "threshold": $("#editthreshold").val(),
+                    "monitorId": $("#monitorId", panel).val(),
+                    "monitorName": $("#editmonitorName", panel).val(),
+                    "monitorSql": $("#editmonitorSql", panel).val(),
+                    "threshold": $("#editthreshold", panel).val(),
                     "startTime": startTime,
                     "endTime": endTime,
-                    "runInterval": $("#editrunInterval").val(),
+                    "runInterval": $("#editrunInterval", panel).val(),
                     "monitorContactsInfoList": monitorContactsInfoList
                 }),
                 success: function (data) {
                     var obj = data;
                     if (obj.success == 0) {
-                        $("#monitorTable").bootstrapTable('refresh');
-                        $('#editModal').modal('hide');
-                        $('#editForm').data('bootstrapValidator').resetForm(true);
+                        $("#monitorTable", panel).bootstrapTable('refresh');
+                        $('#editModal', panel).modal('hide');
+                        $('#editForm', panel).data('bootstrapValidator').resetForm(true);
                         base.success("更新成功！");
                     } else {
                         base.error(obj.message);
@@ -532,8 +534,8 @@ define(['base'], function (base) {
                 }
             });
         },
-        remove: function () {
-            var arrselections = $("#monitorTable").bootstrapTable('getSelections');
+        remove: function (panel) {
+            var arrselections = $("#monitorTable", panel).bootstrapTable('getSelections');
             if (arrselections.length <= 0) {
                 base.error("请选择有效数据!");
                 return;

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="/common/comm.jsp" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%--<%@ include file="/common/comm.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,7 +32,7 @@
           href="<%=request.getContextPath()%>/plugs/dropzone/dropzone.min.css">
     <script
             src="<%=request.getContextPath()%>/plugs/dropzone/dropzone.js"></script>
-    <%--<script type="text/javascript" src="<%=request.getContextPath()%>/plugs/knockout/knockout-3.4.0.js"></script>--%>
+    &lt;%&ndash;<script type="text/javascript" src="<%=request.getContextPath()%>/plugs/knockout/knockout-3.4.0.js"></script>&ndash;%&gt;
     <script src="<%=request.getContextPath()%>/js/require.js"
             data-main="<%=request.getContextPath()%>/js/modules/main"></script>
     <script type="text/javascript">
@@ -52,7 +53,9 @@
 <input type="hidden" id="taskId" value='${taskId}'>
 <div id="page-wrapper" class="container">
     <div class="row">
-        <form action="">
+        <form action="">--%>
+            <input type="hidden" id="taskId" value='${taskId}'>
+            <input type="hidden" class="inmodule" value="taskOrderModules">
             <div class="row">
                 <div class="row">
                     <div class="col-lg-12">
@@ -76,14 +79,14 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group col-lg-12 group-activity">
-                                        <label for="description" class="col-lg-2 control-label add-activity">描述：</label>
-                                        <div class="col-lg-6  ">
-                                            <textarea type="text" class="form-control" id="description" placeholder="描述" maxlength="500"
-                                                      data-bv-field="add_content"></textarea>
+                                    <%--<div class="form-group col-lg-12 group-activity">--%>
+                                        <%--<label for="description" class="col-lg-2 control-label add-activity">描述：</label>--%>
+                                        <%--<div class="col-lg-6  ">--%>
+                                            <%--<textarea type="text" class="form-control" id="description" placeholder="描述" maxlength="500"--%>
+                                                      <%--data-bv-field="add_content"></textarea>--%>
 
-                                        </div>
-                                    </div>
+                                        <%--</div>--%>
+                                    <%--</div>--%>
                                     <div class="form-group col-lg-12 group-activity">
                                         <label for="claim" class="col-lg-2 control-label add-activity">要求：</label>
                                         <div class="col-lg-6">
@@ -132,20 +135,16 @@
                                     <div class="form-group col-lg-12 group-activity">
                                         <label for="taskLevel" class="col-lg-2 control-label add-activity">是否需要图片:</label>
                                         <div class="radio col-lg-6">
-                                            <input type="radio" name="addEnabled" id="addYEnabled" value="option1"
-                                                   checked=""> <label for="addYEnabled">是</label> <input
-                                                type="radio" name="addEnabled" id="addNEnabled" value="option2">
-                                            <label for="addNEnabled">否 </label>
+                                            <input type="text" class="form-control" id="editIsImg" placeholder="主题" maxlength="20">
+
                                         </div>
                                     </div>
 
                                     <div class="form-group col-lg-12 group-activity">
                                         <label class="col-lg-2 control-label add-activity">是否需要任务报告:</label>
                                         <div class="radio col-lg-6">
-                                            <input type="radio" name="isRemark" id="editYIsRemark" value="option1"
-                                                   checked=""> <label for="editYIsRemark">是</label> <input
-                                                type="radio" name="isRemark" id="editNIsRemark" value="option2">
-                                            <label for="editNIsRemark"> 否</label>
+                                            <input type="text" class="form-control" id="editIsRemark" placeholder="主题" maxlength="20">
+
                                         </div>
                                     </div>
 
@@ -187,10 +186,9 @@
                     </div>
                 </div>
             </div>
-        </form>
+        <%--</form>
     </div>
-</div>
+</div>--%>
 <jsp:include page="addModal.jsp"></jsp:include>
-</body>
-</html>
+
 

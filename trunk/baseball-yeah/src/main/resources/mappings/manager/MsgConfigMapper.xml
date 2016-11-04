@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.MsgConfigMapper" >
-  <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.MsgConfigBean" >
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.MsgConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.manager.bean.MsgConfigBean" >
       <result property="messageConfigId" column="message_config_id" jdbcType="BIGINT" javaType="java.lang.Long" />
       <result property="messageTypeId" column="message_type_id" jdbcType="VARCHAR" javaType="java.lang.String" />
       <result property="sendTypeId" column="send_type_id" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -23,7 +23,7 @@
     where message_config_id = #{messageConfigId,jdbcType=BIGINT}
   </select>
   
-   <select id="selectAll" resultMap="BaseResultMap" parameterType="com.zhiduan.axp.controller.model.manager.MsgConfigInfo">
+   <select id="selectAll" resultMap="BaseResultMap" parameterType="com.rofour.baseball.controller.model.manager.MsgConfigInfo">
     select 
     <include refid="Base_Column_List" />
     from tb_message_config where 1=1
@@ -39,7 +39,7 @@
   </select>
   
    <!-- 查询数量 -->
-  <select id="getTotal" resultType="int" parameterType="com.zhiduan.axp.controller.model.manager.MsgConfigInfo">
+  <select id="getTotal" resultType="int" parameterType="com.rofour.baseball.controller.model.manager.MsgConfigInfo">
     select count(1) 
     from tb_message_config
     where 1=1
@@ -55,7 +55,7 @@
     delete from tb_message_config
     where message_config_id = #{messageConfigId,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.MsgConfigBean" >
+  <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.MsgConfigBean" >
     insert into tb_message_config (message_type_id, send_type_id, 
       level, be_immediate_send, max_length, 
       be_enabled, send_role_id, extend_code
@@ -65,7 +65,7 @@
      #{beEnabled,jdbcType=TINYINT}, #{sendRoleId,jdbcType=BIGINT}, #{extendCode,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.MsgConfigBean" >
+  <insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.MsgConfigBean" >
     insert into tb_message_config
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="messageConfigId != null" >
@@ -126,7 +126,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.MsgConfigBean" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.MsgConfigBean" >
     update tb_message_config
     <set >
       <if test="messageTypeId != null" >
@@ -156,7 +156,7 @@
     </set>
     where message_config_id = #{messageConfigId,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.MsgConfigBean" >
+  <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.MsgConfigBean" >
     update tb_message_config
     set message_type_id = #{messageTypeId,jdbcType=VARCHAR},
       send_type_id = #{sendTypeId,jdbcType=VARCHAR},

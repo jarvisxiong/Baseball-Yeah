@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.AtmServerMapper" >
-  <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.AtmServerMapper" >
+  <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.manager.bean.AtmServerBean" >
     <constructor >
       <idArg column="attachment_server_id" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="attachment_server_name" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -16,7 +16,7 @@
     attachment_server_id, attachment_server_name, endpoint, access_key_id, access_key_secret, 
     access_url, be_enabled
   </sql>
-  <select id="selectByPrimaryKey" resultType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" parameterType="java.lang.String" >
+  <select id="selectByPrimaryKey" resultType="com.rofour.baseball.dao.manager.bean.AtmServerBean" parameterType="java.lang.String" >
     select 
     *
     from tb_attachment_server
@@ -39,7 +39,7 @@
     delete from tb_attachment_server
     where attachment_server_id = #{attachmentServerId,jdbcType=VARCHAR}
   </delete>
-  <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+  <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.AtmServerBean" >
     insert into tb_attachment_server (attachment_server_id, attachment_server_name, 
       endpoint, access_key_id, access_key_secret, 
       access_url, be_enabled
@@ -49,7 +49,7 @@
       #{accessUrl,jdbcType=VARCHAR}, #{beEnabled,jdbcType=TINYINT}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+  <insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.AtmServerBean" >
     insert into tb_attachment_server
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="attachmentServerId != null" >
@@ -99,7 +99,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.AtmServerBean" >
     update tb_attachment_server
     <set >
       <if test="attachmentServerName != null" >
@@ -123,7 +123,7 @@
     </set>
     where attachment_server_id = #{attachmentServerId,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+  <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.AtmServerBean" >
     update tb_attachment_server
     set attachment_server_name = #{attachmentServerName,jdbcType=VARCHAR},
       endpoint = #{endpoint,jdbcType=VARCHAR},
@@ -133,7 +133,7 @@
       be_enabled = #{beEnabled,jdbcType=TINYINT}
     where attachment_server_id = #{attachmentServerId,jdbcType=VARCHAR}
   </update>
-  	<select id="isAtmServerExists" resultType="int" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+  	<select id="isAtmServerExists" resultType="int" parameterType="com.rofour.baseball.dao.manager.bean.AtmServerBean" >
 		SELECT
 		count(1)
 		FROM tb_attachment_server
@@ -141,7 +141,7 @@
 		attachment_server_id=#{attachmentServerId} or
 		attachment_server_name=#{attachmentServerName}
 	</select>
-	 	<select id="isAtmServerNameExists" resultType="int" parameterType="com.zhiduan.axp.dao.manager.bean.AtmServerBean" >
+	 	<select id="isAtmServerNameExists" resultType="int" parameterType="com.rofour.baseball.dao.manager.bean.AtmServerBean" >
 		SELECT
 		count(1)
 		FROM tb_attachment_server

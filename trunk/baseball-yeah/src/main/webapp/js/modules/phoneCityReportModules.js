@@ -4,9 +4,9 @@ define(['base'], function (base) {
      */
     var datatable;
     return {
-        init: function (args) {
+        init: function (panel) {
             var self = this;
-            $('#starttimePicker').datetimepicker({
+            $('#starttimePicker', panel).datetimepicker({
        			format : 'yyyy-mm-dd',
        			autoclose : true,
        			startView : 2,
@@ -14,16 +14,16 @@ define(['base'], function (base) {
        			todayHighlight : true,
        			endDate : new Date()
        		});
-            $("#startdate").val((new Date((new Date()).getTime())).Format("yyyy-MM-dd"));
+            $("#startdate", panel).val((new Date((new Date()).getTime())).Format("yyyy-MM-dd"));
             datatable = base.datagrid({
                 url: '/report/phonecount/cityPhoneCount',
                 queryParams: function (params) {
                     return $.extend(params,
                         {
                             selectDate: $(
-                                "#startdate")
+                                "#startdate", panel)
                                 .val(),
-                             cityId:$("#selcity").val()
+                             cityId:$("#selcity", panel).val()
                         });
                 },
             	method : "post",
@@ -33,13 +33,13 @@ define(['base'], function (base) {
     			sidePagination:"client",
     			onLoadSuccess:function(data){
 					  //表格控件不支持高度自适应
-                  var tableHeight = 105+$("#phoneCityTable").find("thead").height() + $("#phoneCityTable").find("tbody").height()
-                  +$("#phoneCityTable").parent().parent().parent().parent().find(".clearfix").height();
+                  var tableHeight = 105+$("#phoneCityTable", panel).find("thead").height() + $("#phoneCityTable", panel).find("tbody").height()
+                  +$("#phoneCityTable", panel).parent().parent().parent().parent().find(".clearfix").height();
                   if (!data||data.length == 0) {//如果没有数据 给固定文字的高度
                       tableHeight = 105;
                   }
              
-                  $("#phoneCityTable").bootstrapTable('resetView', {"height": tableHeight});
+                  $("#phoneCityTable", panel).bootstrapTable('resetView', {"height": tableHeight});
                  
 				},
                 columns: [
@@ -110,25 +110,25 @@ define(['base'], function (base) {
                         }
                     }*/
                   ]
-            }, '#phoneCityTable');
-            $("#btn_query").click(function(){
+            }, '#phoneCityTable', panel);
+            $("#btn_query", panel).click(function(){
            	 datatable.bootstrapTable('refresh');
             });
-            $("#clearSearch").click(function () {
+            $("#clearSearch", panel).click(function () {
                 base.reset(".main-box-header");
-                $('#selcity').select2("val", null);
+                $('#selcity', panel).select2("val", null);
             });
             $.ajax({
                 type: "POST",
                 url: "/manage/province/getcity",
                 dataType: "json",
                 success: function (data) {
-                    $("#selcity").select2({
+                    $("#selcity", panel).select2({
                         data: data,
                         placeholder: '请选择',
                         allowClear: true
                     });
-                    $('#selcity').select2("val", null);
+                    $('#selcity', panel).select2("val", null);
                 }
             });
         }

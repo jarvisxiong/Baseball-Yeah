@@ -19,8 +19,8 @@ define(
                         queryParams: function (params) {
                             return $.extend(params,
                                 {
-                                    offerAreaName: $.trim($("#offerAreaName").val()),
-                                    provinceId: $.trim($("#provinceIds").val())
+                                    offerAreaName: $.trim($("#offerAreaName",args).val()),
+                                    provinceId: $.trim($("#provinceIds",args).val())
                                 });
                         },
                         columns: [
@@ -52,17 +52,17 @@ define(
                                 width: 400
                             }
                         ]
-                    }, '#areaTable');
+                    }, '#areaTable',args);
 
                 $.ajax({
                     type: "GET",
                     url: "/manage/province/getProvinceNoDefault",
                     dataType: "json",
                     success: function (DATA) {
-                        $("#addProvinceIds").select2({
+                        $("#addProvinceIds",args).select2({
                             data: DATA
                         });
-                        $("#editProvinceIds").select2({
+                        $("#editProvinceIds",args).select2({
                             data: DATA
                         });
                     }
@@ -73,43 +73,49 @@ define(
                     url: "/manage/province/getprovince",
                     dataType: "json",
                     success: function (DATA) {
-                        $("#provinceIds").select2({
+                        $("#provinceIds",args).select2({
                             data: DATA
                         });
                     }
                 });
 
-                $("#btn_add").click(function () {
-                    self.add();
+                $("#btn_add",args).click(function () {
+                    self.add(args);
                 });
-                $("#btn_edit").click(function () {
-                    self.edit();
+                $("#btn_edit",args).click(function () {
+                    self.edit(args);
                 });
-                $("#btn_delete").click(function () {
-                    self.remove();
+                $("#btn_delete",args).click(function () {
+                    self.remove(args);
                 });
-                $("#btn_query").click(function () {
-                    $("#areaTable").bootstrapTable('refresh');
+                $("#btn_query",args).click(function () {
+                    // $("#areaTable",args).bootstrapTable('refresh');
+                    $("#areaTable",args).bootstrapTable('selectPage', 1);
                 });
 
-                $("#clearSearch").click(function () {
+                $("#clearSearch",args).click(function () {
                     base.reset(".main-box-body");
-                    $("#provinceIds").val("").trigger("change");
+                    $("#provinceIds",args).val("").trigger("change");
                 });
 
-                $('#addProvinceIds').select2({
+                $('#addProvinceIds',args).select2({
                     placeholder: '请选择角色'
                 });
 
-                $('#addModal').on('shown.bs.modal', function () {
-                    $('#addForm').data('bootstrapValidator').resetForm(true);
-                })
+                $('#addModal',args).on('shown.bs.modal', function () {
+                    $('#addForm',args).data('bootstrapValidator').resetForm(true);
+                });
+                
+                $("#editModal", args).on('hidden.bs.modal', function() {
+                    $("#editForm", args).data('bootstrapValidator').destroy();
+                    $("#editForm", args).data('bootstrapValidator', null);
+                });
             },
-            add: function () {
+            add: function (args) {
                 var self = this;
-                $('#addOfferAreaName').val('');
-                $('#addProvinceIds').val('').trigger("change");
-                $('#addModal').modal({
+                $('#addOfferAreaName',args).val('');
+                $('#addProvinceIds',args).val('').trigger("change");
+                $('#addModal',args).modal({
                     keyboard: false,
                     backdrop: 'static'
                 });
@@ -137,19 +143,20 @@ define(
                                 }
                             }
                         }
-                    }, "#addForm", self.create)
+                    }, "#addForm", self.create,args)
             },
-            create: function () {
+            create: function (args) {
                 $.post("/manage/offerPrice/add",
                     {
-                        "offerAreaName": $("#addOfferAreaName").val(),
-                        "provinceIds": $("#addProvinceIds").val() == null ? "" : $("#addProvinceIds").val().join(",")
+                        "offerAreaName": $("#addOfferAreaName",args).val(),
+                        "provinceIds": $("#addProvinceIds",args).val() == null ? "" : $("#addProvinceIds",args).val().join(",")
                     }, function (data, status) {
                         if (status == "success") {
                             if (data.success == 0) {
                                 base.success("增加成功");
-                                $("#areaTable").bootstrapTable('refresh');
-                                $('#addModal').modal('hide');
+                                // $("#areaTable",args).bootstrapTable('refresh');
+                                $("#areaTable",args).bootstrapTable('selectPage', 1);
+                                $('#addModal',args).modal('hide');
                                 
                             } else {
                                 base.error(data.message);
@@ -159,9 +166,9 @@ define(
                         }
                     });
             },
-            edit: function () {
+            edit: function (args) {
                 var self = this;
-                var arrselections = $("#areaTable").bootstrapTable(
+                var arrselections = $("#areaTable",args).bootstrapTable(
                     'getSelections');
                 if (arrselections.length > 1) {
                     sweetAlert("Oops...", "只能选择一行进行编辑!", "error");
@@ -171,11 +178,11 @@ define(
                     sweetAlert("Oops...", "请选择有效数据!", "error");
                     return;
                 }
-                $('#editOfferAreaId').val(arrselections[0].offerAreaId);
-                $("#editOfferAreaName").val(arrselections[0].offerAreaName);
-                $("#editProvinceIds").val(arrselections[0].provinceIds).trigger("change");
+                $('#editOfferAreaId',args).val(arrselections[0].offerAreaId);
+                $("#editOfferAreaName",args).val(arrselections[0].offerAreaName);
+                $("#editProvinceIds",args).val(arrselections[0].provinceIds).trigger("change");
 
-                $('#editModal').modal({
+                $('#editModal',args).modal({
                     keyboard: false,
                     backdrop: 'static'
                 });
@@ -205,34 +212,35 @@ define(
                             }
                         }
                     },
-                    "#editForm", self.update
+                    "#editForm", self.update,args
                 )
             },
-            update: function () {
+            update: function (args) {
                 $.post("/manage/offerPrice/update",
                     {
-                        "offerAreaId": $("#editOfferAreaId").val(),
-                        "offerAreaName": $("#editOfferAreaName").val(),
-                        "provinceIds": $("#editProvinceIds").val() == null ? "" : $("#editProvinceIds").val().join(",")
+                        "offerAreaId": $("#editOfferAreaId",args).val(),
+                        "offerAreaName": $("#editOfferAreaName",args).val(),
+                        "provinceIds": $("#editProvinceIds",args).val() == null ? "" : $("#editProvinceIds",args).val().join(",")
                     }, function (data, status) {
                         if (status == "success") {
                             if (data.success == 0) {
                                 base.success("编辑成功");
-                                $("#areaTable").bootstrapTable('refresh');
-                                $('#editModal').modal('hide');
-                                $('#editForm').data('bootstrapValidator').resetForm(true);
-                                $('#addForm').data('bootstrapValidator').resetForm(true);
+                                // $("#areaTable",args).bootstrapTable('refresh');
+                                $("#areaTable",args).bootstrapTable('selectPage', 1);
+                                $('#editModal',args).modal('hide');
+                                $('#editForm',args).data('bootstrapValidator').resetForm(true);
+                                $('#addForm',args).data('bootstrapValidator').resetForm(true);
                             } else {
                                 base.error(data.message);
-                                $('#editForm').find(".btn-primary").removeAttr("disabled");
+                                $('#editForm',args).find(".btn-primary").removeAttr("disabled");
                             }
                         } else {
                             base.error("更新失败!");
                         }
                     });
             },
-            remove: function () {
-                var arrselections = $("#areaTable").bootstrapTable(
+            remove: function (args) {
+                var arrselections = $("#areaTable",args).bootstrapTable(
                     'getSelections');
                 if (arrselections.length > 1) {
                     base.error("只能选择一行进行编辑!");
@@ -257,7 +265,8 @@ define(
                                 if (status == "success") {
                                     if (data.success == 0) {
                                         base.success("删除成功");
-                                        $("#areaTable").bootstrapTable('refresh');
+                                        // $("#areaTable",args).bootstrapTable('refresh');
+                                        $("#areaTable",args).bootstrapTable('selectPage', 1);
                                     } else {
                                         base.error(obj.message);
                                     }

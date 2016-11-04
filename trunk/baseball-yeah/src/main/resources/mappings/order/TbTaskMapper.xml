@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.order.mapper.TbTaskMapper">
+<mapper namespace="com.rofour.baseball.dao.order.mapper.TbTaskMapper">
 
-    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.order.bean.TbTask">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.order.bean.TbTask">
         <constructor>
             <idArg column="task_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
             <arg column="theme" jdbcType="VARCHAR" javaType="java.lang.String"/>
@@ -24,7 +24,7 @@
     effective_end_date, deadline, create_user_id, create_time, is_published, publish_user_id, 
     publish_time, is_processed
   </sql>
-    <select id="selectByPrimaryKey" resultType="com.zhiduan.axp.dao.order.bean.TbTask" parameterType="com.zhiduan.axp.dao.order.bean.TbTask">
+    <select id="selectByPrimaryKey" resultType="com.rofour.baseball.dao.order.bean.TbTask" parameterType="com.rofour.baseball.dao.order.bean.TbTask">
         select
         task_id  taskId,  theme, description, rule,claim, task_cover taskCover, is_img isImg, task_level taskLevel,
         create_user_id createUserId, create_time createTime,is_remark isRemark
@@ -32,25 +32,28 @@
         where task_id = #{taskId,jdbcType=BIGINT}
     </select>
 
-    <select id="selectTask" resultType="com.zhiduan.axp.dao.order.bean.TbTask" parameterType="com.zhiduan.axp.dao.order.bean.TbTask">
+    <select id="selectTask" resultType="com.rofour.baseball.dao.order.bean.TbTask" parameterType="com.rofour.baseball.dao.order.bean.TbTask">
 
         SELECT
         a.task_id taskId,d.task_no taskNo, d.task_unit_price taskUnitPrice, d.unit_total unitTotal,
-        a.theme, a.task_level taskLevel, b.user_name userName,  c.dept_name dutyName,d.state,
-        a.create_time createTime ,  t1.carry, t1.cancel,  t1.done,e.full_name fullName
+        a.theme, a.task_level taskLevel, b.user_name userName, c.dept_name dutyName,d.state,
+        a.create_time createTime , t1.carry, t1.audit,t1.cancel, t1.done,e.full_name fullName,d.task_sub_id taskSubId,
+        d.effective_start_date effectiveStartDate,d.effective_end_date effectiveEndDate,d.deadline,
+        d.task_unit_price taskUnitPrice,d.unit_total unitTotal,d.upper_limit upperLimit,d.task_unit_num taskUnitNum,d.college_id collegeId
         FROM tb_task a
-        INNER  JOIN tb_task_sub d
+        INNER JOIN tb_task_sub d
         ON a.task_id=d.task_id
-        INNER  JOIN tb_user_manager b
+        INNER JOIN tb_user_manager b
         ON a.create_user_id =b.user_manager_id
         INNER JOIN tb_college e
         ON e.college_id=d.college_id
-        INNER  JOIN tb_dept c
+        INNER JOIN tb_dept c
         ON b.dept_id=c.dept_id
-        LEFT  JOIN (SELECT a.task_sub_id
-        ,COUNT(CASE WHEN b.state = 3 THEN 1 END)  carry
-        ,COUNT(CASE WHEN b.state = 6 THEN 1 END)  cancel
-        ,COUNT(CASE WHEN b.state = 5 THEN 1 END)  done
+        LEFT JOIN (SELECT a.task_sub_id
+        ,COUNT(CASE WHEN b.state = 3 THEN 1 END) carry
+        ,COUNT(CASE WHEN b.state = 6 THEN 1 END) cancel
+        ,COUNT(CASE WHEN b.state = 10 THEN 1 END) audit
+        ,COUNT(CASE WHEN b.state = 5 THEN 1 END) done
         FROM tb_sys_task_order a INNER JOIN tb_order b
         ON a.order_id = b.order_id
         GROUP BY a.task_sub_id) t1
@@ -62,6 +65,7 @@
         </if>
         <if test="state != '' and state!=null">
             AND d.state like CONCAT('%',TRIM(#{state}),'%')
+            <![CDATA[ and d.effective_end_date> now()]]>
         </if>
         <if test="theme != '' and theme!=null">
             AND a.theme like CONCAT('%',TRIM(#{theme}),'%')
@@ -70,10 +74,13 @@
             and a.task_level=#{taskLevel}
         </if>
         <if test="dutyId != null and dutyId!= ''">
-            and b.duty_id=#{dutyId}
+            and b.dept_id=#{dutyId}
         </if>
         <if test="collegeId != null and collegeId!= ''">
             and e.college_id=#{collegeId}
+        </if>
+        <if test="isDelay != null and isDelay!= ''">
+            <![CDATA[ and d.effective_end_date< now()]]>
         </if>
 
         <if test="startDate != null  and startDate != '' ">
@@ -86,20 +93,20 @@
         ORDER BY ${sort} ${order}
         LIMIT #{offset}, #{limit}
     </select>
-    <select id="selectTaskCount" resultType="int" parameterType="com.zhiduan.axp.dao.order.bean.TbTask">
+    <select id="selectTaskCount" resultType="int" parameterType="com.rofour.baseball.dao.order.bean.TbTask">
         select COUNT(1) from (
         SELECT
         a.task_id taskId,d.task_no taskNo, d.task_unit_price taskUnitPrice, d.unit_total unitTotal,
-        a.theme, a.task_level taskLevel, b.user_name userName,  c.dept_name dutyName,d.state,
+        a.theme, a.task_level taskLevel, b.user_name userName, c.dept_name dutyName,d.state,
         a.create_time createTime
         FROM tb_task a
-        INNER  JOIN tb_task_sub d
+        INNER JOIN tb_task_sub d
         ON a.task_id=d.task_id
-        INNER  JOIN tb_user_manager b
+        INNER JOIN tb_user_manager b
         ON a.create_user_id =b.user_manager_id
         INNER JOIN tb_college e
         ON e.college_id=d.college_id
-        INNER  JOIN tb_dept c
+        INNER JOIN tb_dept c
         ON b.dept_id=c.dept_id
         where
         1=1
@@ -108,6 +115,7 @@
         </if>
         <if test="state != '' and state!=null">
             AND d.state like CONCAT('%',TRIM(#{state}),'%')
+            <![CDATA[ and d.effective_end_date> now()]]>
         </if>
         <if test="theme != '' and theme!=null">
             AND a.theme like CONCAT('%',TRIM(#{theme}),'%')
@@ -116,10 +124,15 @@
             and a.task_level=#{taskLevel}
         </if>
         <if test="dutyId != null and dutyId!= ''">
-            and b.duty_id=#{dutyId}
+            and b.dept_id=#{dutyId}
         </if>
+
         <if test="collegeId != null and collegeId!= ''">
             and e.college_id=#{collegeId}
+        </if>
+
+        <if test="isDelay != null and isDelay!= ''">
+            <![CDATA[ and d.effective_end_date< now()]]>
         </if>
 
         <if test="startDate != null  and startDate != '' ">
@@ -133,10 +146,10 @@
 
     </select>
 
-    <select id="getTaskSubCount" resultType="int" parameterType="com.zhiduan.axp.dao.order.bean.TbTask">
+    <select id="getTaskSubCount" resultType="int" parameterType="com.rofour.baseball.dao.order.bean.TbTask">
         SELECT COUNT(1)  FROM tb_task_sub WHERE state !=0 AND task_id=#{taskId}
     </select>
-    <update id="updateTaskSub" parameterType="com.zhiduan.axp.dao.order.bean.TbTask">
+    <update id="updateTaskSub" parameterType="com.rofour.baseball.dao.order.bean.TbTask">
         UPDATE  tb_task_sub
         set state = 1 where  task_id=#{taskId} and state=0
     </update>
@@ -144,7 +157,7 @@
     delete from tb_task
     where task_id = #{taskId,jdbcType=BIGINT}
   </delete>
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.order.bean.TbTask">
+    <insert id="insert" parameterType="com.rofour.baseball.dao.order.bean.TbTask">
     insert into tb_task (task_id, task_no, theme, 
       description, rule, claim, 
       task_cover, is_img, task_unit_price, 
@@ -162,7 +175,7 @@
       #{createTime,jdbcType=TIMESTAMP}, #{isPublished,jdbcType=TINYINT}, #{publishUserId,jdbcType=BIGINT}, 
       #{publishTime,jdbcType=TIMESTAMP}, #{isProcessed,jdbcType=TINYINT})
   </insert>
-    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.order.bean.TbTask" useGeneratedKeys="true" keyProperty="taskId">
+    <insert id="insertSelective" parameterType="com.rofour.baseball.dao.order.bean.TbTask" useGeneratedKeys="true" keyProperty="taskId">
         insert into tb_task
         <trim prefix="(" suffix=")" suffixOverrides=",">
 
@@ -219,7 +232,7 @@
             <if test="claim != null">
                 #{claim,jdbcType=VARCHAR},
             </if>
-            <if test="taskCover != null">
+            <if test="taskCover != null and taskCover != ''">
                 #{taskCover,jdbcType=VARCHAR},
             </if>
             <if test="isImg != null">
@@ -241,7 +254,7 @@
 
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.order.bean.TbTask">
+    <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.order.bean.TbTask">
         update tb_task
         <set>
 
@@ -289,7 +302,7 @@
         </set>
         where task_id = #{taskId,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.order.bean.TbTask">
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.order.bean.TbTask">
     update tb_task
     set task_no = #{taskNo,jdbcType=BIGINT},
       theme = #{theme,jdbcType=VARCHAR},

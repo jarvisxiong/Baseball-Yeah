@@ -17,18 +17,18 @@
 								<div class="main-box clearfix">
 									<header class="main-box-header clearfix">
 										<div class="panel-group" style="margin-bottom: 0px;"
-											id="accordion">
+											id="accordion1">
 											<div class="panel panel-default">
 												<div class="panel-heading">
 													<h4 class="panel-title">
 														<a class="a-clear-search" id="clearSearch"> <span
 															class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
 														</a> <a class="accordion-toggle a-search"
-															data-toggle="collapse" data-parent="#accordion"
-															href="#collapseOne"> 查询条件 </a>
+															data-toggle="collapse" data-parent="#accordion1"
+															href="#collapseOne1"> 查询条件 </a>
 													</h4>
 												</div>
-												<div id="collapseOne" class="panel-collapse collapse in">
+												<div id="collapseOne1" class="panel-collapse collapse in">
 													<div class="panel-body">
 														<form id="formSearch" class="form-horizontal" role="form">
 															<div class="row">
@@ -76,7 +76,7 @@
 											</div>
 										</div>
 									</header>
-									<div id="toolbar" class="btn-group">
+									<div id="toolbar1" class="btn-group">
 
 										<button style="margin-left: 12px;" type="button"
 											id="btn_query_capital" class="btn btn-default">

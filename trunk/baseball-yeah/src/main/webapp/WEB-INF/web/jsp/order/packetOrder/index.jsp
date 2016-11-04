@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="/common/comm.jsp" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%--<%@ include file="/common/comm.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -55,24 +56,24 @@
 <body>
 <div id="page-wrapper" class="container">
     <div class="row">
-        <form action="">
-
+        <form action="">--%>
+            <input type="hidden" class="inmodule" value="packetOrderModules">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="main-box clearfix">
                         <div class="main-box-body clearfix">
-                            <div class="row">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <ol class="breadcrumb">
-                                            <li><a
-                                                    href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>
-                                            <li class="active"><span>订单管理</span></li>
-                                        </ol>
-                                        <h1>派件订单管理</h1>
-                                    </div>
-                                </div>
-                            </div>
+                            <%--<div class="row">--%>
+                                <%--<div class="row">--%>
+                                    <%--<div class="col-lg-12">--%>
+                                        <%--<ol class="breadcrumb">--%>
+                                            <%--<li><a--%>
+                                                    <%--href="<%=request.getContextPath()%>/user/gotoIndex">首页</a></li>--%>
+                                            <%--<li class="active"><span>订单管理</span></li>--%>
+                                        <%--</ol>--%>
+                                        <%--<h1>派件订单管理</h1>--%>
+                                    <%--</div>--%>
+                                <%--</div>--%>
+                            <%--</div>--%>
                             <div class="table-responsive">
 
                                 <div class="panel-body" style="padding-bottom: 0px;">
@@ -83,10 +84,10 @@
                                                         class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
                                                 </a> <a class="accordion-toggle a-search"
                                                         data-toggle="collapse" data-parent="#accordion"
-                                                        href="#collapseOne"> 查询条件 </a>
+                                                        href="#packetOrdercollapseOne"> 查询条件 </a>
                                             </h4>
                                         </div>
-                                        <div id="collapseOne" class="panel-collapse collapse in">
+                                        <div id="packetOrdercollapseOne" class="panel-collapse collapse in">
                                             <div class="panel-body" style="width: 100%;">
                                                 <form id="formSearch" class="form-horizontal">
 
@@ -106,6 +107,7 @@
                                                                         style="width: 240px">
                                                                     <option value="">请选择</option>
                                                                     <option value="1">创建</option>
+                                                                    <option value="100">待接单</option>
                                                                     <option value="2">已接单</option>
                                                                     <option value="3">配送中</option>
                                                                     <option value="4">处理中</option>
@@ -259,12 +261,12 @@
                     </div>
                 </div>
             </div>
-        </form>
+       <%-- </form>
 
     </div>
 </div>
-</div>
+</div>--%>
 <jsp:include page="orderDetail.jsp"></jsp:include>
-<script src="<%=request.getContextPath()%>/js/demo-skin-changer.js"></script>
-</body>
-</html>
+<%--<script src="<%=request.getContextPath()%>/js/demo-skin-changer.js"></script>--%>
+<%--</body>
+</html>--%>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.resource.mapper.ResourceMapper">
-	<resultMap id="ServerResultMap" type="com.zhiduan.axp.dao.resource.bean.ServerBean">
+<mapper namespace="com.rofour.baseball.dao.resource.mapper.ResourceMapper">
+	<resultMap id="ServerResultMap" type="com.rofour.baseball.dao.resource.bean.ServerBean">
 		<result property="serverId" column="attachment_server_id" />
 		<result property="serverName" column="attachment_server_name"/>
 		<result property="endpoint" column="endpoint"/>
@@ -16,13 +16,13 @@
 	<select id="getServer" parameterType="string" resultMap="ServerResultMap">
 		select * from tb_attachment_server where attachment_server_id=#{id} and be_enabled = 1
 	</select>
-	<insert id="insertAttachment" parameterType="com.zhiduan.axp.dao.resource.bean.AttachmentBean">
+	<insert id="insertAttachment" parameterType="com.rofour.baseball.dao.resource.bean.AttachmentBean">
 		insert into tb_attachment(source_id,attachment_server_id,
 		attachment_type_id,file_url,file,extension,size,user_id,user_name,upload_time) 
 		values(#{sourceId},#{attachmentServerId},#{attachmentTypeId},#{fileUrl},
 		#{file},#{extension},#{size},#{userId},#{userName},#{uploadTime})
 	</insert>
-	<update id="updateAttachment" parameterType="com.zhiduan.axp.dao.resource.bean.AttachmentBean">
+	<update id="updateAttachment" parameterType="com.rofour.baseball.dao.resource.bean.AttachmentBean">
 		update tb_attachment set 
 			<if test="sourceId != null">
 				source_id=#{sourceId},

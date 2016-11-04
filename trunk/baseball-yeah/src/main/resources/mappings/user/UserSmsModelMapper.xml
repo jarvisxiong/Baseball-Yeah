@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.user.mapper.UserSmsModelMapper">
+<mapper namespace="com.rofour.baseball.dao.user.mapper.UserSmsModelMapper">
 
 
-    <select id="getUserSmsModel" parameterType="com.zhiduan.axp.dao.user.bean.UserSmsModelBean"
-            resultType="com.zhiduan.axp.dao.user.bean.UserSmsModelBean">
+    <select id="getUserSmsModel" parameterType="com.rofour.baseball.dao.user.bean.UserSmsModelBean"
+            resultType="com.rofour.baseball.dao.user.bean.UserSmsModelBean">
         SELECT sms_model_id smsModelId,
         user_id userId,
         template_name templateName,
@@ -21,7 +21,7 @@
 
     </select>
 
-    <select id="getUserSmsModelCount" parameterType="com.zhiduan.axp.dao.user.bean.UserSmsModelBean"
+    <select id="getUserSmsModelCount" parameterType="com.rofour.baseball.dao.user.bean.UserSmsModelBean"
             resultType="int">
 
         SELECT COUNT(*) FROM (
@@ -38,8 +38,8 @@
         </if>) t
     </select>
 
-    <select id="getUserSms" parameterType="com.zhiduan.axp.dao.user.bean.UserSmsModelBean"
-            resultType="com.zhiduan.axp.dao.user.bean.UserSmsModelBean">
+    <select id="getUserSms" parameterType="com.rofour.baseball.dao.user.bean.UserSmsModelBean"
+            resultType="com.rofour.baseball.dao.user.bean.UserSmsModelBean">
         SELECT DATE_FORMAT( submit_time, "%Y-%m-%d" ) submitTime,
         COUNT( * ) smsCount
         FROM tb_sms
@@ -59,7 +59,7 @@
 
     </select>
 
-    <select id="getUserSmsCount" parameterType="com.zhiduan.axp.dao.user.bean.UserSmsModelBean"
+    <select id="getUserSmsCount" parameterType="com.rofour.baseball.dao.user.bean.UserSmsModelBean"
             resultType="int">
 
         SELECT COUNT(*) FROM (

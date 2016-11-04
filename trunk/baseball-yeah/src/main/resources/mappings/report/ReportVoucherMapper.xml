@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rofour.baseball.dao.report.mapper.ReportVoucherMapper">
+
+    <!--查询代金券使用列表-->
+    <select id="getVoucherList" parameterType="com.rofour.baseball.dao.report.bean.ReportVoucherBean" resultType="com.rofour.baseball.dao.report.bean.ReportVoucherBean">
+        SELECT
+              *
+          FROM (
+                SELECT (@rownum := @rownum + 1) AS rowNo,
+                  v.voucher_id AS voucherId,
+                  e.full_name AS collegeName,
+                  f.city_name AS cityName,
+                  a.order_id AS orderId,
+                  CASE a.state
+                      WHEN 1 THEN '创建'
+                      WHEN 2 THEN '已接单'
+                      WHEN 3 THEN '配送中'
+                      WHEN 4 THEN '处理中'
+                      WHEN 5 THEN '完成'
+                      WHEN 6 THEN '取消'
+                      WHEN 7 THEN '异常'
+                    END state,
+                  b.channel_name AS channelName,
+                  d.item_code AS itemCode,
+                  FORMAT((v.face_value / 100), 2) AS money,
+                  v.receive_time AS receiveTime,
+                  v.use_time AS useTime,
+                  v.expire_time AS expireTime
+                FROM tb_order a
+                  INNER JOIN tb_order_item i
+                    ON a.order_id = i.order_id AND i.type = 1008
+                  INNER JOIN tb_acct_policy_voucher v
+                    ON i.commodity_code = v.voucher_id
+                  LEFT JOIN tb_business_channel b
+                    ON a.channel = b.channel_code
+                  LEFT JOIN tb_thirdparty_login c
+                    ON a.create_user_mobile = c.phone AND c.be_deleted = 0
+                  LEFT JOIN tb_weixin_attention d
+                    ON c.open_id = d.from_user AND d.state = 1
+                  LEFT JOIN tb_college e
+                    ON a.college_id = e.college_id
+                  LEFT JOIN tb_city f
+                    ON e.city_id = f.city_id,
+                    (SELECT
+                    @rownum := 0) r
+                <trim prefix="WHERE" prefixOverrides="AND |OR">
+                    <if test="collegeId!=null and collegeId!=''">
+                        AND e.college_id = #{collegeId}
+                    </if>
+
+                    <if test="receiveStartTime!=null and receiveStartTime!=''">
+                        <![CDATA[ AND v.receive_time >= #{receiveStartTime}]]>
+                    </if>
+                    <if test="receiveEndTime!=null and receiveEndTime!=''">
+                        <![CDATA[ AND v.receive_time < date_add(#{receiveEndTime}, interval 1 day)]]>
+                    </if>
+
+                    <if test="cityId!=null and cityId!=''">
+                        AND e.city_id = #{cityId}
+                    </if>
+
+                    <if test="state!=null and state!=''">
+                        AND v.state = #{state}
+                    </if>
+
+                    <if test="useStartTime!=null and useStartTime!=''">
+                        <![CDATA[ AND v.use_time >= #{useStartTime}]]>
+                    </if>
+                    <if test="useEndTime!=null and useEndTime!=''">
+                        <![CDATA[ AND v.use_time < date_add(#{useEndTime}, interval 1 day)]]>
+                    </if>
+
+                    <if test="expireStartTime!=null and expireStartTime!=''">
+                        <![CDATA[ AND v.expire_time >= #{expireStartTime}]]>
+                    </if>
+                    <if test="expireEndTime!=null and expireEndTime!=''">
+                        <![CDATA[ AND v.expire_time < date_add(#{expireEndTime}, interval 1 day)]]>
+                    </if>
+                </trim>
+                <if test="sort!=null and sort!=''">
+                    ORDER BY ${sort} ${order}
+                </if>
+            ) P
+            limit #{offset},#{limit}
+
+
+    </select>
+<!--    正式库sql
+    SELECT e.full_name,f.city_name,a.order_id,case a.state when 1 then '创建' when 2 then '已接单' when 3 then '配送中' when 4 then '处理中' when 5 then '完成' when 6 then '取消' when 7 then '异常' end state,
+    b.channel_name,d.item_code,v.face_value,v.receive_time,v.use_time,v.expire_time
+    FROM tb_order a
+    inner join p_order p on a.order_id=p.order_id
+    inner join tb_order_item i on a.order_id=i.order_id and i.type=1008
+    inner join tb_acct_policy_voucher v on i.commodity_code=v.voucher_id
+    LEFT JOIN tb_business_channel b ON a.channel = b.channel_code
+    left join tb_thirdparty_login c on a.create_user_mobile=c.phone and c.be_deleted=0
+    left join tb_weixin_attention d on c.open_id=d.from_user and d.state=1
+    left join tb_college e on p.college_id=e.college_id
+    left join tb_city f on e.city_id=f.city_id-->
+
+    <!--查询数据列表总数-->
+    <select id="getVoucherListCount" parameterType="com.rofour.baseball.dao.report.bean.ReportVoucherBean" resultType="int">
+        SELECT
+              COUNT(*)
+            FROM tb_order a
+              INNER JOIN tb_order_item i
+                ON a.order_id = i.order_id AND i.type = 1008
+              INNER JOIN tb_acct_policy_voucher v
+                ON i.commodity_code = v.voucher_id
+              LEFT JOIN tb_business_channel b
+                ON a.channel = b.channel_code
+              LEFT JOIN tb_thirdparty_login c
+                ON a.create_user_mobile = c.phone AND c.be_deleted = 0
+              LEFT JOIN tb_weixin_attention d
+                ON c.open_id = d.from_user AND d.state = 1
+              LEFT JOIN tb_college e
+                ON a.college_id = e.college_id
+              LEFT JOIN tb_city f
+                ON e.city_id = f.city_id
+        WHERE 1 = 1
+        <if test="collegeId!=null and collegeId!=''">
+            AND e.college_id = #{collegeId}
+        </if>
+
+        <if test="receiveStartTime!=null and receiveStartTime!=''">
+            <![CDATA[ AND v.receive_time >= #{receiveStartTime}]]>
+        </if>
+        <if test="receiveEndTime!=null and receiveEndTime!=''">
+            <![CDATA[ AND v.receive_time < date_add(#{receiveEndTime}, interval 1 day)]]>
+        </if>
+
+        <if test="cityId!=null and cityId!=''">
+            AND e.city_id = #{cityId}
+        </if>
+
+        <if test="state!=null and state!=''">
+            AND v.state = #{state}
+        </if>
+
+        <if test="useStartTime!=null and useStartTime!=''">
+            <![CDATA[ AND v.use_time >= #{useStartTime}]]>
+        </if>
+        <if test="useEndTime!=null and useEndTime!=''">
+            <![CDATA[ AND v.use_time < date_add(#{useEndTime}, interval 1 day)]]>
+        </if>
+
+        <if test="expireStartTime!=null and expireStartTime!=''">
+            <![CDATA[ AND v.expire_time >= #{expireStartTime}]]>
+        </if>
+        <if test="expireEndTime!=null and expireEndTime!=''">
+            <![CDATA[ AND v.expire_time < date_add(#{expireEndTime}, interval 1 day)]]>
+        </if>
+
+    </select>
+
+    <select id="getAllUsers" resultType="com.rofour.baseball.dao.report.bean.ReportVoucherBean">
+        SELECT
+              *
+            FROM (SELECT
+                (@rownum := @rownum + 1) AS rowNo,
+                v.voucher_id AS voucherId,
+                e.full_name AS collegeName,
+                f.city_name AS cityName,
+                a.order_id AS orderId,
+                CASE a.state
+                    WHEN 1 THEN '创建'
+                    WHEN 2 THEN '已接单'
+                    WHEN 3 THEN '配送中'
+                    WHEN 4 THEN '处理中'
+                    WHEN 5 THEN '完成'
+                    WHEN 6 THEN '取消'
+                    WHEN 7 THEN '异常'
+                  END state,
+                b.channel_name AS channelName,
+                d.item_code AS itemCode,
+                FORMAT((v.face_value / 100), 2) AS money,
+                v.receive_time AS receiveTime,
+                v.use_time AS useTime,
+                v.expire_time AS expireTime
+              FROM tb_order a
+                     INNER JOIN tb_order_item i
+                       ON a.order_id = i.order_id AND i.type = 1008
+                     INNER JOIN tb_acct_policy_voucher v
+                       ON i.commodity_code = v.voucher_id
+                     LEFT JOIN tb_business_channel b
+                       ON a.channel = b.channel_code
+                     LEFT JOIN tb_thirdparty_login c
+                       ON a.create_user_mobile = c.phone AND c.be_deleted = 0
+                     LEFT JOIN tb_weixin_attention d
+                       ON c.open_id = d.from_user AND d.state = 1
+                     LEFT JOIN tb_college e
+                       ON a.college_id = e.college_id
+                     LEFT JOIN tb_city f
+                       ON e.city_id = f.city_id,
+                   (SELECT
+                       @rownum := 0) r
+                            <trim prefix="WHERE" prefixOverrides="AND |OR">
+                                <if test="collegeId!=null and collegeId!=''">
+                                    AND e.college_id = #{collegeId}
+                                </if>
+
+                                <if test="receiveStartTime!=null and receiveStartTime!=''">
+                                    <![CDATA[ AND v.receive_time >= #{receiveStartTime}]]>
+                                </if>
+                                <if test="receiveEndTime!=null and receiveEndTime!=''">
+                                    <![CDATA[ AND v.receive_time < date_add(#{receiveEndTime}, interval 1 day)]]>
+                                </if>
+
+                                <if test="cityId!=null and cityId!=''">
+                                    AND e.city_id = #{cityId}
+                                </if>
+
+                                <if test="state!=null and state!=''">
+                                    AND v.state = #{state}
+                                </if>
+
+                                <if test="useStartTime!=null and useStartTime!=''">
+                                    <![CDATA[ AND v.use_time >= #{useStartTime}]]>
+                                </if>
+                                <if test="useEndTime!=null and useEndTime!=''">
+                                    <![CDATA[ AND v.use_time < date_add(#{useEndTime}, interval 1 day)]]>
+                                </if>
+
+                                <if test="expireStartTime!=null and expireStartTime!=''">
+                                    <![CDATA[ AND v.expire_time >= #{expireStartTime}]]>
+                                </if>
+                                <if test="expireEndTime!=null and expireEndTime!=''">
+                                    <![CDATA[ AND v.expire_time < date_add(#{expireEndTime}, interval 1 day)]]>
+                                </if>
+                            </trim>
+                            <if test="sort!=null and sort!=''">
+                                ORDER BY ${sort} ${order}
+                            </if>
+            ) p
+    </select>
+</mapper>

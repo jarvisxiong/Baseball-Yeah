@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.SmsVendorMapper" >
-  <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.manager.bean.SmsVendorBean" >
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.SmsVendorMapper" >
+  <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.manager.bean.SmsVendorBean" >
       <result property="smsVendorId" column="sms_vendor_id" jdbcType="VARCHAR" javaType="java.lang.String" />
       <result property="smsVendorCode" column="sms_vendor_code" jdbcType="VARCHAR" javaType="java.lang.String" />
       <result property="smsVendorName" column="sms_vendor_name" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -29,7 +29,7 @@
   </select>
   
   <!-- 查询全部 -->
-  <select id="selectAll" resultMap="BaseResultMap" parameterType="com.zhiduan.axp.controller.model.manager.SmsVendorInfo">
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="com.rofour.baseball.controller.model.manager.SmsVendorInfo">
     select 
     <include refid="Base_Column_List" />
     from tb_sms_vendor
@@ -45,7 +45,7 @@
 		LIMIT #{offset}, #{limit}
   </select>
   <!-- 查询数量 -->
-  <select id="getTotal" resultType="int" parameterType="com.zhiduan.axp.controller.model.manager.SmsVendorInfo">
+  <select id="getTotal" resultType="int" parameterType="com.rofour.baseball.controller.model.manager.SmsVendorInfo">
     select count(1) 
     from tb_sms_vendor
     where be_deleted = 0
@@ -64,7 +64,7 @@
   </delete>
   
   <!-- 新增 -->
-  <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.SmsVendorBean" >
+  <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.SmsVendorBean" >
     insert into tb_sms_vendor
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="smsVendorId != null" >
@@ -145,7 +145,7 @@
   </insert>
   
   <!-- 更新 -->
-  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.SmsVendorBean" >
+  <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.SmsVendorBean" >
     update tb_sms_vendor
     <set >
       <if test="smsVendorCode != null" >

@@ -1,15 +1,25 @@
-define(['base'],
-    function (base) {
+define(
+		[ 'base','packetStuManagerModules' ],
+    function (base, packet) {
         /**
          * 私有成员定义区域
          */
+			
+		var packetinit=function (){
+				
+			packet.init();
+		}
 
         return {
-            init: function (args) {
+            init: function (panel) {
+				// / <summary>
+				// / 模块初始化方法
+				// / </summary>
+				// / <param name="args">初始化时传入的参数</param>
                 var self = this;
                 var date = new Date();
                 // 开始时间
-                $('#createStartDatePicker').datetimepicker({
+                $('#createStartDatePicker', panel).datetimepicker({
                     format: 'yyyy-mm-dd hh:ii:ss',
                     autoclose: true,
                     startView: 2,
@@ -18,10 +28,10 @@ define(['base'],
                     endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59)
                 }).on('changeDate', function (e) {
                     var startTime = e.date;
-                    $('#createEndDatePicker').datetimepicker('setStartDate', startTime);
+                    $('#createEndDatePicker', panel).datetimepicker('setStartDate', startTime);
                 });
 
-                $('#createEndDatePicker').datetimepicker({
+                $('#createEndDatePicker', panel).datetimepicker({
                     format: 'yyyy-mm-dd hh:ii:ss',
                     autoclose: true,
                     startView: 2,
@@ -30,7 +40,7 @@ define(['base'],
                     endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59)
                 }).on('changeDate', function (e) {
                     var startTime = e.date;
-                    $('#createStartDatePicker').datetimepicker('setEndDate', startTime);
+                    $('#createStartDatePicker', panel).datetimepicker('setEndDate', startTime);
                 });
 
                 // 结束时间
@@ -43,11 +53,11 @@ define(['base'],
                     endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59)
                 }).on('changeDate', function (e) {
                     var startTime = e.date;
-                    $('#deliveryEndDatePicker').datetimepicker('setStartDate', startTime);
+                    $('#deliveryEndDatePicker', panel).datetimepicker('setStartDate', startTime);
                 });
 
                 // 结束时间
-                $('#deliveryEndDatePicker').datetimepicker({
+                $('#deliveryEndDatePicker', panel).datetimepicker({
                     format: 'yyyy-mm-dd hh:ii:ss',
                     autoclose: true,
                     startView: 2,
@@ -56,11 +66,11 @@ define(['base'],
                     endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59)
                 }).on('changeDate', function (e) {
                     var startTime = e.date;
-                    $('#deliveryStartDatePicker').datetimepicker('setEndDate', startTime);
+                    $('#deliveryStartDatePicker', panel).datetimepicker('setEndDate', startTime);
                 });
 
                 // 结束时间
-                $('#deliverySStartDatePicker').datetimepicker({
+                $('#deliverySStartDatePicker', panel).datetimepicker({
                     format: 'yyyy-mm-dd hh:ii:ss',
                     autoclose: true,
                     startView: 2,
@@ -70,11 +80,11 @@ define(['base'],
                         date.getDate(), 23, 59, 59)
                 }).on('changeDate', function (e) {
                     var startTime = e.date;
-                    $('#deliverySEndDatePicker').datetimepicker('setStartDate', startTime);
+                    $('#deliverySEndDatePicker', panel).datetimepicker('setStartDate', startTime);
                 });
 
                 // 结束时间
-                $('#deliverySEndDatePicker').datetimepicker({
+                $('#deliverySEndDatePicker', panel).datetimepicker({
                     format: 'yyyy-mm-dd hh:ii:ss',
                     autoclose: true,
                     startView: 2,
@@ -83,7 +93,7 @@ define(['base'],
                     endDate: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59)
                 }).on('changeDate', function (e) {
                     var startTime = e.date;
-                    $('#deliverySStartDatePicker').datetimepicker('setEndDate', startTime);
+                    $('#deliverySStartDatePicker', panel).datetimepicker('setEndDate', startTime);
                 });
 
                 base.datagrid(
@@ -91,21 +101,32 @@ define(['base'],
                         url: '/order/user/getPickupOrder',
                         queryParams: function (params) {
                             return $.extend(params, {
-                                createStartDate: $('#createStartDate').val(),
-                                createEndDate: $('#createEndDate').val(),
-                                deliveryStartDate: $('#deliveryStartDate').val(),
-                                deliveryEndDate: $('#deliveryEndDate').val(),
-                                deliverySStartDate: $('#deliverySStartDate').val(),
-                                deliverySEndDate: $('#deliverySEndDate').val(),
-                                orderId: $.trim($("#orderId").val()),
-                                state: $.trim($("#state").val()),
-                                payType: $.trim($("#payType").val()),
-                                payId: $.trim($("#payId").val()),
-                                phone: $.trim($("#phone").val()),
-                                collegeId: $.trim($("#collegeId").val()),
-                                mobile: $("#mobile").val()
+                                createStartDate: $('#createStartDate', panel).val(),
+                                createEndDate: $('#createEndDate', panel).val(),
+                                deliveryStartDate: $('#deliveryStartDate', panel).val(),
+                                deliveryEndDate: $('#deliveryEndDate', panel).val(),
+                                deliverySStartDate: $('#deliverySStartDate', panel).val(),
+                                deliverySEndDate: $('#deliverySEndDate', panel).val(),
+                                orderId: $.trim($("#orderId", panel).val()),
+                                state: $.trim($("#state", panel).val()),
+                                payType: $.trim($("#payType", panel).val()),
+                                payId: $.trim($("#payId", panel).val()),
+                                phone: $.trim($("#phone", panel).val()),
+                                collegeId: $.trim($("#collegeId", panel).val()),
+                                mobile: $("#mobile", panel).val()
                             });
                         },
+						onLoadSuccess : function(data){
+							$('.orderIdDetail',panel).click(function(){
+								self.showDetail($.trim($(this).text()),panel);
+							});
+							$('.phoneUserManager',panel).click(function(){
+								var phone = $.trim($(this).text());
+								var title = $(this).attr('title');
+								var href = '/order/gotoPacketStuManager?phone='+phone;
+								base.openTab(title,href,packetinit);
+							});
+						},
                         columns: [
                             {
                                 checkbox: true
@@ -115,7 +136,8 @@ define(['base'],
                                 title: '订单号',
                                 sortable: true,
                                 formatter: function (value, row, index) {
-                                    return "<a href='#' onclick='showDetail(\"" + value + "\");'>" + value + "</a>";
+//                                    return "<a href='#' onclick='showDetail(\"" + value + "\");'>" + value + "</a>";
+                                	return "<a href='#' class='orderIdDetail'>" + value + "</a>";
                                 },
                                 width: 400
                             },
@@ -141,6 +163,27 @@ define(['base'],
                                 },
                                 sortable: true,
                                 width: 400
+                            },
+                            {
+                                field: 'lockState',
+                                title: '是否锁定',
+                                formatter: function (value, row, index) {
+                                    switch (value) {
+                                        case 0:
+                                            return "否";
+                                        case 1:
+                                            return "收件人分单锁定";
+                                        case 2:
+                                            return "货源分单锁定";
+                                        case 3:
+                                            return "众包分单锁定";
+                                        case 4:
+                                            return "系统分单锁定";
+                                        case 5:
+                                            return "预支付未付款锁定";
+                                    }
+                                },
+                                width: 80
                             },
                             {
                                 field: 'payType',
@@ -187,7 +230,8 @@ define(['base'],
                                 field: 'phone',
                                 title: '众包人手机号码',
                                 formatter: function (value, row, index) {
-                                    return "<a title='管理此用户' href='/order/gotoPacketStuManager?phone=" + value + "'>" + value + "</a>";
+//                                    return "<a title='管理此用户' href='order/gotoPacketStuManager?phone=" + value + "'>" + value + "</a>";
+									return "<a title='管理此用户' href='#' class='phoneUserManager'>"+value+"</a>";
                                 },
                                 align: 'center',
                                 sortable: true,
@@ -257,17 +301,22 @@ define(['base'],
                                 width : 400
                             }
                         ]
-                    }, '#userTable');
+                    }, '#userTable', panel);
 
                 $.ajax({
                     type: "POST",
                     url: "/order/user/selectAllPayType",
                     dataType: "json",
                     success: function (data) {
-                        $("#payType").select2({
+                    	$.each(data,function(index,obj){
+							if(obj.id == 4){
+								data.splice(index,1);
+							}
+						});
+                        $("#payType", panel).select2({
                             data: data
                         });
-                        $('#collegeId').select2("val", "");
+                        //$('#collegeId', panel).select2("val", "");
                     }
                 });
 
@@ -276,103 +325,176 @@ define(['base'],
                     url: "/manage/college/getCollageForSel",
                     dataType: "json",
                     success: function (data) {
-                        $("#collegeId").select2({
+                        $("#collegeId", panel).select2({
                             data: data.data
                         });
                     }
                 });
 
-                $("#btn_query").click(function () {
-                    $("#userTable").bootstrapTable('refresh');
+                $("#btn_query", panel).click(function () {
+                    // $("#userTable", panel).bootstrapTable('refresh');
+                    $("#userTable", panel).bootstrapTable('selectPage', 1);
                 });
 
-                $("#clearSearch").click(function () {
+                $("#clearSearch", panel).click(function () {
                     base.reset(".main-box-body");
-                    $('#payType').select2("val", "");
-                    $('#collegeId').select2("val", "");
+                    $('#payType', panel).select2("val", "");
+                    $('#collegeId', panel).select2("val", "");
                 });
 
-                $('#addRole').select2({
+                $('#addRole', panel).select2({
                     placeholder: '请选择角色'
                 });
 
-                $('#addModal').on('shown.bs.modal',
+                $('#addModal', panel).on('shown.bs.modal',
                     function () {
-                        $('#addForm').data('bootstrapValidator').resetForm(true);
+                        $('#addForm', panel).data('bootstrapValidator').resetForm(true);
                     })
             },
+            showDetail : function(orderId, panel){
+                $('#detailMoblile', panel).val("");
+                $('#detailOrderId', panel).val("");
+                $('#detailRealName', panel).val("");
+                $('#detailWaybillNo', panel).val("");
+                $('#detailSex', panel).val("");
+                $('#detailState', panel).val("");
+                $('#detailCityName', panel).val("");
+                $('#detailAddress', panel).val("");
+                $('#detailCollegeName', panel).val("");
+                $('#detailStoreName', panel).val("");
+                $('#detailLocation', panel).val("");
+                $('#detailTotalMoney', panel).val("");
+                $('#detailRebateMoney', panel).val("");
+                $('#detailFinalMoney', panel).val("");
+                $('#detailPayMoney', panel).val("");
+				
+
+                $.post("/order/user/orderView1", {
+                    "orderId": orderId
+                }, function (data, status) {
+                    if (status == "success") {
+                        data = json_parse(data);
+                        $('#detailMoblile', panel).val(data.mobile);
+                        $('#detailOrderId', panel).val(data.orderId);
+                        $('#detailRealName', panel).val(data.consignee);
+                        $('#detailWaybillNo', panel).val(data.waybillNo);
+                        if (data.sex == "p_gender_male") {
+                            $('#detailSex', panel).val("男");
+                        } else if (data.sex == "p_gender_female") {
+                            $('#detailSex', panel).val("女");
+                        } else if (data.sex == "p_gender_secret") {
+                            $('#detailSex', panel).val("保密");
+                        }
+                        $('#detailState', panel).val(data.stateStr);
+                        $('#detailCityName', panel).val(data.cityName);
+                        $('#detailAddress', panel).val(data.address);
+                        $('#detailCollegeName', panel).val(data.fullName);
+                        $('#detailStoreName', panel).val(data.storeName);
+                        $('#detailLocation', panel).val(data.location);
+                        $('#detailTotalMoney', panel).val(data.totalMoney);
+                        $('#detailRebateMoney', panel).val(data.rebateMoney);
+                        $('#detailFinalMoney', panel).val(data.finalMoney);
+                        $('#detailPayMoney', panel).val(data.payMoney);
+                    } else {
+                        base.error("初始化失败!");
+                    }
+				});
+
+				$('#detailTable',panel).bootstrapTable({
+					 // 请求后台的URL（*）
+			        url : '/order/user/orderDetail',
+			        striped: true, // 是否显示行间隔色
+			        singleSelect: true,
+			        queryParams : function(pa) {
+						return {"orderId" : orderId};
+					},
+			        height: 320,
+					columns : [ {
+						field : 'createDateStr',
+						title : '操作时间',
+						width : 100
+					}, {
+						field : 'content',
+						title : '内容',
+						width : 100
+					}
+					]
+				}).bootstrapTable('refresh',{query: {"orderId" : orderId}});
+
+				$('#detailModal',panel).modal();
+			}
 
         };
     });
 
-function showDetail(orderId) {
-    $('#detailMoblile').val("");
-    $('#detailOrderId').val("");
-    $('#detailRealName').val("");
-    $('#detailWaybillNo').val("");
-    $('#detailSex').val("");
-    $('#detailState').val("");
-    $('#detailCityName').val("");
-    $('#detailAddress').val("");
-    $('#detailCollegeName').val("");
-    $('#detailStoreName').val("");
-    $('#detailLocation').val("");
-    $('#detailTotalMoney').val("");
-    $('#detailRebateMoney').val("");
-    $('#detailFinalMoney').val("");
-    $('#detailPayMoney').val("");
-
-    $.post("/order/user/orderView1", {
-        "orderId": orderId
-    }, function (data, status) {
-        if (status == "success") {
-            data = json_parse(data);
-            $('#detailMoblile').val(data.mobile);
-            $('#detailOrderId').val(data.orderId);
-            $('#detailRealName').val(data.consignee);
-            $('#detailWaybillNo').val(data.waybillNo);
-            if (data.sex == "p_gender_male") {
-                $('#detailSex').val("男");
-            } else if (data.sex == "p_gender_female") {
-                $('#detailSex').val("女");
-            } else if (data.sex == "p_gender_secret") {
-                $('#detailSex').val("保密");
-            }
-            $('#detailState').val(data.stateStr);
-            $('#detailCityName').val(data.cityName);
-            $('#detailAddress').val(data.address);
-            $('#detailCollegeName').val(data.fullName);
-            $('#detailStoreName').val(data.storeName);
-            $('#detailLocation').val(data.location);
-            $('#detailTotalMoney').val(data.totalMoney);
-            $('#detailRebateMoney').val(data.rebateMoney);
-            $('#detailFinalMoney').val(data.finalMoney);
-            $('#detailPayMoney').val(data.payMoney);
-        } else {
-            base.error("初始化失败!");
-        }
-    });
-
-    $('#detailTable').bootstrapTable({
-        // 请求后台的URL（*）
-        url: '/order/user/orderDetail',
-        striped: true, // 是否显示行间隔色
-        singleSelect: true,
-        queryParams: function (pa) {
-            return {"orderId": orderId};
-        },
-        height: 320,
-        columns: [{
-            field: 'createDateStr',
-            title: '操作时间',
-            width: 100
-        }, {
-            field: 'content',
-            title: '内容',
-            width: 100
-        }
-        ]
-    });//.bootstrapTable('refresh', {query: {"orderId": orderId}});
-
-    $('#detailModal').modal();
-}
+//function showDetail1(orderId, panel) {
+//    $('#detailMoblile', panel).val("");
+//    $('#detailOrderId', panel).val("");
+//    $('#detailRealName', panel).val("");
+//    $('#detailWaybillNo', panel).val("");
+//    $('#detailSex', panel).val("");
+//    $('#detailState', panel).val("");
+//    $('#detailCityName', panel).val("");
+//    $('#detailAddress', panel).val("");
+//    $('#detailCollegeName', panel).val("");
+//    $('#detailStoreName', panel).val("");
+//    $('#detailLocation', panel).val("");
+//    $('#detailTotalMoney', panel).val("");
+//    $('#detailRebateMoney', panel).val("");
+//    $('#detailFinalMoney', panel).val("");
+//    $('#detailPayMoney', panel).val("");
+//
+//    $.post("/order/user/orderView1", {
+//        "orderId": orderId
+//    }, function (data, status) {
+//        if (status == "success") {
+//            data = json_parse(data);
+//            $('#detailMoblile', panel).val(data.mobile);
+//            $('#detailOrderId', panel).val(data.orderId);
+//            $('#detailRealName', panel).val(data.consignee);
+//            $('#detailWaybillNo', panel).val(data.waybillNo);
+//            if (data.sex == "p_gender_male") {
+//                $('#detailSex', panel).val("男");
+//            } else if (data.sex == "p_gender_female") {
+//                $('#detailSex', panel).val("女");
+//            } else if (data.sex == "p_gender_secret") {
+//                $('#detailSex', panel).val("保密");
+//            }
+//            $('#detailState', panel).val(data.stateStr);
+//            $('#detailCityName', panel).val(data.cityName);
+//            $('#detailAddress', panel).val(data.address);
+//            $('#detailCollegeName', panel).val(data.fullName);
+//            $('#detailStoreName', panel).val(data.storeName);
+//            $('#detailLocation', panel).val(data.location);
+//            $('#detailTotalMoney', panel).val(data.totalMoney);
+//            $('#detailRebateMoney', panel).val(data.rebateMoney);
+//            $('#detailFinalMoney', panel).val(data.finalMoney);
+//            $('#detailPayMoney', panel).val(data.payMoney);
+//        } else {
+//            base.error("初始化失败!");
+//        }
+//    });
+//
+//    $('#detailTable', panel).bootstrapTable({
+//        // 请求后台的URL（*）
+//        url: '/order/user/orderDetail',
+//        striped: true, // 是否显示行间隔色
+//        singleSelect: true,
+//        queryParams: function (pa) {
+//            return {"orderId": orderId};
+//        },
+//        height: 320,
+//        columns: [{
+//            field: 'createDateStr',
+//            title: '操作时间',
+//            width: 100
+//        }, {
+//            field: 'content',
+//            title: '内容',
+//            width: 100
+//        }
+//        ]
+//    });//.bootstrapTable('refresh', {query: {"orderId": orderId}});
+//
+//    $('#detailModal', panel).modal();
+//}

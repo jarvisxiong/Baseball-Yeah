@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.CountyMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.CountyMapper">
 	<resultMap id="CountyResultMap"
-		type="com.zhiduan.axp.dao.manager.bean.CountyBean">
+		type="com.rofour.baseball.dao.manager.bean.CountyBean">
 		<constructor>
 			<idArg column="county_id" jdbcType="BIGINT" javaType="java.lang.Long" />
 			<arg column="county_name" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -11,7 +11,7 @@
 			<arg column="sort_no" jdbcType="SMALLINT" javaType="java.lang.Short" />
 		</constructor>
 	</resultMap>
-	<resultMap type="com.zhiduan.axp.dao.manager.bean.CountyBean"
+	<resultMap type="com.rofour.baseball.dao.manager.bean.CountyBean"
 		id="BaseCityResultMap">
 		<result column="county_id" property="countyId" />
 		<result column="county_name" property="countyName" />
@@ -30,7 +30,7 @@
 		from tb_county
 		where county_id = #{countyId,jdbcType=BIGINT}
 	</select>
-	<select id="selectCountiesByCityId" resultType="com.zhiduan.axp.dao.manager.bean.CountyBean"
+	<select id="selectCountiesByCityId" resultType="com.rofour.baseball.dao.manager.bean.CountyBean"
 		parameterType="java.lang.Long">
 		select
 		<include refid="Base_Column_List" />
@@ -121,7 +121,7 @@
 		tb_county
 		where county_id = #{countyId,jdbcType=BIGINT}
 	</delete>
-	<insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.CountyBean">
+	<insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.CountyBean">
 		insert into tb_county (
 		county_name, city_id,
 		post_code, sort_no)
@@ -129,7 +129,7 @@
 		#{countyName,jdbcType=VARCHAR}, #{cityId,jdbcType=BIGINT},
 		#{postCode,jdbcType=CHAR}, #{sortNo,jdbcType=SMALLINT})
 	</insert>
-	<insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.CountyBean">
+	<insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.CountyBean">
 		insert into tb_county
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="countyId != null">
@@ -166,7 +166,7 @@
 			</if>
 		</trim>
 	</insert>
-	<update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.CountyBean">
+	<update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.CountyBean">
 		update tb_county
 		<set>
 			<if test="countyName != null">
@@ -184,7 +184,7 @@
 		</set>
 		where county_id = #{countyId,jdbcType=BIGINT}
 	</update>
-	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.CountyBean">
+	<update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.CountyBean">
 		update tb_county
 		set county_name = #{countyName,jdbcType=VARCHAR},
 		city_id =

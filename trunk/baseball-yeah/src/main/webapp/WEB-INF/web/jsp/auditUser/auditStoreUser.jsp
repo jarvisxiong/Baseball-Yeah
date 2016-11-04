@@ -28,8 +28,8 @@
                                    id="aduitrealName"/>
                         </div>
                         <div class="radio" style="float: left;">
-                            <input type="radio" name="f1" id="f1" value="option1" checked=""> <label for="f1"
-                        >正确</label> <input type="radio" name="f1" id="fe1" value="option2"><label for="fe1"> 错误</label>
+                            <input type="radio" name="auditStoref1" id="auditStoref1" value="option1" checked=""> <label for="auditStoref1"
+                        >正确</label> <input type="radio" name="auditStoref1" id="auditStorefe1" value="option2"><label for="auditStorefe1"> 错误</label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -39,16 +39,16 @@
                                    id="aduitidentityNumber"/>
                         </div>
                         <div class="radio" style="float: left;">
-                            <input type="radio" name="f2" id="f2" value="option1" checked=""> <label for="f2"
-                        >正确</label> <input type="radio" name="f2" id="fe2" value="option2"><label for="fe2"> 错误</label>
+                            <input type="radio" name="auditStoref2" id="auditStoref2" value="option1" checked=""> <label for="auditStoref2"
+                        >正确</label> <input type="radio" name="auditStoref2" id="auditStorefe2" value="option2"><label for="auditStorefe2"> 错误</label>
                         </div>
 
                     </div>
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">手持身份证正面照片</label>
                         <div class="radio" style="float: left;">
-                            <input type="radio" name="f7" id="f7" value="option1" checked=""> <label for="f7"
-                        >正确</label> <input type="radio" name="f7" id="fe7" value="option2"><label for="fe7"> 错误</label>
+                            <input type="radio" name="auditStoref7" id="auditStoref7" value="option1" checked=""> <label for="auditStoref7"
+                        >正确</label> <input type="radio" name="auditStoref7" id="auditStorefe7" value="option2"><label for="auditStorefe7"> 错误</label>
                         </div>
                         <div class="col-lg-3" style="margin-top: 8;color: #2980b9;"><i
                                 class=" fa fa-file-image-o fa-fw fa-lg"></i><strong style="cursor: pointer;" id="labelimg1">点击查看 </strong></div>
@@ -56,8 +56,8 @@
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">身份证正面照片</label>
                         <div class="radio" style="float: left;">
-                            <input type="radio" name="f8" id="f8" value="option1" checked=""> <label for="f8"
-                        >正确</label> <input type="radio" name="f8" id="fe8" value="option2"><label for="fe8"> 错误</label>
+                            <input type="radio" name="auditStoref8" id="auditStoref8" value="option1" checked=""> <label for="auditStoref8"
+                        >正确</label> <input type="radio" name="auditStoref8" id="auditStorefe8" value="option2"><label for="auditStorefe8"> 错误</label>
                         </div>
 
                         <div class="col-lg-3" style="margin-top: 8;color: #2980b9;"><i
@@ -72,8 +72,8 @@
                                    id="aduitCompanyName"/>
                         </div>
                         <div class="radio" style="float: left;">
-                            <input type="radio" name="f3" id="f3" value="option1" checked=""> <label for="f3"
-                        >正确</label> <input type="radio" name="f3" id="fe3" value="option2"><label for="fe3"> 错误</label>
+                            <input type="radio" name="auditStoref3" id="auditStoref3" value="option1" checked=""> <label for="auditStoref3"
+                        >正确</label> <input type="radio" name="auditStoref3" id="auditStorefe3" value="option2"><label for="auditStorefe3"> 错误</label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -83,8 +83,8 @@
                                    id="aduitStoreCode"/>
                         </div>
                         <div class="radio" style="float: left;">
-                            <input type="radio" name="f4" id="f4" value="option1" checked=""> <label for="f4"
-                        >正确</label> <input type="radio" name="f4" id="fe4" value="option2"><label for="fe4"> 错误</label>
+                            <input type="radio" name="auditStoref4" id="auditStoref4" value="option1" checked=""> <label for="auditStoref4"
+                        >正确</label> <input type="radio" name="auditStoref4" id="auditStorefe4" value="option2"><label for="auditStorefe4"> 错误</label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -94,8 +94,8 @@
                                    id="aduitStoreName"/>
                         </div>
                         <div class="radio" style="float: left;">
-                            <input type="radio" name="f5" id="f5" value="option1" checked=""> <label for="f5"
-                        >正确</label> <input type="radio" name="f5" id="fe5" value="option2"><label for="fe5"> 错误</label>
+                            <input type="radio" name="auditStoref5" id="auditStoref5" value="option1" checked=""> <label for="auditStoref5"
+                        >正确</label> <input type="radio" name="auditStoref5" id="auditStorefe5" value="option2"><label for="auditStorefe5"> 错误</label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -105,25 +105,25 @@
                                    id="aduitLocation"/>
                         </div>
                         <div class="radio" style="float: left;">
-                            <input type="radio" name="f6" id="f6" value="option1" checked=""> <label for="f6"
-                        >正确</label> <input type="radio" name="f6" id="fe6" value="option2"><label for="fe6"> 错误</label>
+                            <input type="radio" name="auditStoref6" id="auditStoref6" value="option1" checked=""> <label for="auditStoref6"
+                        >正确</label> <input type="radio" name="auditStoref6" id="auditStorefe6" value="option2"><label for="auditStorefe6"> 错误</label>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">许可证正面照片：</label>
                         <div class="radio" style="float: left;">
-                            <input type="radio" name="f9" id="f9" value="option1" checked=""> <label for="f9"
-                        >正确</label> <input type="radio" name="f9" id="fe9" value="option2"><label for="fe9"> 错误</label>
+                            <input type="radio" name="auditStoref9" id="auditStoref9" value="option1" checked=""> <label for="auditStoref9"
+                        >正确</label> <input type="radio" name="auditStoref9" id="auditStorefe9" value="option2"><label for="auditStorefe9"> 错误</label>
                         </div>
                         <div class="col-lg-3" style="margin-top: 8;color: #2980b9;"><i
                                 class="fa fa-file-image-o fa-fw fa-lg"></i><strong id="labelimg3" style="cursor: pointer;">点击查看 </strong></div>
-                    </div>
+                    </div> -->
 
                     <div class="form-group">
                         <label class="col-lg-3 control-label label-operation">校区信息：</label>
                         <div class="radio" style="float: left;">
-                            <input type="radio" name="f10" id="f10" value="option1" checked=""> <label for="f10"
-                        >正确</label> <input type="radio" name="f10" id="fe10" value="option2"><label for="fe10">
+                            <input type="radio" name="auditStoref10" id="auditStoref10" value="option1" checked=""> <label for="auditStoref10"
+                        >正确</label> <input type="radio" name="auditStoref10" id="auditStorefe10" value="option2"><label for="auditStorefe10">
                             错误</label>
                         </div>
 

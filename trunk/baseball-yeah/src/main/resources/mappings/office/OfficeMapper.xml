@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rofour.baseball.dao.officemanage.mapper.OfficeMapper">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.officemanage.bean.OfficeBean">
+        <result property="beEnabled" column="beEnabled" jdbcType="TINYINT" javaType="java.lang.Byte"/>
+        <result property="userId" column="userId" jdbcType="BIGINT" javaType="java.lang.Long"/>
+        <result property="username" column="username" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="createDate" column="createDate" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="realName" column="realName" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="sex" column="sex" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="office" column="office" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+        <result property="auditState" column="auditState" jdbcType="TINYINT" javaType="java.lang.Byte"/>
+
+        <result property="auditor" column="auditor" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="city" column="city" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="collegeId" column="collegeId" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="collegeArea" column="collegeArea" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="dormitoryAddress" column="dormitoryAddress" jdbcType="VARCHAR" javaType="java.lang.String"/>
+    </resultMap>
+
+    <resultMap id="DetailMap" type="com.rofour.baseball.dao.officemanage.bean.OfficeDetailBean">
+        <result property="beEnabled" column="beEnabled" jdbcType="TINYINT" javaType="java.lang.Byte"/>
+        <result property="username" column="username" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="realName" column="realName" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="sex" column="sex" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="auditState" column="auditState" jdbcType="TINYINT" javaType="java.lang.Byte"/>
+
+        <result property="city" column="city" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="collegeArea" column="collegeArea" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="dormitoryAddress" column="dormitoryAddress" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="idNo" column="idNo" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="auditTime" column="auditTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="orderNum" column="orderNum" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+        <result property="commentPercent" column="commentPercent" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+    </resultMap>
+
+    <resultMap id="StoreResultMap" type="com.rofour.baseball.dao.officemanage.bean.OfficeStoreBean">
+        <result property="storeId" column="storeId" jdbcType="BIGINT" javaType="java.lang.Long"/>
+        <result property="storeName" column="storeName" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="location" column="location" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="college" column="college" jdbcType="VARCHAR" javaType="java.lang.String"/>
+    </resultMap>
+    <select id="queryByUserId" parameterType="long" resultMap="DetailMap">
+    SELECT 
+    tu.id_no idNo,tut.be_enabled beEnabled,tu.user_name username,tu.real_name realName,tu.gender sex, 
+    toma.audit_state auditState,tc.full_name collegeArea,pu.dormitory_address dormitoryAddress,
+    tc2.city_name city,tau.balance balance,toma.audit_time auditTime,pus.packet_num orderNum,(pus.overall_score_4+pus.overall_score_5)*100/(pus.packet_num) commentPercent
+    FROM tb_user tu
+    LEFT JOIN p_user pu ON pu.user_id = tu.user_id
+    LEFT JOIN tb_office_manage_audit toma ON toma.apply_user_id = tu.user_id
+    LEFT JOIN tb_user_manager tum ON tum.user_manager_id = toma.audit_user_id
+    LEFT JOIN tb_college tc ON tc.college_id = pu.college_id
+    LEFT JOIN tb_city tc2 ON tc.city_id = tc2.city_id
+    LEFT JOIN tb_acct_user tau ON tau.user_id = tu.user_id
+    LEFT JOIN tb_user_type tut ON tut.user_id = tu.user_id
+    LEFT JOIN p_user_statistics pus ON pus.user_id = tu.user_id
+    WHERE tu.be_deleted=0 AND (toma.opt_type = 1 OR toma.opt_type = 2) AND tut.user_type = 3 AND tu.user_id=#{userId}
+    ORDER BY toma.audit_time DESC LIMIT 0,1
+  </select>
+<select id="queryAll" resultMap="BaseResultMap" parameterType="com.rofour.baseball.controller.model.office.OfficeQueryInfo">
+    SELECT DISTINCT
+    tut.be_enabled beEnabled,pu.user_id userId, tu.user_name username,tu.signup_time createDate,tu.real_name realName,tu.gender sex, 
+    pu.office_role_type office,toma.audit_state auditState,tum.user_name auditor,
+    tc.full_name collegeArea,tc.college_id collegeId,pu.dormitory_address dormitoryAddress,
+    tc2.city_name city
+    FROM tb_user tu
+    LEFT JOIN p_user pu ON pu.user_id = tu.user_id
+    LEFT JOIN tb_office_manage_audit toma ON toma.apply_user_id = tu.user_id
+    LEFT JOIN tb_user_manager tum ON tum.user_manager_id = toma.audit_user_id
+    LEFT JOIN tb_college tc ON tc.college_id = pu.college_id
+    LEFT JOIN tb_city tc2 ON tc.city_id = tc2.city_id
+    LEFT JOIN tb_user_type tut ON tut.user_id = tu.user_id
+    WHERE tu.be_deleted=0 AND (pu.office_role_type = 3 OR pu.office_role_type = 2) AND tut.user_type = 3 and toma.audit_state = 1
+     <if test="username != null and username != ''">
+        AND tu.user_name LIKE TRIM(CONCAT('%', #{username}, '%'))
+    </if>
+     <if test="realName != null and realName != ''">
+        AND tu.real_name LIKE TRIM(CONCAT('%', #{realName}, '%'))
+    </if>
+    <if test="sex != null and sex != ''">
+        and tu.gender =#{sex}
+    </if>
+    <if test="collegeArea != null">
+        and tc.college_id =#{collegeArea}
+    </if>
+    <if test="auditState != null">
+        and toma.audit_state =#{auditState}
+    </if>
+     <if test="office != null">
+        and pu.office_role_type =#{office}
+    </if>
+     <if test="auditor != null and auditor != ''">
+        and tum.user_name =#{auditor}
+    </if>
+    <if test="startDate != null">
+        and tu.signup_time &gt;=#{startDate}
+    </if>
+    <if test="endDate != null">
+        and tu.signup_time &lt;#{endDate}
+    </if>
+    ORDER BY
+        ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+  </select>
+  
+   <!-- 查询数量 -->
+  <select id="getTotal" resultType="int" parameterType="com.rofour.baseball.controller.model.office.OfficeQueryInfo">
+    select COUNT(DISTINCT pu.user_id )
+    FROM tb_user tu
+    LEFT JOIN p_user pu ON pu.user_id = tu.user_id
+    LEFT JOIN tb_office_manage_audit toma ON toma.apply_user_id = tu.user_id
+    LEFT JOIN tb_user_manager tum ON tum.user_manager_id = toma.audit_user_id
+    LEFT JOIN tb_college tc ON tc.college_id = pu.college_id
+    LEFT JOIN tb_city tc2 ON tc.city_id = tc2.city_id
+    LEFT JOIN tb_user_type tut ON tut.user_id = tu.user_id
+    WHERE tu.be_deleted=0 AND (pu.office_role_type = 3 OR pu.office_role_type = 2) AND tut.user_type = 3 and toma.audit_state = 1
+    <if test="username != null and username != ''">
+        AND tu.user_name LIKE TRIM(CONCAT('%', #{username}, '%'))
+    </if>
+     <if test="realName != null and realName != ''">
+        AND tu.real_name LIKE TRIM(CONCAT('%', #{realName}, '%'))
+    </if>
+    <if test="sex != null and sex != ''">
+        and tu.gender =#{sex}
+    </if>
+    <if test="collegeArea != null">
+        and tc.college_id =#{collegeArea}
+    </if>
+    <if test="auditState != null">
+        and toma.audit_state =#{auditState}
+    </if>
+     <if test="office != null">
+        and pu.office_role_type =#{office}
+    </if>
+     <if test="auditor != null and auditor != ''">
+        and tum.user_name =#{auditor}
+    </if>
+    <if test="startDate != null">
+        and tu.signup_time &gt;=#{startDate}
+    </if>
+    <if test="endDate != null">
+        and tu.signup_time &lt;#{endDate}
+    </if>
+  </select>
+  
+  <select id="queryUserTotal" parameterType="long" resultType="int">
+    SELECT COUNT(1) FROM p_user pu
+    LEFT JOIN tb_user tu ON tu.user_id = pu.user_id
+    WHERE tu.be_deleted = 0 AND pu.coo_id = #{id} 
+  </select>
+    <select id="queryUserAndCOOTotal" parameterType="long" resultType="int">
+    SELECT COUNT(1) FROM p_user pu
+    LEFT JOIN tb_user tu ON tu.user_id = pu.user_id
+    WHERE tu.be_deleted = 0  and pu.user_id != #{id}
+        AND pu.coo_id is null AND pu.office_role_type != 3 and (pu.ceo_id =#{id} or pu.college_id = (
+        select college_id  id from p_user pu_in where pu_in.user_id =#{id}
+        ))
+  </select>
+    <select id="queryStoreTotal" parameterType="long" resultType="int">
+    select count(1) from tb_store_exp tse 
+    left join tb_store ts on tse.sto_exp_id = ts.store_id where tse.coo_id = #{id} and ts.be_deleted = 0
+  </select>
+    <select id="queryStoreAndCOOTotal" parameterType="long" resultType="int">
+    select count(1) from tb_store_exp tse 
+    left join tb_store ts on tse.sto_exp_id = ts.store_id where tse.ceo_id = #{id} and ts.be_deleted = 0
+  </select>
+
+    <update id="updateRoleType" parameterType="long">
+    update p_user set office_role_type = 1 where user_id=#{userId}
+  </update>
+
+    <update id="updatePuserCEO" parameterType="long">
+    update p_user set ceo_id = NULL where ceo_id=#{userId}
+  </update>
+
+    <update id="updatePuserCOO" parameterType="long">
+    update p_user set coo_id = NULL where coo_id=#{userId}
+  </update>
+
+    <update id="updateStoreCEO" parameterType="long">
+    update tb_store_exp set ceo_id = NULL where ceo_id=#{userId}
+  </update>
+
+    <update id="updateStoreCOO" parameterType="long">
+    update tb_store_exp set coo_id = NULL where coo_id=#{userId}
+  </update>
+
+    <update id="updateAuditState" parameterType="map">
+    update tb_office_manage_audit set audit_state=#{auditState},audit_user_id=#{managerId},audit_time=now()
+    where audit_id=#{auditId}
+  </update>
+  <!-- 查询属下的小派 -->
+  <select id="queryAttached" parameterType="com.rofour.baseball.controller.model.office.OfficeQueryInfo" resultMap="BaseResultMap">
+    SELECT 
+    tut.be_enabled beEnabled,pu.user_id userId, tu.user_name username,tu.signup_time createDate,tu.real_name realName,tu.gender sex, 
+    tc.full_name collegeArea,pu.dormitory_address dormitoryAddress,
+    tc2.city_name city,pu.office_role_type office
+    FROM tb_user tu
+    LEFT JOIN p_user pu ON pu.user_id = tu.user_id
+    LEFT JOIN tb_college tc ON tc.college_id = pu.college_id
+    LEFT JOIN tb_city tc2 ON tc.city_id = tc2.city_id
+    LEFT JOIN tb_user_type tut ON tut.user_id = tu.user_id
+    WHERE tu.be_deleted=0 AND tut.user_type = 3 and pu.user_id != #{userId}
+    <if test="office == 3">
+        AND pu.coo_id is null  AND pu.office_role_type != 3 AND (pu.ceo_id =#{userId} or pu.college_id = (
+        select college_id  id from p_user pu_in where pu_in.user_id =#{userId}
+        ))
+    </if>
+    <if test="office == 2">
+        AND pu.coo_id =#{userId}
+    </if>
+    ORDER BY
+        ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+  </select>
+  
+  <!-- 查询属下的商户 -->
+  <select id="queryAttachedStores" parameterType="com.rofour.baseball.controller.model.office.OfficeQueryInfo" resultMap="StoreResultMap">
+    SELECT tse.sto_exp_id storeId,ts.store_name storeName,ts.location location,tse.phone phone
+    FROM tb_store ts
+    LEFT JOIN tb_store_exp tse  ON tse.sto_exp_id = ts.store_id 
+    WHERE ts.be_deleted = 0
+    <if test="office == 3">
+        AND tse.ceo_id = #{userId}
+    </if>
+    <if test="office == 2">
+        AND tse.coo_id = #{userId}
+    </if>
+    <if test="sort != null and order != null">
+        ORDER BY
+            ${sort} ${order}
+        </if>
+        LIMIT #{offset}, #{limit}
+  </select>
+  <!-- 删除属下的小派 -->
+  <update id="deletePuserBoss" parameterType="map">
+    update p_user set 
+    <if test="office == 3">
+         ceo_id = NULL
+    </if>
+    <if test="office == 2">
+        coo_id = NULL
+    </if>
+     where user_id in 
+     <foreach collection="list" close=")" open="(" item="item" separator=",">
+        #{item}
+     </foreach>
+  </update>
+  
+  <!-- 删除属下的商户 -->
+  <update id="deleteStoreBoss" parameterType="map">
+    update tb_store_exp set 
+    <if test="office == 3">
+         ceo_id = NULL
+    </if>
+    <if test="office == 2">
+        coo_id = NULL
+    </if>
+     where sto_exp_id in 
+     <foreach collection="list" close=")" open="(" item="item" separator=",">
+        #{item}
+     </foreach>
+  </update>
+  
+  <!-- 查询全部小派 -->
+  <select id="queryAllPuser" resultMap="BaseResultMap" parameterType="com.rofour.baseball.controller.model.office.OfficeQueryInfo">
+    SELECT 
+    tut.be_enabled beEnabled,pu.user_id userId, tu.user_name username,tu.signup_time createDate,tu.real_name realName,tu.gender sex, 
+    pu.office_role_type office,
+    tc.full_name collegeArea,pu.dormitory_address dormitoryAddress,
+    tc2.city_name city
+    FROM tb_user tu
+    LEFT JOIN p_user pu ON pu.user_id = tu.user_id
+    LEFT JOIN tb_college tc ON tc.college_id = pu.college_id
+    LEFT JOIN tb_city tc2 ON tc.city_id = tc2.city_id
+    LEFT JOIN tb_user_type tut ON tut.user_id = tu.user_id
+    WHERE tu.be_deleted=0 and pu.state = 2 AND pu.office_role_type = 1 AND tut.user_type = 3 AND pu.ceo_id IS NULL and pu.coo_id IS NULL
+    and tut.be_enabled = 1
+    <if test="username != null and username != ''">
+        AND tu.user_name LIKE TRIM(CONCAT('%', #{username}, '%'))
+    </if>
+     <if test="realName != null and realName != ''">
+        AND tu.real_name LIKE TRIM(CONCAT('%', #{realName}, '%'))
+    </if>
+    <if test="sex != null and sex != ''">
+        and tu.gender =#{sex}
+    </if>
+    <if test="startDate != null">
+        and tu.signup_time &gt;=#{startDate}
+    </if>
+    <if test="endDate != null">
+        and tu.signup_time &lt;#{endDate}
+    </if>
+    <if test="cityId != null">
+        and tc2.city_id =#{cityId}
+    </if>
+    <if test="beEnabled != null">
+        and tut.be_enabled =#{beEnabled}
+    </if>
+    <if test="collegeArea != null">
+        and tc.college_id =#{collegeArea}
+    </if>
+    ORDER BY
+        ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+  </select>
+  <!-- 查询全部小派数量 -->
+  <select id="queryAllPuserTotal"  resultType="int" parameterType="com.rofour.baseball.controller.model.office.OfficeQueryInfo">
+    SELECT count(1)
+    FROM tb_user tu
+    LEFT JOIN p_user pu ON pu.user_id = tu.user_id
+    LEFT JOIN tb_college tc ON tc.college_id = pu.college_id
+    LEFT JOIN tb_city tc2 ON tc.city_id = tc2.city_id
+    LEFT JOIN tb_user_type tut ON tut.user_id = tu.user_id
+    WHERE tu.be_deleted=0 and pu.state = 2 AND pu.office_role_type = 1 AND tut.user_type = 3 AND pu.ceo_id IS NULL and pu.coo_id IS NULL
+    and tut.be_enabled = 1
+    <if test="username != null and username != ''">
+        AND tu.user_name LIKE TRIM(CONCAT('%', #{username}, '%'))
+    </if>
+     <if test="realName != null and realName != ''">
+        AND tu.real_name LIKE TRIM(CONCAT('%', #{realName}, '%'))
+    </if>
+    <if test="sex != null and sex != ''">
+        and tu.gender =#{sex}
+    </if>
+    <if test="startDate != null">
+        and tu.signup_time &gt;=#{startDate}
+    </if>
+    <if test="endDate != null">
+        and tu.signup_time &lt;#{endDate}
+    </if>
+    <if test="cityId != null">
+        and tc2.city_id =#{cityId}
+    </if>
+    <if test="beEnabled != null">
+        and tut.be_enabled =#{beEnabled}
+    </if>
+    <if test="collegeArea != null">
+        and tc.college_id =#{collegeArea}
+    </if>
+  </select>
+  
+  <update id="addPuserBoss" parameterType="map">
+    update p_user set 
+    <if test="office == 3">
+         ceo_id = #{userId}
+    </if>
+    <if test="office == 2">
+        coo_id = #{userId}
+    </if>
+     where user_id in 
+     <foreach collection="list" close=")" open="(" item="item" separator=",">
+        #{item}
+     </foreach>
+  </update>
+    <update id="updatePacketRole" parameterType="map">
+        update p_user SET office_role_type=#{roleType}
+        <if test="roleType == 3">
+            ,ceo_id = NULL,coo_id = null
+        </if>
+        <if test="roleType == 2">
+            ,coo_id = null
+        </if>
+         WHERE user_id=#{userId}
+    </update>
+
+    <select id="getOfficeAudit" resultType="com.rofour.baseball.dao.officemanage.bean.OfficeAuditInfo">
+        SELECT
+        toma.audit_id,
+        pu.user_id,
+        tu.user_name username,
+        tu.signup_time signupTime,
+        tu.real_name,
+        tu.gender,
+        tut.be_enabled,
+        toma.opt_type,
+        toma.audit_state,
+        toma.audit_user_id,
+        tum.user_name auditUserName,
+        toma.audit_time,
+        tc2.city_name,
+        tc.full_name college_name,
+        pu.college_id,
+        pu.dormitory_address,
+        toma.apply_user_id,
+        toma.apply_time
+        FROM tb_office_manage_audit toma
+        LEFT JOIN tb_user tu
+        ON toma.packet_user_id = tu.user_id
+        LEFT JOIN p_user pu
+        ON toma.packet_user_id = pu.user_id
+        LEFT JOIN tb_college tc
+        ON tc.college_id = pu.college_id
+        LEFT JOIN tb_city tc2
+        ON tc.city_id = tc2.city_id
+        LEFT JOIN tb_user_type tut
+        ON tut.user_id = tu.user_id
+        LEFT JOIN tb_user_manager tum
+        ON toma.audit_user_id = tum.user_manager_id
+        WHERE tu.be_deleted = 0 AND tut.user_type = 3 AND toma.audit_state in(0,2)
+        <if test="username != null and username != ''">
+            and tu.user_name like CONCAT('%',TRIM(#{username}),'%')
+        </if>
+        <if test="realName != null and realName != ''">
+            and tu.real_name like CONCAT('%',TRIM(#{realName}),'%')
+        </if>
+        <if test="sex != null and sex != ''">
+            and tu.gender =#{sex}
+        </if>
+        <if test="collegeArea != null">
+            and tc.college_id =#{collegeArea}
+        </if>
+        <if test="auditState != null">
+            and toma.audit_state =#{auditState}
+        </if>
+        <if test="office != null">
+            and toma.opt_type =#{office}
+        </if>
+        <if test="auditor != null and auditor != ''">
+            and tum.user_name like CONCAT('%',TRIM(#{auditor}),'%')
+        </if>
+        <if test="startDate != null">
+            and tu.signup_time &gt;=#{startDate}
+        </if>
+        <if test="endDate != null">
+            and tu.signup_time &lt;#{endDate}
+        </if>
+        ORDER BY
+        ${sort} ${order}
+        LIMIT #{offset}, #{limit}
+    </select>
+    <select id="getOfficeAuditCount" resultType="java.lang.Integer">
+        SELECT count(0)
+        FROM tb_office_manage_audit toma
+        LEFT JOIN tb_user tu
+        ON toma.packet_user_id = tu.user_id
+        LEFT JOIN p_user pu
+        ON toma.packet_user_id = pu.user_id
+        LEFT JOIN tb_college tc
+        ON tc.college_id = pu.college_id
+        LEFT JOIN tb_city tc2
+        ON tc.city_id = tc2.city_id
+        LEFT JOIN tb_user_type tut
+        ON tut.user_id = tu.user_id
+        LEFT
+        JOIN tb_user_manager tum
+        ON toma.audit_user_id = tum.user_manager_id
+        WHERE tu.be_deleted = 0 AND tut.user_type = 3 AND toma.audit_state in(0,2)
+        <if test="username != null and username != ''">
+            and tu.user_name like CONCAT('%',TRIM(#{username}),'%')
+        </if>
+        <if test="realName != null and realName != ''">
+            and tu.real_name like CONCAT('%',TRIM(#{realName}),'%')
+        </if>
+        <if test="sex != null and sex != ''">
+            and tu.gender =#{sex}
+        </if>
+        <if test="collegeArea != null">
+            and tc.college_id =#{collegeArea}
+        </if>
+        <if test="auditState != null">
+            and toma.audit_state =#{auditState}
+        </if>
+        <if test="office != null">
+            and toma.opt_type =#{office}
+        </if>
+        <if test="auditor != null and auditor != ''">
+            and tum.user_name like CONCAT('%',TRIM(#{auditor}),'%')
+        </if>
+        <if test="startDate != null">
+            and tu.signup_time &gt;=#{startDate}
+        </if>
+        <if test="endDate != null">
+            and tu.signup_time &lt;#{endDate}
+        </if>
+    </select>
+    <select id="getOfficeAuditById" resultType="com.rofour.baseball.dao.officemanage.bean.OfficeAuditBean">
+        SELECT
+          audit_id,
+          opt_type,
+          packet_user_id,
+          apply_user_id,
+          audit_state,
+          apply_time,
+          audit_user_id,
+          audit_time
+        FROM tb_office_manage_audit WHERE audit_id=#{auditId}
+    </select>
+    
+    <select id="selectSameCollegeCEO" parameterType="map" resultMap="BaseResultMap">
+        SELECT  
+        tut.be_enabled beEnabled,pu.user_id userId, tu.user_name username,tu.signup_time createDate,tu.real_name realName,tu.gender sex, 
+        pu.office_role_type office,pu.dormitory_address dormitoryAddress 
+        FROM tb_user tu
+        LEFT JOIN p_user pu ON pu.user_id = tu.user_id
+        LEFT JOIN tb_user_type tut ON pu.user_id = tut.user_id
+        WHERE pu.office_role_type =  3 AND tut.user_type = 3 AND tut.be_enabled = 1 AND tu.be_deleted = 0 
+        AND pu.college_id = (
+        SELECT pu_in.college_id FROM p_user pu_in WHERE pu_in.user_id = #{userId}
+        ) AND pu.user_id != #{userId}
+    </select>
+    
+</mapper>

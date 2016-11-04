@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.activity.mapper.AcctActivityPolicyMapper">
-    <resultMap id="BaseResultMap" type="com.zhiduan.axp.dao.activity.bean.AcctActivityPolicyBean">
+<mapper namespace="com.rofour.baseball.dao.activity.mapper.AcctActivityPolicyMapper">
+    <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.activity.bean.AcctActivityPolicyBean">
         <constructor>
             <idArg column="policy_id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
             <arg column="activity_id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
@@ -26,12 +26,13 @@
         <include refid="Base_Column_List"/>
         from tb_acct_activity_policy
         where activity_id = #{activityId,jdbcType=INTEGER}
+        and be_deleted=0
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     update tb_acct_activity_policy set be_deleted=1
     where policy_id = #{policyId,jdbcType=INTEGER}
   </delete>
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.activity.bean.AcctActivityPolicyBean" useGeneratedKeys="true" keyProperty="policyId">
+    <insert id="insert" parameterType="com.rofour.baseball.dao.activity.bean.AcctActivityPolicyBean" useGeneratedKeys="true" keyProperty="policyId">
     insert into tb_acct_activity_policy ( activity_id, policy_name,
       policy_type, policy_priority, effect_days,be_deleted
       )
@@ -39,7 +40,7 @@
       #{policyType,jdbcType=TINYINT}, #{policyPriority,jdbcType=TINYINT}, #{effectDays,jdbcType=INTEGER}, #{beDeleted,jdbcType=TINYINT}
       )
   </insert>
-    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.activity.bean.AcctActivityPolicyBean">
+    <insert id="insertSelective" parameterType="com.rofour.baseball.dao.activity.bean.AcctActivityPolicyBean">
         insert into tb_acct_activity_policy
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="policyId != null">
@@ -82,7 +83,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.activity.bean.AcctActivityPolicyBean">
+    <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.activity.bean.AcctActivityPolicyBean">
         update tb_acct_activity_policy
         <set>
             <if test="activityId != null">
@@ -103,7 +104,7 @@
         </set>
         where policy_id = #{policyId,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.activity.bean.AcctActivityPolicyBean">
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.activity.bean.AcctActivityPolicyBean">
     update tb_acct_activity_policy
     set activity_id = #{activityId,jdbcType=INTEGER},
       policy_name = #{policyName,jdbcType=VARCHAR},
@@ -112,10 +113,10 @@
       effect_days = #{effectDays,jdbcType=INTEGER}
     where policy_id = #{policyId,jdbcType=INTEGER}
   </update>
-    <select id="selectActivity" resultType="com.zhiduan.axp.controller.model.SelectSet">
+    <select id="selectActivity" resultType="com.rofour.baseball.controller.model.SelectSet">
        select t.activity_id id,t.activity_name text from tb_acct_activity t where t.be_deleted=0 AND (t.state=1 OR t.state=2)
     </select>
-    <select id="selectPolicy" parameterType="java.lang.Long" resultType="com.zhiduan.axp.controller.model.SelectSet">
+    <select id="selectPolicy" parameterType="java.lang.Long" resultType="com.rofour.baseball.controller.model.SelectSet">
         select t.policy_id id,t.policy_name text from tb_acct_activity_policy t where activity_id=#{activityId}
     </select>
 </mapper>

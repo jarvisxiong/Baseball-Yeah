@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.RolePermissionMapper">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.RolePermissionMapper">
 
-	<resultMap id="rolePermissionResultMap"
-		type="com.zhiduan.axp.dao.manager.bean.RolePermissionBean">
-		<id column="role_permission_id" property="rolePermissionId" />
-		<result column="role_id" property="roleId" />
-		<result column="menu_id" property="menuId" />
-		<result column="action" property="action" />
-	</resultMap>
+    <resultMap id="rolePermissionResultMap"
+               type="com.rofour.baseball.dao.manager.bean.RolePermissionBean">
+        <id column="role_permission_id" property="rolePermissionId"/>
+        <result column="role_id" property="roleId"/>
+        <result column="menu_id" property="menuId"/>
+        <result column="action" property="action"/>
+    </resultMap>
 
-	<resultMap id="BaseMap"
-		type="com.zhiduan.axp.dao.manager.bean.RolePermissionBean">
-	</resultMap>
+    <resultMap id="BaseMap"
+               type="com.rofour.baseball.dao.manager.bean.RolePermissionBean">
+    </resultMap>
 
-	<select id="selectAllPermission" parameterType="java.lang.Long"
-		resultMap="rolePermissionResultMap">
+    <select id="selectAllPermission" parameterType="java.lang.Long"
+            resultMap="rolePermissionResultMap">
 		select * from tb_role_permission where
 		role_id=#{roleId,jdbcType=BIGINT}
 	</select>
-	<insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.RolePermissionBean">
+    <select id="selectAllByMenu" parameterType="java.lang.Long"
+            resultMap="rolePermissionResultMap">
+		select * from tb_role_permission where
+		menu_id=#{menuId,jdbcType=BIGINT}
+	</select>
+    <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.RolePermissionBean">
 		insert into tb_role_permission
 		(role_id, menu_id,action
 		)
@@ -28,13 +33,22 @@
 		)
 	</insert>
 
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
 		delete from
 		tb_role_permission where
 		role_permission_id=#{rolePermissionId,jdbcType=BIGINT}
 	</delete>
 
-	<update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.RolePermissionBean">
+    <update id="batchUpdate" parameterType="list">
+        <foreach collection="list" item="item" index="index" separator=";">
+            update tb_role_permission
+            <set>
+                action=#{item.action,jdbcType=VARCHAR}
+            </set>
+            where role_permission_id = #{item.rolePermissionId,jdbcType=BIGINT}
+        </foreach>
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.RolePermissionBean">
 		update
 		tb_role_permission
 		set
@@ -45,8 +59,8 @@
 		#{rolePermissionId,jdbcType=BIGINT}
 	</update>
 
-	<select id="selectByPrimaryKey" parameterType="java.lang.Long"
-		resultMap="rolePermissionResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long"
+            resultMap="rolePermissionResultMap">
 		select role_permission_id,role_id,menu_id,action
 		from
 		tb_role_permission
@@ -54,53 +68,53 @@
 		#{rolePermissionId,jdbcType=BIGINT}
 	</select>
 
-	<select id="isRolePermissionExists" parameterType="map"
-		resultType="int">
-		select count(1) from tb_role_permission
-		where
-		role_id=#{roleId,jdbcType=BIGINT}
-		and menu_id=#{menuId,jdbcType=BIGINT}
-		<if test="rolePermissionId != null">
-			and role_permission_id !=
-			#{rolePermissionId,jdbcType=BIGINT}
-		</if>
-	</select>
-	<insert id="batchInsert" parameterType="list">
-		insert into tb_role_permission (role_id,menu_id,action)
-		values
-		<foreach collection="list" item="item" index="index"
-			separator=",">
-			(
-			#{item.roleId,jdbcType=BIGINT},
-			#{item.menuId,jdbcType=BIGINT},
-			#{item.action,jdbcType=VARCHAR}
-			)
-		</foreach>
-	</insert>
-	<select id="selectAll" resultMap="rolePermissionResultMap">
+    <select id="isRolePermissionExists" parameterType="map"
+            resultType="int">
+        select count(1) from tb_role_permission
+        where
+        role_id=#{roleId,jdbcType=BIGINT}
+        and menu_id=#{menuId,jdbcType=BIGINT}
+        <if test="rolePermissionId != null">
+            and role_permission_id !=
+            #{rolePermissionId,jdbcType=BIGINT}
+        </if>
+    </select>
+    <insert id="batchInsert" parameterType="list">
+        insert into tb_role_permission (role_id,menu_id,action)
+        values
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (
+            #{item.roleId,jdbcType=BIGINT},
+            #{item.menuId,jdbcType=BIGINT},
+            #{item.action,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+    <select id="selectAll" resultMap="rolePermissionResultMap">
 		select * from
 		tb_role_permission
 	</select>
-	<delete id="deleteByRoleId" parameterType="java.lang.Long">
+    <delete id="deleteByRoleId" parameterType="java.lang.Long">
 		delete from
 		tb_role_permission where
 		role_id=#{roleId}
 	</delete>
 
-	<select id="selectAllPermissionByUserName" parameterType="java.lang.String"
-		resultType="com.zhiduan.axp.dao.manager.bean.RolePermissionBean">
+    <select id="selectAllPermissionByUserName" parameterType="java.lang.String"
+            resultType="com.rofour.baseball.dao.manager.bean.RolePermissionBean">
 		SELECT DISTINCT menu_id,action FROM tb_role_permission where role_id in
 		(SELECT a.role_id from tb_user_manager_role_rel a LEFT JOIN
 		tb_user_manager b on a.user_manager_id=b.user_manager_id 
 		where b.be_deleted=0 AND
 		login_name=#{userName})
 	</select>
-	
-	<select id="getTotal" resultType="java.lang.Integer">
+
+    <select id="getTotal" resultType="java.lang.Integer">
 		SELECT COUNT(1) from tb_role_permission
 	</select>
-	
-	<!-- 批量增加或者更新权限 -->
+
+    <!-- 批量增加或者更新权限 -->
     <insert id="addOrUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" separator=";">
             insert into tb_role_permission
@@ -139,11 +153,11 @@
             </trim>
         </foreach>
     </insert>
-    
-    <!-- 批量增加权限-->
+
+    <!-- 批量增加权限，该方法在5.7.15版本下的mysql中会报错-->
     <insert id="addMenus" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" separator=";">
-            insert into tb_role_permission
+            INSERT INTO tb_role_permission
             <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="item.roleId != null">
                     role_id,
@@ -155,7 +169,8 @@
                     action,
                 </if>
             </trim>
-            <trim prefix="values (" suffix=")" suffixOverrides=",">
+            VALUES
+            <trim prefix="(" suffix=")" suffixOverrides=",">
                 <if test="item.roleId != null">
                     #{item.roleId},
                 </if>
@@ -168,10 +183,10 @@
             </trim>
         </foreach>
     </insert>
-    
+
     <!-- 根据角色Id来查找权限 -->
     <select id="selectByRoleId" parameterType="java.lang.Long"
-		resultMap="rolePermissionResultMap">
+            resultMap="rolePermissionResultMap">
 		select role_permission_id,role_id,menu_id,action
 		from
 		tb_role_permission

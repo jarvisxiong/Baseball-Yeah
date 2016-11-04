@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.PickupAddressMapper">
-    <resultMap id="Pickup_Address_Map" type="com.zhiduan.axp.dao.manager.bean.PickupAddressBean">
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.PickupAddressMapper">
+    <resultMap id="Pickup_Address_Map" type="com.rofour.baseball.dao.manager.bean.PickupAddressBean">
         <id property="pickupAddressId" column="pickup_address_id"/>
         <result property="storeName" column="store_name"/>
         <result property="storePhone" column="store_phone"/>
         <result property="address" column="address"/>
         <result property="createTime" column="create_time"/>
-        <!--<collection property="colleges" ofType="com.zhiduan.axp.dao.manager.bean.CollegeBean">
+        <!--<collection property="colleges" ofType="com.rofour.baseball.dao.manager.bean.CollegeBean">
             <id property="collegeId" column="college_id"/>
             <result property="fullName" column="full_name"/>
         </collection>-->
@@ -22,7 +22,7 @@
         college_id, college_name
     </sql>
     <!-- 按主键查询 -->
-    <select id="selectByPrimaryKey" resultType="com.zhiduan.axp.dao.manager.bean.PickupAddressBean"
+    <select id="selectByPrimaryKey" resultType="com.rofour.baseball.dao.manager.bean.PickupAddressBean"
             parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
@@ -31,9 +31,9 @@
     </select>
 
     <!-- 查询列表 -->
-    <select id="selectList" resultMap="Pickup_Address_Map" parameterType="map">
-        SELECT a.pickup_address_id,a.store_name,a.store_phone,a.address,
-        a.create_time,group_concat(b.college_id) collegeIds,group_concat(c.full_name) collegeNames
+    <select id="selectList" resultType="com.rofour.baseball.dao.manager.bean.PickupAddressBean" parameterType="map">
+        SELECT a.pickup_address_id as pickupAddressId ,a.store_name as storeName,a.store_phone as storePhone,a.address as address,
+        a.create_time as createTime,group_concat(b.college_id) collegeIds,group_concat(c.full_name) collegeNames
         FROM
         tb_pickup_address a,tb_pickup_address_college b,tb_college c
         WHERE a.pickup_address_id = b.pickup_address_id
@@ -47,7 +47,12 @@
             and a.store_phone like #{storePhone}
         </if>
         GROUP BY a.pickup_address_id
-        ORDER BY a.pickup_address_id DESC
+        <if test="sort != null and sort != '' ">
+            ORDER BY ${sort} ${order}
+        </if>
+        <if test="sort == null or sort == '' ">
+            ORDER BY a.pickup_address_id DESC
+        </if>
         LIMIT #{offset}, #{limit}
     </select>
 
@@ -68,7 +73,7 @@
     </select>
 
     <!-- 新增 -->
-    <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressBean" useGeneratedKeys="true"
+    <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.PickupAddressBean" useGeneratedKeys="true"
             keyProperty="pickupAddressId">
     insert into tb_pickup_address (
       store_name,store_phone, address, province_id,
@@ -81,7 +86,7 @@
   </insert>
 
     <!-- 动态新增 -->
-    <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressBean">
+    <insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.PickupAddressBean">
         insert into tb_pickup_address
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="pickupAddressId != null">
@@ -138,7 +143,7 @@
     </insert>
 
     <!-- 动态更新 -->
-    <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressBean">
+    <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.PickupAddressBean">
         update tb_pickup_address
         <set>
             <if test="storeName != null">
@@ -164,7 +169,7 @@
     </update>
 
     <!-- 更新 -->
-    <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.PickupAddressBean">
+    <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.PickupAddressBean">
     update tb_pickup_address
     set user_id = #{userId,jdbcType=BIGINT},
       store_name = #{storeName,jdbcType=VARCHAR},

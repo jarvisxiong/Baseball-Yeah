@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zhiduan.axp.dao.report.mapper.ReportStoreSmsMapper">
+<mapper namespace="com.rofour.baseball.dao.report.mapper.ReportStoreSmsMapper">
 
-    <resultMap type="com.zhiduan.axp.dao.report.bean.ReportStoreSmsBean" id="reportStoreSmsBeanResult">
+    <resultMap type="com.rofour.baseball.dao.report.bean.ReportStoreSmsBean" id="reportStoreSmsBeanResult">
         <result property="collegeName" column="collegeName"/>
         <result property="storeCode" column="storeCode"/>
         <result property="storeName" column="storeName"/>
@@ -124,7 +124,7 @@
     </select>
 
     <resultMap id="searchStoreSmsTotal"
-               type="com.zhiduan.axp.dao.report.bean.SearchStoreSmsTotalBean">
+               type="com.rofour.baseball.dao.report.bean.SearchStoreSmsTotalBean">
         <id column="storeId" property="storeId"/>
         <result column="storeName" property="storeName"/>
         <result column="totalCount" property="totalCount"/>
@@ -157,7 +157,7 @@
         GROUP BY t4.store_id ,t4.store_name
     </select>
     <resultMap id="searchStoreSmsDetails"
-               type="com.zhiduan.axp.dao.report.bean.SearchStoreSmsDetailBean">
+               type="com.rofour.baseball.dao.report.bean.SearchStoreSmsDetailBean">
         <result column="storeName" property="storeName"/>
         <result column="billNo" property="billNo"/>
         <result column="phone" property="phone"/>
@@ -201,14 +201,14 @@
     </select>
 
     <!--用户短信模板查询-->
-    <select id="getuserSmsModelList" resultType="com.zhiduan.axp.dao.report.bean.ReportUserSmsModelBean"
+    <select id="getuserSmsModelList" resultType="com.rofour.baseball.dao.report.bean.ReportUserSmsModelBean"
             parameterType="map">
         SELECT a.sms_model_id AS smsModelId,d.store_name AS storeName,b.real_name AS userName,b.phone,
         a.template_name as modelName,a.model_content AS modelContent
         FROM tb_sms_model_for_user a
         INNER JOIN tb_user b ON a.user_id = b.user_id
         INNER JOIN tb_user_store_exp c ON b.user_id = c.user_id
-        INNER JOIN tb_store d on d.store_id=c.store_id
+        INNER JOIN tb_store d on d.store_id=c.store_id and d.be_deleted = 0 
         <where>
             <if test="storeId != null">
                 and d.store_id = #{storeId}
@@ -222,6 +222,7 @@
             <if test="modelContent != null">
                 and a.model_content like TRIM(CONCAT('%', #{modelContent}, '%'))
             </if>
+            and a.state!=0 
         </where>
         LIMIT #{offset},#{limit}
     </select>
@@ -231,7 +232,7 @@
         FROM tb_sms_model_for_user a
         INNER JOIN tb_user b ON a.user_id = b.user_id
         INNER JOIN tb_user_store_exp c ON b.user_id = c.user_id
-        INNER JOIN tb_store d on d.store_id=c.store_id
+        INNER JOIN tb_store d on d.store_id=c.store_id and d.be_deleted = 0 
         <where>
             <if test="storeId != null">
                 and d.store_id = #{storeId}
@@ -245,6 +246,7 @@
             <if test="modelContent != null">
                 and a.model_content like TRIM(CONCAT('%', #{modelContent}, '%'))
             </if>
+            and a.state!=0 
         </where>
     </select>
 </mapper>

@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zhiduan.axp.dao.manager.mapper.MsgTemplateMapper" >
-  <resultMap id="BaseResultMap" type="com.zhiduan.axp.controller.model.manager.MsgTemplateInfo" >
-    <constructor >
-      <idArg column="message_template_id" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="message_template_name" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="message_template" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="priority" jdbcType="TINYINT" javaType="java.lang.Byte" />
-    </constructor>
+<mapper namespace="com.rofour.baseball.dao.manager.mapper.MsgTemplateMapper" >
+  <resultMap id="BaseResultMap" type="com.rofour.baseball.dao.manager.bean.MsgTemplateBean" >
+      <result property="messageTemplateId" column="message_template_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="messageTemplateName" column="message_template_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="messageTemplate" column="message_template" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <result property="priority" column="priority" jdbcType="TINYINT" javaType="java.lang.Byte" />
   </resultMap>
   <sql id="Base_Column_List" >
     message_template_id messageTemplateId, message_template_name messageTemplateName, message_template messageTemplate, priority
@@ -18,7 +16,7 @@
     from tb_message_template
     where message_template_id = #{messageTemplateId,jdbcType=VARCHAR}
   </select>
-   <select id="selectAll" resultType="com.zhiduan.axp.controller.model.manager.MsgTemplateInfo" parameterType="com.zhiduan.axp.controller.model.manager.MsgTemplateInfo" >
+   <select id="selectAll" resultType="com.rofour.baseball.controller.model.manager.MsgTemplateInfo" parameterType="com.rofour.baseball.controller.model.manager.MsgTemplateInfo" >
     select 
     <include refid="Base_Column_List" />
     from tb_message_template
@@ -31,7 +29,7 @@
    
   </select>
   
-     <select id="getMsgTemplateTotal" resultType="int"   parameterType="com.zhiduan.axp.controller.model.manager.MsgTemplateInfo" >
+     <select id="getMsgTemplateTotal" resultType="int"   parameterType="com.rofour.baseball.controller.model.manager.MsgTemplateInfo" >
     select 
    count(1)
     from tb_message_template
@@ -39,19 +37,19 @@
 			where message_template_name like CONCAT('%',#{messageTemplateName},'%')
 		</if>
   </select>
-  <delete id="deleteTemplate" parameterType="com.zhiduan.axp.controller.model.manager.MsgTemplateInfo" >
+  <delete id="deleteTemplate" parameterType="com.rofour.baseball.controller.model.manager.MsgTemplateInfo" >
     
     <foreach collection="messageTemplateIds" item="messageTemplateId" index="index">delete from tb_message_template
     where message_template_id = #{messageTemplateId,jdbcType=VARCHAR}</foreach>
     
   </delete>
-  <insert id="insert" parameterType="com.zhiduan.axp.dao.manager.bean.MsgTemplateBean" >
+  <insert id="insert" parameterType="com.rofour.baseball.dao.manager.bean.MsgTemplateBean" >
     insert into tb_message_template (message_template_id, message_template_name, 
       message_template, priority)
     values (#{messageTemplateId,jdbcType=VARCHAR}, #{messageTemplateName,jdbcType=VARCHAR}, 
       #{messageTemplate,jdbcType=VARCHAR}, #{priority,jdbcType=TINYINT})
   </insert>
-  <insert id="insertSelective" parameterType="com.zhiduan.axp.dao.manager.bean.MsgTemplateBean" >
+  <insert id="insertSelective" parameterType="com.rofour.baseball.dao.manager.bean.MsgTemplateBean" >
     insert into tb_message_template
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="messageTemplateId != null" >
@@ -82,7 +80,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.zhiduan.axp.dao.manager.bean.MsgTemplateBean" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.rofour.baseball.dao.manager.bean.MsgTemplateBean" >
     update tb_message_template
     <set >
       <if test="messageTemplateName != null" >
@@ -97,7 +95,7 @@
     </set>
     where message_template_id = #{messageTemplateId,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.zhiduan.axp.dao.manager.bean.MsgTemplateBean" >
+  <update id="updateByPrimaryKey" parameterType="com.rofour.baseball.dao.manager.bean.MsgTemplateBean" >
     update tb_message_template
     set message_template_name = #{messageTemplateName,jdbcType=VARCHAR},
       message_template = #{messageTemplate,jdbcType=VARCHAR},

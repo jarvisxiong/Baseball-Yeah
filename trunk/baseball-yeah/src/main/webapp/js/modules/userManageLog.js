@@ -5,7 +5,7 @@ define(['base'], function (base) {
     var detailData = [];
 
     return {
-        init: function (args) {
+        init: function (panel) {
             // / <summary>
             // / 模块初始化方法
             // / </summary>
@@ -13,14 +13,14 @@ define(['base'], function (base) {
             var self = this;
 
             //开始时间
-            $('#starttimePicker').datetimepicker({
+            $('#starttimePicker', panel).datetimepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 pickTime: false,
                 minView: 2
             })
 
-            $('#detail_distinction').bootstrapTable({
+            $('#detail_distinction', panel).bootstrapTable({
                 data: detailData,
                 striped: true, // 是否显示行间隔色
                 pagination: true, // 是否显示分页（*）
@@ -43,9 +43,9 @@ define(['base'], function (base) {
                         width: 150
                     }]
             });
-            $('#detailModal').css('width', '800px');
-            $('#detailModal').css('margin', '100px auto 100px auto');
-            $('#endtimePicker').datetimepicker(
+            // $('#detailModal', panel).css('width', '800px');
+            // $('#detailModal', panel).css('margin', '100px auto 100px auto');
+            $('#endtimePicker', panel).datetimepicker(
                 {
                     format: 'yyyy-mm-dd',
                     autoclose: true,
@@ -53,21 +53,19 @@ define(['base'], function (base) {
                     minView: 2
                 });
 
-            $("#startdate").val((new Date((new Date()).getTime() - 30 * 24 * 3600 * 1000)).Format("yyyy-MM-dd"));
-            $("#enddate").val((new Date()).Format("yyyy-MM-dd"));
-
+            self.initDate(panel);
 
             datatable = base.datagrid({
                 url: '/user/managers/getLogs',
                 queryParams: function (params) {
                     return $.extend(params,
                         {
-                            userName: $("#userName").val(),
-                            tableName: $("#tableName").val(),
-                            startDate: $('#startdate').val(),
-                            endDate: $('#enddate').val() + " 23:59:59",
-                            menuId: $("#selmenu").val(),
-                            operationType: $("#seloperationType").val()
+                            userName: $("#userName", panel).val(),
+                            tableName: $("#tableName", panel).val(),
+                            startDate: $('#startdate', panel).val(),
+                            endDate: $('#enddate', panel).val(),
+                            menuId: $("#selmenu", panel).val(),
+                            operationType: $("#seloperationType", panel).val()
                         });
                 },
                 columns: [
@@ -112,7 +110,7 @@ define(['base'], function (base) {
                         width: 80,
                         events: {
                             'click .detail': function (e, value, row, index) {
-                                self.getLogInfo(row);
+                                self.getLogInfo(row, panel);
                             }
                         },
                         formatter: function (value, row, index) {
@@ -128,11 +126,11 @@ define(['base'], function (base) {
                         title: 'userId',
                         visible: false
                     }]
-            }, '#userTable');
+            }, '#userTable', panel);
 
 
-            $("#btn_query").click(function () {
-                $("#userTable").bootstrapTable('refresh');
+            $("#btn_query", panel).click(function () {
+                $("#userTable", panel).bootstrapTable('refresh');
             });
 
             $.ajax({
@@ -140,31 +138,42 @@ define(['base'], function (base) {
                 url: "/manage/menu/getAllParent",
                 dataType: "json",
                 success: function (data) {
-                    $("#selmenu").select2({
+                    $("#selmenu", panel).select2({
                         placeholder: '请选择',
                         allowClear: true,
                         data: data
                     });
-                    $('#selmenu').select2("val", null);
+                    $('#selmenu', panel).select2("val", null);
                 }
             });
-
 
             $.ajax({
                 type: "POST",
                 url: "/manage/menu/getEnumPermission",
                 dataType: "json",
                 success: function (data) {
-                    $("#seloperationType").select2({
+                    $("#seloperationType", panel).select2({
                         placeholder: '请选择',
                         allowClear: true,
                         data: data
                     });
-                    $('#seloperationType').select2("val", null);
+                    $('#seloperationType', panel).select2("val", null);
                 }
             });
+
+            $("#clearSearch",panel).click(function () {
+                base.reset($(".main-box-header",panel));
+                $('#userName').val('');
+                $('#selmenu',panel).select2("val", null);
+                $('#seloperationType',panel).select2("val", null);
+                self.initDate(panel);
+            });
         },
-        getLogInfo: function (model) {
+        initDate: function (panel) {
+            $("#startdate", panel).val((new Date((new Date()).getTime() - 30 * 24 * 3600 * 1000)).Format("yyyy-MM-dd"));
+            $("#enddate", panel).val((new Date()).Format("yyyy-MM-dd"));
+        },
+        getLogInfo: function (model, panel) {
             var self = this;
             detailData = [];
             if (model.newValue && model.oldValue) {
@@ -234,10 +243,9 @@ define(['base'], function (base) {
                     }
                 }
             }
-
             $('#detail_distinction').bootstrapTable('load', detailData);
-            $('#detail_distinction').bootstrapTable('resetView', {"height": 483});
-            $('#detailModal').modal();
+            $('#detail_distinction', panel).bootstrapTable('resetView', {"height": 483});
+            $('#detailModal', panel).modal();
         }
     };
 });

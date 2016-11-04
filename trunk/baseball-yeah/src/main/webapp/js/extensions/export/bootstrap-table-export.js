@@ -79,21 +79,26 @@
                             '</li>'].join(''));
                     }
                 });
-
+                $export.click(function () {
+                    if (that.options.exportAllExcel) {
+                        $(this).find("a").attr('href', that.options.exportAllExcel());
+                    }
+                })
                 $menu.find('li').click(function () {
-                    var type = $(this).data('type'),
-                        doExport = function () {
-                            that.$el.tableExport($.extend({}, that.options.exportOptions, {
-                                type: type,
-                                escape: false
-                            }));
-                        };
+                    var type = $(this).data('type'), doExport = function () {
+                        that.$el.tableExport($.extend({}, that.options.exportOptions, {
+                            type: type,
+                            escape: false
+                        }));
+                    };
+
+
 
                     doExport();
                 });
 
                 if (this.options.exportAllExcel) {
-                    $menu.append('<li data-type="excel"><a href="' + this.options.exportAllExcel + '">MS-Excel(all)</a></li>');
+                    $menu.append('<li data-type="excel"><a id="" href="#">MS-Excel(all)</a></li>');
                 }
             }
         }
