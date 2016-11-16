@@ -4,7 +4,9 @@
 
 <Workspace>
 	<Local Expanded="Yes">
-		<Model ID="{2CA271BC-688A-460B-A7F4-300F4F8FC234}" Name="baseball-yeal" Selected="Yes" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="baseball-yeal.pdm"/>
+		<Model ID="{2CA271BC-688A-460B-A7F4-300F4F8FC234}" Loaded="No" Name="baseball-yeal" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="baseball-yeal.pdm"/>
+		<Model Expanded="Yes" ID="{2CA271BC-688A-460B-A7F4-300F4F8FC234}" Loaded="No" Name="baseball-yeal" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="baseball-yeal.pdm"/>
+		<Model Expanded="Yes" ID="{2CA271BC-688A-460B-A7F4-300F4F8FC234}" Name="baseball-yeal" Selected="Yes" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="baseball-yeal.pdm"/>
 	</Local>
 	<BrowserModule Name="Repository"/>
 </Workspace>
